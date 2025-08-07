@@ -1,21 +1,32 @@
 import React, { useState } from "react";
 import { useNavigate } from 'react-router-dom';
 import { useForm } from "react-hook-form";
-
+import {axiosInstance} from "../api/axiosInstance";
 function Login() {
     const navigate = useNavigate();
-    const { handleSubmit } = useForm();
+    const {register, handleSubmit } = useForm();
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [loginError, setLoginError] = useState("");
 
-    const onSubmit = (data) => {
+    const onSubmit = async (data) => {
+        console.log(data);
+        
         try {
+            const response = await axiosInstance.post('/users/signin', {
+            "email" : data.email,
+            "password": data.password,
+        });
+            console.log('Registration data:', data);
+            console.log('Registration success:', response.data);
             setLoading(true);
             console.log(data);
             navigate("/");
             // eslint-disable-next-line no-unused-vars
         } catch (errors) {
-            console.error("حدث خطأ أثناء التسجيل");
+              const message = errors.response?.data?.message || "حدث خطأ أثناء تسجيل الدخول";
+  console.error('Login error:', message);
+  setLoginError(message); // ← هنا نحفظ الرسالة
         } finally {
             setLoading(false);
         }
@@ -49,6 +60,12 @@ function Login() {
                             أو <span className="font-bold text-yellow-500 hover:text-yellow-600 transition-colors cursor-pointer" onClick={() => navigate("/Register")}>  إنشاء حساب جديد</span>
                         </p>
                     </div>
+                    {console.log(loginError)}
+                            {loginError && (
+                            <div className="bg-red-600 text-white px-4 py-3 rounded-md text-center font-bold text-md">
+                                {loginError}
+                            </div>
+                            )}
 
                     <form onSubmit={handleSubmit(onSubmit)} className="mt-1 space-y-1">
                         <div className="space-y-3">
@@ -58,6 +75,7 @@ function Login() {
                                     <input
                                         type="email"
                                         id="email"
+                                        {...register("email")}
                                         required
                                         className="w-full px-4 py-3 pr-12 bg-input border border-none rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-300 text-white"
                                         placeholder="أدخل بريدك الإلكتروني"
@@ -89,6 +107,8 @@ function Login() {
                                     <input
                                         type={showPassword ? "text" : "password"}
                                         id="password"
+
+                                        {...register("password")}
                                         required
                                         className="w-full px-4 py-3 pr-12 bg-input border border-none rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-300 text-white"
                                         placeholder="أدخل كلمة المرور"
