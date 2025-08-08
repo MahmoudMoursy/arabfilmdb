@@ -12,3 +12,6 @@ body {
   font-family: 'Noto Sans Arabic', sans-serif;
   direction: rtl;
 }
+.hover-glow:hover {
+  box-shadow: 0 0 10px rgba(255, 191, 0, 0.8);
+}

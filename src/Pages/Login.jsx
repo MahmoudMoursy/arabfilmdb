@@ -1,32 +1,32 @@
 import React, { useState } from "react";
 import { useNavigate } from 'react-router-dom';
 import { useForm } from "react-hook-form";
-import {axiosInstance} from "../api/axiosInstance";
+import { axiosInstance } from "../api/axiosInstance";
 function Login() {
     const navigate = useNavigate();
-    const {register, handleSubmit } = useForm();
+    const { register, handleSubmit } = useForm();
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
     const [loginError, setLoginError] = useState("");
+    const [showReset, setShowReset] = useState(false);
 
     const onSubmit = async (data) => {
         console.log(data);
-        
+
         try {
             const response = await axiosInstance.post('/users/signin', {
-            "email" : data.email,
-            "password": data.password,
-        });
+                "email": data.email,
+                "password": data.password,
+            });
             console.log('Registration data:', data);
             console.log('Registration success:', response.data);
             setLoading(true);
             console.log(data);
             navigate("/");
-            // eslint-disable-next-line no-unused-vars
         } catch (errors) {
-              const message = errors.response?.data?.message || "حدث خطأ أثناء تسجيل الدخول";
-  console.error('Login error:', message);
-  setLoginError(message); // ← هنا نحفظ الرسالة
+            const message = errors.response?.data?.message || "حدث خطأ أثناء تسجيل الدخول";
+            console.error('Login error:', message);
+            setLoginError(message);
         } finally {
             setLoading(false);
         }
@@ -60,12 +60,11 @@ function Login() {
                             أو <span className="font-bold text-yellow-500 hover:text-yellow-600 transition-colors cursor-pointer" onClick={() => navigate("/Register")}>  إنشاء حساب جديد</span>
                         </p>
                     </div>
-                    {console.log(loginError)}
-                            {loginError && (
-                            <div className="bg-red-600 text-white px-4 py-3 rounded-md text-center font-bold text-md">
-                                {loginError}
-                            </div>
-                            )}
+                    {loginError && (
+                        <div className="bg-red-600 text-white px-4 py-3 rounded-md text-center font-bold text-md">
+                            {loginError}
+                        </div>
+                    )}
 
                     <form onSubmit={handleSubmit(onSubmit)} className="mt-1 space-y-1">
                         <div className="space-y-3">
@@ -189,10 +188,50 @@ function Login() {
                                 <div className="text-md">
                                     <a
                                         href="#"
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            setShowReset(true);
+                                        }}
                                         className="font-medium text-amber-300 hover:text-primary/80 transition-colors"
                                     >
                                         نسيت كلمة المرور؟
                                     </a>
+                                    {showReset && (
+                                        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+                                            <div className="bg-[#101829] rounded-lg shadow-lg w-full max-w-md p-6">
+                                                <h2 className="text-2xl font-bold mb-4 text-center text-white">إعادة تعيين كلمة المرور</h2>
+                                                <form
+                                                    onSubmit={(e) => {
+                                                        e.preventDefault();
+                                                        setShowReset(false);
+                                                    }}
+
+                                                >
+                                                    <input
+                                                        type="email"
+                                                        required
+                                                        placeholder="أدخل بريدك الإلكتروني"
+                                                        className="w-full p-3 rounded bg-gray-700 border border-gray-500 text-white mb-4"
+                                                    />
+                                                    <div className="flex gap-3">
+                                                        <button
+                                                            type="submit"
+                                                            className="flex-1 bg-amber-500 hover:bg-amber-600 text-black font-bold py-2 rounded"
+                                                        >
+                                                            إرسال
+                                                        </button>
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => setShowReset(false)}
+                                                            className="flex-1 bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 rounded"
+                                                        >
+                                                            إلغاء
+                                                        </button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
 
