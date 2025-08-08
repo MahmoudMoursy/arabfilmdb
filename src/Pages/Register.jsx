@@ -4,7 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-
+import {axiosInstance} from "../api/axiosInstance";
+import { da } from "zod/locales";
 function Register() {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
@@ -25,14 +26,31 @@ function Register() {
         resolver: zodResolver(schema)
     });
 
-
-    const onSubmit = (data) => {
+    // 
+    // 
+    const onSubmit = async (data) => {  
+        console.log(data);
+          
         try {
+                const response = await axiosInstance.post('/users/signup', {
+            "username":  data.name,
+            "email" : data.email,
+            "password": data.password,
+        });
+                console.log('Registration data:', data);
+                console.log('Registration success:', response.data);
             setLoading(true);
             console.log(data);
             navigate("/welcome");
         } catch (errors) {
-            setSignupError("حدث خطأ أثناء التسجيل");
+                console.error('Registration error:', errors.response?.data || errors.message);
+                if(errors.response?.data?.message === "User registered successfully") {                    
+                }
+                else if( errors.response?.data?.message === "Email already in use") {
+                    setSignupError("البريد الإلكتروني مستخدم بالفعل");
+                }
+                else 
+                    setSignupError("حدث خطأ أثناء التسجيل");
         } finally {
             setLoading(false);
         }
