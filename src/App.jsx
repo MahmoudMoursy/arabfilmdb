@@ -22,10 +22,10 @@ function App() {
           <Route path="/Login" element={<Login/>}/>
           <Route path="/Footer" element={<Footer/>}/>
           <Route path="/TermsOfUse" element={<TermsOfUse/>}/>
-          <Route path="/PrivacyPolicy" element={<PrivacyPolicy/>}/>
+          <Route path="/PrivacyPolicy" element={<PrivacyPolicy/>}/> 
           <Route path="/IntellectualPropertyRights" element={<IntellectualPropertyRights/>}/>
           <Route path="/AddFilmForm" element={<AddFilmForm/>}/>
-          <Route path="/ResetPassword" element={<ResetPassword/>}/>
+          <Route path="/reset-password/:token" element={<ResetPassword/>}/>
          </Routes>
       </div>
     </>

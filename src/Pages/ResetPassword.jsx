@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 import React, { useState } from "react";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -8,6 +8,7 @@ import { axiosInstance } from "../api/axiosInstance";
 import { da } from "zod/locales";
 function ResetPassword() {
     const navigate = useNavigate();
+    const { token } = useParams();
     const [loading, setLoading] = useState(false);
     const [signupError, setSignupError] = useState("");
     const [showPassword, setShowPassword] = useState(false);
@@ -31,16 +32,14 @@ function ResetPassword() {
         setLoading(true);
 
         try {
-            const response = await axiosInstance.post('/users/', {
-              
-                password: data.password,
+            console.log(token);
+            
+            const response = await axiosInstance.post(`users/reset-password/${token}`, {
+                newPassword: data.password,
             });
             console.log('Registration success:', response.data);
-            if (response.data?.message === "User registered successfully") {
-                navigate("/Login");
-            } else {
-                setSignupError(response.data?.message || "حدث خطأ أثناء التعديل");
-            }
+            navigate('/Login');
+           
         } catch (errors) {
             console.error('Registration error:', errors.response?.data || errors.message);
 

@@ -32,6 +32,30 @@ function Login() {
         }
     };
 
+    
+    const sendToEmail =async (email) => {
+        console.log(email);
+
+        try {
+            const response = await axiosInstance.post('/users/forgot-password', {
+                email: email,
+            });
+            console.log('Registration data:', data);
+            console.log('Registration success:', response.data);
+            // setLoading(true);
+            console.log(data);
+            // navigate("/");
+        } catch (errors) {
+            const message = errors.response?.data?.message || "حدث خطأ أثناء تسجيل الدخول";
+            console.error('Login error:', message);
+            // setLoginError(message);
+        } finally {
+            // setLoading(false);
+        }
+
+        //setShowReset(false);
+
+    }
     return (
         <div className="min-h-screen text-foreground">
             <div style={{ backgroundColor: "black" }} className="min-h-screen flex justify-center bg-background py-10 px-4 sm:px-6 lg:px-8">
@@ -200,22 +224,18 @@ function Login() {
                                         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
                                             <div className="bg-[#101829] rounded-lg shadow-lg w-full max-w-md p-6">
                                                 <h2 className="text-2xl font-bold mb-4 text-center text-white">إعادة تعيين كلمة المرور</h2>
-                                                <form
-                                                    onSubmit={(e) => {
-                                                        e.preventDefault();
-                                                        setShowReset(false);
-                                                    }}
-
-                                                >
+                                                <form >
                                                     <input
                                                         type="email"
+                                                        id="repass"
                                                         required
                                                         placeholder="أدخل بريدك الإلكتروني"
                                                         className="w-full p-3 rounded bg-gray-700 border border-gray-500 text-white mb-4"
                                                     />
                                                     <div className="flex gap-3">
                                                         <button
-                                                            type="submit"
+                                                            type="button"
+                                                            onClick={() => sendToEmail(repass.value)}
                                                             className="flex-1 bg-amber-500 hover:bg-amber-600 text-black font-bold py-2 rounded"
                                                         >
                                                             إرسال
