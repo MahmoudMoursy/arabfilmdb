@@ -4,7 +4,6 @@ const axiosInstance = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  // تقدر تضيف أي إعدادات تانية هنا
 });
 
 // interceptor
