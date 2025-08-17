@@ -33,29 +33,36 @@ function Login() {
     };
 
     
-    const sendToEmail =async (email) => {
-        console.log(email);
+    const sendToEmail = async (email) => {
+  if (!email) {
+    setLoginError("يرجى إدخال البريد الإلكتروني");
+    return;
+  }
 
-        try {
-            const response = await axiosInstance.post('/users/forgot-password', {
-                email: email,
-            });
-            console.log('Registration data:', data);
-            console.log('Registration success:', response.data);
-            // setLoading(true);
-            console.log(data);
-            // navigate("/");
-        } catch (errors) {
-            const message = errors.response?.data?.message || "حدث خطأ أثناء تسجيل الدخول";
-            console.error('Login error:', message);
-            // setLoginError(message);
-        } finally {
-            // setLoading(false);
-        }
+  setLoading(true); // خليها في الأول عشان تمنع التكرار
+  try {
+    const response = await axiosInstance.post('/users/forgot-password', {
+      email: email,
+    });
 
-        //setShowReset(false);
+    console.log('API response:', response.data);    
+    // const token = response.data?.token;
+    // if (token) {
+    //   window.location.href = `/reset-password/${token}`;
+    // } else {
+    //   console.warn("لم يتم استلام رمز التحقق");
+    // }
+    alert("تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني");
+    setShowReset(false); // إغلاق النافذة بعد الإرسال
+  } catch (error) {
+    const message = error.response?.data?.message || "حدث خطأ أثناء إرسال البريد";
+    setLoginError(message);
+    console.error("Error in sendToEmail:", message);
+  } finally {
+    setLoading(false);
+  }
+};
 
-    }
     return (
         <div className="min-h-screen text-foreground">
             <div style={{ backgroundColor: "black" }} className="min-h-screen flex justify-center bg-background py-10 px-4 sm:px-6 lg:px-8">
@@ -224,7 +231,8 @@ function Login() {
                                         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
                                             <div className="bg-[#101829] rounded-lg shadow-lg w-full max-w-md p-6">
                                                 <h2 className="text-2xl font-bold mb-4 text-center text-white">إعادة تعيين كلمة المرور</h2>
-                                                <form >
+                                                <form onSubmit={(e) => e.preventDefault()}>
+
                                                     <input
                                                         type="email"
                                                         id="repass"
@@ -235,11 +243,15 @@ function Login() {
                                                     <div className="flex gap-3">
                                                         <button
                                                             type="button"
-                                                            onClick={() => sendToEmail(repass.value)}
-                                                            className="flex-1 bg-amber-500 hover:bg-amber-600 text-black font-bold py-2 rounded"
-                                                        >
-                                                            إرسال
-                                                        </button>
+                                                            
+                                                            onClick={() => {
+                                                                if (!loading) sendToEmail(repass.value); // أو repassRef.current.value
+                                                            }}
+                                                            disabled={loading}
+                                                            className="flex-1 bg-amber-300 hover:bg-amber-600 text-white font-bold py-2 rounded"
+                                                            >
+                                                            {loading ? "جاري الإرسال..." : "إرسال"}
+                                                            </button>
                                                         <button
                                                             type="button"
                                                             onClick={() => setShowReset(false)}
