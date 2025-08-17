@@ -22,7 +22,16 @@ function Login() {
             console.log('Registration success:', response.data);
             setLoading(true);
             console.log(data);
-            navigate("/");
+            // Store user data in localStorage
+            localStorage.setItem('user', JSON.stringify(response.data.user));
+            localStorage.setItem('token', response.data.token);
+            
+            // Redirect based on role
+            if (response.data.user.role === 'admin') {
+                navigate("/dashboard");
+            } else {
+                navigate("/");
+            }
         } catch (errors) {
             const message = errors.response?.data?.message || "حدث خطأ أثناء تسجيل الدخول";
             console.error('Login error:', message);

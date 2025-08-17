@@ -1,27 +1,49 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Eye, Calendar, Star, Play, Heart, Share2, Clock, Globe } from 'lucide-react';
+import { workService } from '../api/workService';
 
 const Series = () => {
-  const [movie, setMovie] = useState({
-    id: 1,
-    rating: 4.5,
-    isFavorite: false
-  });
-
+  const [series, setSeries] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [isImageLoaded, setIsImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
 
+  useEffect(() => {
+    const fetchSeries = async () => {
+      try {
+        const works = await workService.getAllWorks();
+        // Filter only series
+        const seriesWorks = works.filter(work => work.type === 'series');
+        setSeries(seriesWorks);
+      } catch (err) {
+        setError('فشل في تحميل المسلسلات');
+        console.error('Error fetching series:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSeries();
+  }, []);
 
 
-  const handleFavoriteClick = (e) => {
+
+  const handleFavoriteClick = (e, selectedSeries) => {
     e.stopPropagation();
-    setMovie(prev => ({ ...prev, isFavorite: !prev.isFavorite }));
-    console.log('تم تغيير حالة المفضلة:', !movie.isFavorite);
+    setSeries(prevSeries =>
+      prevSeries.map(series =>
+        series.id === selectedSeries.id
+          ? { ...series, isFavorite: !series.isFavorite }
+          : series
+      )
+    );
+    console.log('تم تغيير حالة المفضلة:', !selectedSeries.isFavorite);
   };
 
-  const handleShareClick = (e) => {
+  const handleShareClick = (e, selectedSeries) => {
     e.stopPropagation();
-    console.log('تم النقر على مشاركة:', movie);
+    console.log('تم النقر على مشاركة:', selectedSeries);
 
 
     if (navigator.share) {
@@ -95,17 +117,17 @@ const Series = () => {
                   </button>
 
                   <button
-                    onClick={handleFavoriteClick}
-                    className={`w-12 h-12 flex items-center justify-center  rounded-full transition-all duration-300 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-offset-2 ${movie.isFavorite
+                    onClick={(e) => handleFavoriteClick(e, series)}
+                    className={`w-12 h-12 flex items-center justify-center  rounded-full transition-all duration-300 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-offset-2 ${series.isFavorite
                       ? 'bg-red-500/90 hover:bg-red-500 text-white focus:ring-red-500'
                       : 'bg-white/20 hover:bg-white/30 text-amber-300 focus:ring-amber-300'
                       }`}
                   >
-                    <Heart size={30} className={movie.isFavorite ? 'fill-current' : ''} />
+                    <Heart size={30} className={series.isFavorite ? 'fill-current' : ''} />
                   </button>
 
                   <button
-                    onClick={handleShareClick}
+                    onClick={(e) => handleShareClick(e, series)}
                     className="w-12 h-12 flex items-center justify-center bg-white/20 hover:bg-white/30 text-blue-700 rounded-full transition-all duration-300 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2"
                   >
                     <Share2 size={30} />
@@ -121,7 +143,7 @@ const Series = () => {
                     aria-hidden="true"
                   />
                   <span className="text-white text-xs font-medium group-hover:text-primary-foreground transition-colors duration-300">
-                    {movie.rating}
+                    {series.rating}
                   </span>
                 </div>
               </div>
@@ -138,9 +160,9 @@ const Series = () => {
               </div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center  text-amber-300 space-x-1 space-x-reverse">
-                  {renderStars(movie.rating)}
+                  {renderStars(series.rating)}
                   <span className="text text-xs mr-2 text-white transition-colors duration-300">
-                    ({movie.rating})
+                    ({series.rating})
                   </span>
                 </div>
               </div>

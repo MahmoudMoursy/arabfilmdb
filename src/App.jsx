@@ -1,7 +1,7 @@
 
 import './App.css'
 import React from 'react';
-import { Route, Routes } from "react-router-dom"
+import { Route, Routes, Navigate } from "react-router-dom"
 import Home from './Pages/Home';
 import Register from './Pages/Register'
 import Login from './Pages/Login'
@@ -9,27 +9,43 @@ import Footer from './componet/Footer'
 import PrivacyPolicy from './Pages/PrivacyPolicy';
 import TermsOfUse from './Pages/TermsOfUse';
 import IntellectualPropertyRights from './Pages/IntellectualPropertyRights';
-import AddForm from './Dashboard/AddForm';
+import Dashboard from './Dashboard/Dashboard';
 import ResetPassword from './Pages/ResetPassword';
 import MovieFilterDemo from './Pages/MovieFilterDemo';
 import SeriesFilterDemo from './Pages/SeriesFilterDemo';
-function App() {
 
+// Protected Route component
+const ProtectedRoute = ({ children }) => {
+  const user = JSON.parse(localStorage.getItem('user'));
+  if (!user || user.role !== 'admin') {
+    return <Navigate to="/login" />;
+  }
+  return children;
+};
+
+function App() {
   return (
     <>
       <div> 
        <Routes>
          <Route path="/" index element={<Home/>}/>
          <Route path="/Register" element={<Register/>}/>
-          <Route path="/Login" element={<Login/>}/>
-          <Route path="/Footer" element={<Footer/>}/>
-          <Route path="/TermsOfUse" element={<TermsOfUse/>}/>
-          <Route path="/PrivacyPolicy" element={<PrivacyPolicy/>}/> 
-          <Route path="/IntellectualPropertyRights" element={<IntellectualPropertyRights/>}/>
-          <Route path="/reset-password/:token" element={<ResetPassword/>}/>
-          <Route path="/AddForm" element={<AddForm />} />
-          <Route path="/MovieFilterDemo" element={<MovieFilterDemo />} />
-          <Route path="/SeriesFilterDemo" element={<SeriesFilterDemo />} />
+         <Route path="/Login" element={<Login/>}/>
+         <Route path="/Footer" element={<Footer/>}/>
+         <Route path="/TermsOfUse" element={<TermsOfUse/>}/>
+         <Route path="/PrivacyPolicy" element={<PrivacyPolicy/>}/> 
+         <Route path="/IntellectualPropertyRights" element={<IntellectualPropertyRights/>}/>
+         <Route path="/reset-password/:token" element={<ResetPassword/>}/>
+         <Route 
+           path="/dashboard" 
+           element={
+             <ProtectedRoute>
+               <Dashboard />
+             </ProtectedRoute>
+           } 
+         />
+         <Route path="/MovieFilterDemo" element={<MovieFilterDemo />} />
+         <Route path="/SeriesFilterDemo" element={<SeriesFilterDemo />} />
          </Routes>
       </div>
     </>
