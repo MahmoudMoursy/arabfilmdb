@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import Footer from '../componet/Footer';
 import Navbar from '../componet/Navbar';
+import { workService } from '../api/workService';
 
 export default function FilmForm() {
   const [isVerified, setIsVerified] = useState(false);
@@ -56,10 +57,64 @@ export default function FilmForm() {
     setFormData({ ...formData, actors: [...formData.actors, ''] });
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log(formData);
-  };
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+            // Just use the actors as is, no validation
+    let validActors = formData.actors;
+
+            // Map frontend fields directly to backend schema - minimal processing
+    const cleanedData = {
+      type: formData.type === 'فيلم' ? 'film' : 'series',
+      nameArabic: formData.arabicName || 'عمل جديد',
+      nameEnglish: formData.englishName || 'New Work',
+      year: parseInt(formData.year) || 2000,
+      director: formData.director || 'غير محدد',
+      assistantDirector: formData.assistantDirector || 'غير محدد',
+      genre: formData.genre || 'دراما',
+      cast: validActors.length > 0 ? validActors : ['لم يتم تحديد الممثلين'],
+      country: formData.country || 'مصر',
+      filmingLocation: formData.location || 'القاهرة',
+      summary: formData.summary || 'لا يوجد ملخص متاح لهذا العمل.',
+      posterUrl: formData.posterUrl || 'https://fastly.picsum.photos/id/237/500/500.jpg?hmac=idOEkrJhLd7nEU5pNrAGCyJ6HHJdR_sit1qDt5J3Wo0'
+    };
+
+    // Add series-specific fields if it's a series
+    if (formData.type === 'مسلسل') {
+      cleanedData.seasonsCount = parseInt(formData.seasons) || 1;
+      cleanedData.episodesCount = parseInt(formData.episodes) || 1;
+    }
+
+        // No validation check here anymore
+
+                try {
+      console.log('Form data being sent:', cleanedData);
+      // Pass the data directly without letting workService remap it
+      await workService.createWork(cleanedData, true);
+      alert('تم إضافة العمل بنجاح');
+      // Reset form
+      setFormData({
+        type: 'فيلم',
+        arabicName: '',
+        englishName: '',
+        year: '',
+        director: '',
+        assistantDirector: '',
+        genre: '',
+        actors: [''],
+        country: '',
+        location: '',
+        summary: '',
+        posterUrl: '',
+        seasons: '',
+        episodes: ''
+      });
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      const errorMessage = error.response?.data?.message || error.response?.data?.errors?.[0]?.msg || 'حدث خطأ أثناء إضافة العمل';
+      alert(errorMessage);
+    }
+    };
   if (!isVerified) {
     return (
       <div className="min-h-screen bg-black text-white">

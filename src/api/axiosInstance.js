@@ -1,6 +1,6 @@
 import axios from 'axios';
 const axiosInstance = axios.create({
-  baseURL: 'https://arabfilmsserver.onrender.com/api/', // غيرها حسب السيرفر بتاعك
+  baseURL: 'https://arabfilmsserver.onrender.com/api', // غيرها حسب السيرفر بتاعك
   headers: {
     'Content-Type': 'application/json',
   },
