@@ -1,7 +1,7 @@
 
 import './App.css'
-import React  from 'react';
-import {Route ,Routes} from "react-router-dom"
+import React from 'react';
+import { Route, Routes } from "react-router-dom"
 import Home from './Pages/Home';
 import Register from './Pages/Register'
 import Login from './Pages/Login'
@@ -9,24 +9,29 @@ import Footer from './componet/Footer'
 import PrivacyPolicy from './Pages/PrivacyPolicy';
 import TermsOfUse from './Pages/TermsOfUse';
 import IntellectualPropertyRights from './Pages/IntellectualPropertyRights';
-import AddFilmForm from './Dashboard/AddFilmForm';
+import AddForm from './Dashboard/AddForm';
 import ResetPassword from './Pages/ResetPassword';
+import MovieFilterDemo from './Pages/MovieFilterDemo';
+import SeriesFilterDemo from './Pages/SeriesFilterDemo';
 function App() {
-  
+
   return (
     <>
-      <div> 
-       <Routes>
-         <Route path="/" index element={<Home/>}/>
-         <Route path="/Register" element={<Register/>}/>
-          <Route path="/Login" element={<Login/>}/>
-          <Route path="/Footer" element={<Footer/>}/>
-          <Route path="/TermsOfUse" element={<TermsOfUse/>}/>
-          <Route path="/PrivacyPolicy" element={<PrivacyPolicy/>}/>
-          <Route path="/IntellectualPropertyRights" element={<IntellectualPropertyRights/>}/>
-          <Route path="/AddFilmForm" element={<AddFilmForm/>}/>
-          <Route path="/ResetPassword" element={<ResetPassword/>}/>
-         </Routes>
+      <div>
+        <Routes>
+          <Route path="/" index element={<Home />} />
+          <Route path="/Register" element={<Register />} />
+          <Route path="/Login" element={<Login />} />
+          <Route path="/Footer" element={<Footer />} />
+          <Route path="/TermsOfUse" element={<TermsOfUse />} />
+          <Route path="/PrivacyPolicy" element={<PrivacyPolicy />} />
+          <Route path="/IntellectualPropertyRights" element={<IntellectualPropertyRights />} />
+          <Route path="/AddForm" element={<AddForm />} />
+          <Route path="/ResetPassword" element={<ResetPassword />} />
+          <Route path="/MovieFilterDemo" element={<MovieFilterDemo />} />
+          <Route path="/SeriesFilterDemo" element={<SeriesFilterDemo />} />
+       
+        </Routes>
       </div>
     </>
   )
