@@ -6,6 +6,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { axiosInstance } from "../api/axiosInstance";
 import { da } from "zod/locales";
+import { fa } from "zod/v4/locales";
 function ResetPassword() {
     const navigate = useNavigate();
     const { token } = useParams();
@@ -14,7 +15,7 @@ function ResetPassword() {
     const [showPassword, setShowPassword] = useState(false);
 
     const schema = z.object({
-       
+
         password: z.string().min(10, "كلمة المرور يجب أن تكون أكثر من 10 أحرف").max(20, 'كلمة المرور يجب أن تكون أقل من 20 حرف'),
         confirmPassword: z.string().min(10, "كلمة المرور يجب أن تكون أكثر من 10 أحرف").max(20, 'كلمة المرور يجب أن تكون أقل من 20 حرف'),
     }).refine((data) => data.password === data.confirmPassword, {
@@ -26,24 +27,23 @@ function ResetPassword() {
         resolver: zodResolver(schema)
     });
 
-    
+
     const onSubmit = async (data) => {
         console.log("Form data:", data);
         setLoading(true);
 
         try {
             console.log(token);
-            
+
             const response = await axiosInstance.post(`users/reset-password/${token}`, {
                 newPassword: data.password,
             });
             console.log('Registration success:', response.data);
+            setLoading(false);
             navigate('/Login');
-           
+
         } catch (errors) {
             console.error('Registration error:', errors.response?.data || errors.message);
-
-           
         } finally {
             setLoading(false);
         }
@@ -58,7 +58,7 @@ function ResetPassword() {
                     </div>
                     <form onSubmit={handleSubmit(onSubmit)} className="mt-1 space-y-1">
                         <div className="space-y-3">
-                           
+
                             <div>
                                 <label htmlFor="password" className="block text-lg font-medium text-foreground mb-2 text-white">كلمة المرور</label>
                                 <div className="relative">
@@ -156,10 +156,10 @@ function ResetPassword() {
                                         <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
                                     </svg>
                                 </div>
-import ResetPassword
+                                import ResetPassword
                             </div>
                             {errors.confirmPassword && <p className="text-red-500 text-sm mt-5">{errors.confirmPassword.message}</p>}
-                            
+
                             {signupError && <p>{signupError}</p>}
                             <button type="submit" disabled={loading} className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-md font-bold rounded-lg text-white  hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed transition-colors" style={{ backgroundColor: 'var(--color-accent)' }}>
                                 {loading ? "جاري التسجيل..." : " تسجيل الدخول"}

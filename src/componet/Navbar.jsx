@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import "/src/App.css";
 import logo from "/src/assets/WhatsApp Image 2025-08-03 at 23.32.06_4ba7b00e.jpg"
+import MovieFilterDemo from '../Pages/MovieFilterDemo';
+import SeriesFilterDemo from '../Pages/SeriesFilterDemo';
 import { useNavigate } from 'react-router-dom';
 
 
@@ -71,7 +73,7 @@ const Navbar = () => {
                                 <ul className="flex flex-row-reverse gap-12" dir="rtl">
                                     <li className="relative group">
                                         <a
-                                            href="#"
+                                            onClick={() => navigate('/MovieFilterDemo')}
                                             className="relative text-white hover:text-amber-300 text-lg font-bold transition-all duration-300 py-2 px-4 rounded-xl hover:bg-white/10 backdrop-blur-sm"
                                         >
                                             الافلام
@@ -80,7 +82,7 @@ const Navbar = () => {
                                     </li>
                                     <li className="relative group">
                                         <a
-                                            href=""
+                                            onClick={() => navigate('/SeriesFilterDemo')}
                                             className="relative text-white hover:text-amber-300 text-lg font-bold transition-all duration-300 py-2 px-4 rounded-xl hover:bg-white/10 backdrop-blur-sm"
                                         >
                                             المسلسلات
@@ -128,8 +130,8 @@ const Navbar = () => {
                                 <button
                                     onClick={() => navigate('/Login')}
                                     className="group flex items-center text-white mx-2 px-6 py-3 rounded-xl text-base font-semibold transition-all duration-300 hover:text-amber-300 hover:bg-white/10 backdrop-blur-sm border border-transparent hover:border-white/20 hover:shadow-lg
-             sm:px-5 sm:py-2.5 sm:text-sm
-             max-sm:px-4 max-sm:py-2 max-sm:text-xs"
+                            sm:px-5 sm:py-2.5 sm:text-sm
+                               max-sm:px-4 max-sm:py-2 max-sm:text-xs"
                                 >
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
@@ -273,16 +275,16 @@ const Navbar = () => {
                                     تسجيل الدخول
                                 </button>
 
-                                    <button
-                                        onClick={() => {
-                                            navigate('/Register');
-                                            closeMobileMenu();
-                                        }}
-                                        className="w-full px-1 py-2 rounded-xl font-bold transition-all duration-300 text-white hover:shadow-lg"
-                                        style={{ backgroundColor: "var(--color-accent)" }}
-                                    >
-                                        إنشاء حساب
-                                    </button>
+                                <button
+                                    onClick={() => {
+                                        navigate('/Register');
+                                        closeMobileMenu();
+                                    }}
+                                    className="w-full px-1 py-2 rounded-xl font-bold transition-all duration-300 text-white hover:shadow-lg"
+                                    style={{ backgroundColor: "var(--color-accent)" }}
+                                >
+                                    إنشاء حساب
+                                </button>
                             </div>
                         </div>
                     </div>
