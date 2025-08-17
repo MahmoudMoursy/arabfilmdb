@@ -17,21 +17,20 @@ function App() {
 
   return (
     <>
-      <div>
-        <Routes>
-          <Route path="/" index element={<Home />} />
-          <Route path="/Register" element={<Register />} />
-          <Route path="/Login" element={<Login />} />
-          <Route path="/Footer" element={<Footer />} />
-          <Route path="/TermsOfUse" element={<TermsOfUse />} />
-          <Route path="/PrivacyPolicy" element={<PrivacyPolicy />} />
-          <Route path="/IntellectualPropertyRights" element={<IntellectualPropertyRights />} />
+      <div> 
+       <Routes>
+         <Route path="/" index element={<Home/>}/>
+         <Route path="/Register" element={<Register/>}/>
+          <Route path="/Login" element={<Login/>}/>
+          <Route path="/Footer" element={<Footer/>}/>
+          <Route path="/TermsOfUse" element={<TermsOfUse/>}/>
+          <Route path="/PrivacyPolicy" element={<PrivacyPolicy/>}/> 
+          <Route path="/IntellectualPropertyRights" element={<IntellectualPropertyRights/>}/>
+          <Route path="/reset-password/:token" element={<ResetPassword/>}/>
           <Route path="/AddForm" element={<AddForm />} />
-          <Route path="/ResetPassword" element={<ResetPassword />} />
           <Route path="/MovieFilterDemo" element={<MovieFilterDemo />} />
           <Route path="/SeriesFilterDemo" element={<SeriesFilterDemo />} />
-       
-        </Routes>
+         </Routes>
       </div>
     </>
   )
