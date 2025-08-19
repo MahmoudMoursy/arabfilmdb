@@ -6,40 +6,21 @@ import Series from '../HomeSech/Series';
 import Footer from '../componet/Footer';
 import Navbar from '../componet/Navbar';
 import MediaSlider from '../SliderHome/MediaSlider';
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Film } from 'lucide-react';
+import Dashboard from '../Dashboard/Dashboard';
 function Home() {
-  const [open, setOpen] = useState(false);
-  const [open1, setOpen1] = useState(false);
-  const [open2, setOpen2] = useState(false);
+
   const [dotCount, setDotCount] = useState(1);
   const navigate = useNavigate();
-  const dropdownRef = useRef();
-  const dropdownRef1 = useRef();
-  const dropdownRef2 = useRef();
-
+ 
   useEffect(() => {
     const interval = setInterval(() => {
       setDotCount((prev) => (prev === 3 ? 1 : prev + 1));
     }, 400);
     return () => clearInterval(interval);
   }, []);
-  useEffect(() => {
-    function handleClickOutside(event) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setOpen(false);
-      }
-      if (dropdownRef1.current && !dropdownRef1.current.contains(event.target)) {
-        setOpen1(false);
-      }
-      if (dropdownRef2.current && !dropdownRef2.current.contains(event.target)) {
-        setOpen2(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+  
   return (
     <div className=" min-h-screen" style={{ backgroundColor: 'black' }}>
       <Navbar />
@@ -48,7 +29,7 @@ function Home() {
      
           <button
             onClick={() => {
-              navigate('/AddForm');
+              navigate('/Dashboard');
             }}
             className="w-58 px-1 py-2 rounded-xl font-bold transition-all duration-300 text-white hover:shadow-lg"
             style={{ backgroundColor: "var(--color-accent)" }}
