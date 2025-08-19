@@ -141,9 +141,9 @@ export default function FilmForm() {
   if (!isVerified) {
     return (
       <div className="min-h-screen bg-black text-white">
-      <div className="min-h-screen flex items-center justify-center py-10 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-md w-full space-y-8">
-          {!isVerified ? (
+        {/* Navbar and Footer hidden on login screen */}
+        <div className="min-h-screen flex items-center justify-center py-10 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-md w-full space-y-8">
             <form onSubmit={handleSubmitt} className="space-y-6 bg-gray-900/50 p-6 rounded-lg">
 
               <input
@@ -169,25 +169,18 @@ export default function FilmForm() {
                 دخول
               </button>
             </form>
-          ) : (
-            <div>
-              <h1 className="text-2xl font-bold">أهلاً بك في لوحة التحكم</h1>
-              <p className="mt-4">محتوى الداشبورد هنا...</p>
-            </div>
-          )}
+          </div>
         </div>
       </div>
-    </div>
-        );
+    );
   }
+  // Dashboard: hide Navbar and Footer
   return (
-    <>
-      <Navbar />
-      <div className='bg-black py-20'>
-        <form
-          onSubmit={handleSubmit}
-          className="max-w-3xl mx-auto p-6 bg-gray-800 text-white rounded-lg shadow-lg space-y-6"
-        >
+    <div className="bg-black py-20 min-h-screen">
+      <form
+        onSubmit={handleSubmit}
+        className="max-w-3xl mx-auto p-6 bg-gray-800 text-white rounded-lg shadow-lg space-y-6"
+      >
           <div>
             <label className="block mb-1">نوع العمل *</label>
             <select
@@ -379,7 +372,5 @@ export default function FilmForm() {
           </button>
         </form>
       </div>
-      <Footer />
-    </>
   );
 }
