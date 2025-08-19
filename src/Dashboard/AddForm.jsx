@@ -7,22 +7,45 @@ export default function FilmForm() {
   const [isVerified, setIsVerified] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const correctEmail = "mettuo@gmail.com";
-  const correctPassword = "mettuo1289";
+
    useEffect(() => {
    const verified = sessionStorage.getItem("dashboardVerified");
     if (verified === "true") {
     setIsVerified(true);
     }
   }, []);
-  const handleSubmitt = (e) => {
-    e.preventDefault();
+  const API_URL = "https://arabfilmsserver.onrender.com/api/users/signin";
 
-    if (email === correctEmail && password === correctPassword) {
+  const handleSubmitt = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+
+      let errorData = {};
+      if (!response.ok) {
+        try {
+          errorData = await response.json();
+        } catch {
+          const text = await response.text();
+          errorData.message = text || 'فشل تسجيل الدخول (خطأ غير متوقع)';
+        }
+        throw new Error(errorData.message || 'فشل تسجيل الدخول');
+      }
+
+      // Success: parse the response
+      const data = await response.json();
+      // Store token if needed
+      if (data.token) {
+        sessionStorage.setItem('dashboardToken', data.token);
+      }
       sessionStorage.setItem("dashboardVerified", "true");
-      setIsVerified(true); 
-    } else {
-      alert("الإيميل أو كلمة المرور غير صحيحة");
+      setIsVerified(true);
+    } catch (error) {
+      alert(error.message || "الإيميل أو كلمة المرور غير صحيحة");
     }
   };
   const [formData, setFormData] = useState({
