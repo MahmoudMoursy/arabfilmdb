@@ -333,7 +333,7 @@ const Details = () => {
                                         </svg>
                                         أضف للمفضلة
                                     </button>
-                                    <button className="flex items-center gap-2 px-6 py-3 bg-white/20 text-white rounded-lg hover:bg-white/30 transition-colors">
+                                    <button onClick={handleShareClick} className="flex items-center gap-2 px-6 py-3 bg-white/20 text-white rounded-lg hover:bg-white/30 transition-colors">
                                         <svg
                                             xmlns="http://www.w3.org/2000/svg"
                                             width={20}
@@ -483,6 +483,14 @@ const Details = () => {
                                         <span className="font-semibold text-white">0</span>
                                     </div>
                                 </div>
+                                <div className="flex gap-4 mt-5">
+                                    <button className="w-full py-2 px-4 bg-amber-300 text-white rounded-lg hover:bg-primary-dark transition">
+                                        تعديل
+                                    </button>
+                                    <button className="w-full py-2 px-4 bg-red-500 text-white rounded-lg hover:bg-red-600 transition">
+                                        حذف
+                                    </button>
+                                </div>
                             </div>
 
                         </div>
@@ -536,12 +544,7 @@ const Details = () => {
                                                     >
                                                         <Heart size={30} className={movie.isFavorite ? 'fill-current' : ''} />
                                                     </button>
-                                                    <button
-                                                        onClick={() => handleShareClick(movie.id)}
-                                                        className="w-12 h-12 flex items-center justify-center bg-white/20 hover:bg-white/30 text-blue-700 rounded-full transition-all duration-300 hover:scale-110"
-                                                    >
-                                                        <Share2 size={30} />
-                                                    </button>
+                                                   
                                                 </div>
                                             </div>
 
