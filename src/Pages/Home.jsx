@@ -1,5 +1,4 @@
 import LatestAdditions from '../HomeSech/LatestAdditions.JSX';
-import MostViewed from '../HomeSech/MostViewed'
 import MostRated from '../HomeSech/MostRated'
 import Filme from '../HomeSech/Filme';
 import Series from '../HomeSech/Series';
@@ -9,6 +8,8 @@ import MediaSlider from '../SliderHome/MediaSlider';
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Dashboard from '../Dashboard/Dashboard';
+import LastFilme from '../HomeSech/LastFilme';
+import LastSeries from '../HomeSech/LastSeries';
 
 function Home() {
   const user = JSON.parse(localStorage.getItem('user'));
@@ -41,7 +42,7 @@ function Home() {
         ) : null}
       <div style={{ backgroundColor: 'var(--color-secondary)' }} >
         <div className=" p-7 pt-9 ">
-          <h2 className="text-3xl font-bold text-white ">أحدث الإضافات</h2>
+          <h2 className="text-3xl font-bold text-white ">إصدارات جديدة</h2>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-1">
           <LatestAdditions />
@@ -49,14 +50,21 @@ function Home() {
       </div>
       <div style={{ backgroundColor: 'var(--color-primary)' }} >
         <div className=" p-7 pt-9 ">
-          <h2 className="text-3xl font-bold text-white ">الأكثر مشاهدة
-          </h2>
+          <h2 className="text-3xl font-bold text-white ">احدث الافلام</h2>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-1">
-          <MostViewed />
+          <LastFilme />
         </div>
       </div>
       <div style={{ backgroundColor: 'var(--color-secondary)' }} >
+        <div className=" p-7 pt-9 ">
+          <h2 className="text-3xl font-bold text-white ">أحدث المسلسلات</h2>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-1">
+          <LastSeries />
+        </div>
+      </div>
+       <div style={{ backgroundColor: 'var(--color-primary)' }} >
         <div className=" p-7 pt-9 ">
           <h2 className="text-3xl font-bold text-white "> الأكثر تقييماً</h2>
         </div>
@@ -64,9 +72,11 @@ function Home() {
           <MostRated />
         </div>
       </div>
-      <div style={{ backgroundColor: 'var(--color-primary)' }} >
+
+
+      <div style={{ backgroundColor: 'var(--color-secondary)' }} >
         <div className=" p-7 pt-9 flex justify-between items-center">
-          <h2 className="text-3xl font-bold text-white ">أفلام
+          <h2 className="text-3xl font-bold text-white ">الأفلام
           </h2>
           <button className="flex items-center gap-3 bg-[#2b3441] px-6 py-3 rounded-full">
             <div className="flex items-center gap-1">
@@ -86,9 +96,9 @@ function Home() {
           <Filme />
         </div>
       </div>
-      <div style={{ backgroundColor: 'var(--color-secondary)' }} >
+      <div style={{ backgroundColor: 'var(--color-primary)' }} >
         <div className=" p-7 pt-9 flex justify-between items-center">
-          <h2 className="text-3xl font-bold text-white ">مسلسلات
+          <h2 className="text-3xl font-bold text-white ">ألمسلسلات
           </h2>
           <button className="flex items-center gap-3 bg-[#2b3441] px-6 py-3 rounded-full">
             <div className="flex items-center gap-1">

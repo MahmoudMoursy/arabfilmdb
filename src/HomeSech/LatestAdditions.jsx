@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Eye, Calendar, Star, Play, Heart, Share2, Clock, Globe } from 'lucide-react';
+import {  Star, Play, Heart, Share2 } from 'lucide-react';
 
 const LatestAdditions = () => {
   const [movie, setMovie] = useState({

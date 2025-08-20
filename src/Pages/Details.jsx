@@ -1,6 +1,7 @@
 import Navbar from '../componet/Navbar';
+import Footer from '../componet/Footer';
 import React, { useState } from 'react';
-import { Eye, Calendar, Star, Play, Heart, Share2, Clock, Globe } from 'lucide-react';
+import {  Star, Play, Heart } from 'lucide-react';
 
 const Details = () => {
     const similarMovies = [
@@ -580,7 +581,7 @@ const Details = () => {
                 </div>
             </div>
 
-
+<Footer/>
         </>
     );
 };
