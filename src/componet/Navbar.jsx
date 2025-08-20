@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom';
 
 const Navbar = () => {
     const navigate = useNavigate();
-
+    const user = JSON.parse(localStorage.getItem('user'));
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
     const toggleMobileMenu = () => {
@@ -35,6 +35,11 @@ const Navbar = () => {
         };
     }, [isMobileMenuOpen]);
 
+    const logout = () =>{
+        localStorage.removeItem('user');
+        localStorage.removeItem('token');
+        navigate('/Login');
+    }
 
     useEffect(() => {
         const handleResize = () => {
@@ -126,7 +131,7 @@ const Navbar = () => {
                                 </div>
                             </div>
 
-                            <div className="flex items-center space-x-reverse space-x-4">
+                           {(!user) ? ( <div className="flex items-center space-x-reverse space-x-4">
                                 <button
                                     onClick={() => navigate('/Login')}
                                     className="group flex items-center text-white mx-2 px-6 py-3 rounded-xl text-base font-semibold transition-all duration-300 hover:text-amber-300 hover:bg-white/10 backdrop-blur-sm border border-transparent hover:border-white/20 hover:shadow-lg
@@ -167,7 +172,19 @@ const Navbar = () => {
                                     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
                                 </button>
 
-                            </div>
+                            </div>) : <button
+                                    onClick={() =>logout()}
+                                    className="group relative overflow-hidden border border-gray-600/50 hover:border-amber-300/50 mx-2 px-6 py-3 rounded-xl text-base font-bold transition-all duration-300 hover:shadow-lg hover:shadow-amber-300/20 hover:-translate-y-0.5
+                                                      sm:px-5 sm:py-2.5 sm:text-sm
+                                         max-sm:px-4 max-sm:py-2 max-sm:text-xs"
+                                    style={{ backgroundColor: "var(--color-accent)" }}
+                                >
+                                    <span className="relative z-10 text-white group-hover:text-white transition-colors duration-300">
+                                        تسحيل خروج
+                                    </span>
+
+                                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+                                </button> }
 
                             <div className="lg:hidden">
                                 <button
@@ -248,7 +265,7 @@ const Navbar = () => {
                                 </div>
                             </div>
 
-                            <div className="pt-4 space-y-3">
+                           {!user && <div className="pt-4 space-y-3">
                                 <button
                                     onClick={() => {
                                         navigate('/Login');
@@ -285,7 +302,7 @@ const Navbar = () => {
                                 >
                                     إنشاء حساب
                                 </button>
-                            </div>
+                            </div>} 
                         </div>
                     </div>
                 </nav>

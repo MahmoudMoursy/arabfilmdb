@@ -9,24 +9,25 @@ import MediaSlider from '../SliderHome/MediaSlider';
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Dashboard from '../Dashboard/Dashboard';
-function Home() {
 
+function Home() {
+  const user = JSON.parse(localStorage.getItem('user'));
   const [dotCount, setDotCount] = useState(1);
   const navigate = useNavigate();
- 
+
   useEffect(() => {
     const interval = setInterval(() => {
       setDotCount((prev) => (prev === 3 ? 1 : prev + 1));
     }, 400);
     return () => clearInterval(interval);
   }, []);
-  
+
   return (
     <div className=" min-h-screen" style={{ backgroundColor: 'black' }}>
       <Navbar />
       <MediaSlider />
+       {(user?.role === 'admin') ? (
       <div className="flex flex-col md:flex-row justify-between items-center px-3 py-5 space-y-4 md:space-y-0 md:space-x-6" style={{ backgroundColor: 'var(--color-primary)' }}>
-     
           <button
             onClick={() => {
               navigate('/Dashboard');
@@ -37,6 +38,7 @@ function Home() {
             أضافه
           </button>
       </div>
+        ) : null}
       <div style={{ backgroundColor: 'var(--color-secondary)' }} >
         <div className=" p-7 pt-9 ">
           <h2 className="text-3xl font-bold text-white ">أحدث الإضافات</h2>

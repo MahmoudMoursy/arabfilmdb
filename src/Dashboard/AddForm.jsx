@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
-import Footer from '../componet/Footer';
-import Navbar from '../componet/Navbar';
+
 import { workService } from '../api/workService';
 
 export default function FilmForm() {
