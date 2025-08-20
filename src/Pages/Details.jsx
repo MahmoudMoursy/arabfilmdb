@@ -1,8 +1,8 @@
 import Navbar from '../componet/Navbar';
 import Footer from '../componet/Footer';
 import React, { useState } from 'react';
-import {  Star, Play, Heart } from 'lucide-react';
-
+import {  Star, Play, Heart,User } from 'lucide-react';
+const actors = ["أحمد خالد", "سارة محمد", "علي حسن"];
 const Details = () => {
     const similarMovies = [
   {
@@ -392,12 +392,19 @@ const Details = () => {
                                         <h3 className="font-semibold text-white mb-1">🎭 التصنيف</h3>
                                         <p className="text-gray-300">دراما</p>
                                     </div>
-                                    <div className="bg-[#2a2a2a] p-4 rounded-lg shadow-sm">
-                                        <h3 className="font-semibold text-white mb-1 flex items-center gap-2">
-                                            🎬 الأبطال
-                                        </h3>
-                                        <p className="text-gray-300">أحمد خالد، سارة محمد، علي حسن</p>
-                                    </div>
+                                      <div className="bg-[#2a2a2a] p-4 rounded-lg shadow-sm">
+                   <h3 className="font-semibold text-white mb-2 flex items-center gap-2">
+                           🎬 الأبطال
+                     </h3>
+                          <div className="flex flex-col gap-2">
+                      {actors.map((actor, index) => (
+                    <div key={index} className="flex items-center gap-2 text-gray-300">
+                             <User size={18} className="text-wh" />
+                           <span>{actor}</span>
+                        </div>
+                                 ))}
+                    </div>
+                                  </div>
 
                                     <div className="bg-[#2a2a2a] p-4 rounded-lg shadow-sm">
                                         <h3 className="font-semibold text-white mb-1 flex items-center gap-2">
