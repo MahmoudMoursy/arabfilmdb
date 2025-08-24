@@ -1,49 +1,27 @@
-import React, { useState, useEffect } from 'react';
-import {  Star, Play, Heart, Share2 } from 'lucide-react';
-import { workService } from '../api/workService';
+import React, { useState } from 'react';
+import {  Star, Play, Heart, Share2} from 'lucide-react';
 
-const Series = () => {
-  const [series, setSeries] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+const LastFilme = () => {
+  const [movie, setMovie] = useState({
+    id: 1,
+    rating: 4.5,
+    isFavorite: false
+  });
+
   const [isImageLoaded, setIsImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
 
-  useEffect(() => {
-    const fetchSeries = async () => {
-      try {
-        const works = await workService.getAllWorks();
-        // Filter only series
-        const seriesWorks = works.filter(work => work.type === 'series');
-        setSeries(seriesWorks);
-      } catch (err) {
-        setError('فشل في تحميل المسلسلات');
-        console.error('Error fetching series:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchSeries();
-  }, []);
 
 
-
-  const handleFavoriteClick = (e, selectedSeries) => {
+  const handleFavoriteClick = (e) => {
     e.stopPropagation();
-    setSeries(prevSeries =>
-      prevSeries.map(series =>
-        series.id === selectedSeries.id
-          ? { ...series, isFavorite: !series.isFavorite }
-          : series
-      )
-    );
-    console.log('تم تغيير حالة المفضلة:', !selectedSeries.isFavorite);
+    setMovie(prev => ({ ...prev, isFavorite: !prev.isFavorite }));
+    console.log('تم تغيير حالة المفضلة:', !movie.isFavorite);
   };
 
-  const handleShareClick = (e, selectedSeries) => {
+  const handleShareClick = (e) => {
     e.stopPropagation();
-    console.log('تم النقر على مشاركة:', selectedSeries);
+    console.log('تم النقر على مشاركة:', movie);
 
 
     if (navigator.share) {
@@ -106,8 +84,14 @@ const Series = () => {
                 }}
               />
 
-              <div className="absolute top-2 right-2 bg-amber-300 backdrop-blur-sm rounded-lg px-3 text-black font-extrabold py-1 transition-all duration-300 group-hover:bg-amber-400">
-                <span className="text-primary-foreground text-base font-bold">دراما</span>
+              
+              <div className="absolute top-2 left-2 bg-red-500/90 backdrop-blur-sm rounded-lg px-2 py-1 animate-pulse">
+                <span className="text-white text-xs font-bold">جديد</span>
+              </div>
+              
+
+              <div className="absolute top-2 right-2 bg-amber-300 backdrop-blur-sm rounded-lg px-2 text-black font-extrabold py-1 transition-all duration-300 group-hover:bg-amber-400">
+                <span className="text-primary-foreground text-xs font-medium">دراما</span>
               </div>
 
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
@@ -117,17 +101,17 @@ const Series = () => {
                   </button>
 
                   <button
-                    onClick={(e) => handleFavoriteClick(e, series)}
-                    className={`w-12 h-12 flex items-center justify-center  rounded-full transition-all duration-300 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-offset-2 ${series.isFavorite
+                    onClick={handleFavoriteClick}
+                    className={`w-12 h-12 flex items-center justify-center  rounded-full transition-all duration-300 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-offset-2 ${movie.isFavorite
                       ? 'bg-red-500/90 hover:bg-red-500 text-white focus:ring-red-500'
                       : 'bg-white/20 hover:bg-white/30 text-amber-300 focus:ring-amber-300'
                       }`}
                   >
-                    <Heart size={30} className={series.isFavorite ? 'fill-current' : ''} />
+                    <Heart size={30} className={movie.isFavorite ? 'fill-current' : ''} />
                   </button>
 
                   <button
-                    onClick={(e) => handleShareClick(e, series)}
+                    onClick={handleShareClick}
                     className="w-12 h-12 flex items-center justify-center bg-white/20 hover:bg-white/30 text-blue-700 rounded-full transition-all duration-300 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2"
                   >
                     <Share2 size={30} />
@@ -143,7 +127,7 @@ const Series = () => {
                     aria-hidden="true"
                   />
                   <span className="text-white text-xs font-medium group-hover:text-primary-foreground transition-colors duration-300">
-                    {series.rating}
+                    {movie.rating}
                   </span>
                 </div>
               </div>
@@ -160,36 +144,14 @@ const Series = () => {
               </div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center  text-amber-300 space-x-1 space-x-reverse">
-                  {renderStars(series.rating)}
+                  {renderStars(movie.rating)}
                   <span className="text text-xs mr-2 text-white transition-colors duration-300">
-                    ({series.rating})
+                    ({movie.rating})
                   </span>
                 </div>
               </div>
               
-              {/* <div className="flex items-center justify-between text-xs text-muted-foreground">
-                <div className="flex items-center space-x-1 space-x-reverse  backdrop-blur-sm rounded-md px-2 py-1">
-                  <Clock size={15} className="mx-1" aria-hidden="true" />
-                  <span className='text-sm'>120 دقيقة</span>
-                </div>
-                <div className="flex items-center space-x-1 space-x-reverse  backdrop-blur-sm rounded-md px-2 py-1">
-                  <Calendar size={15} className="mx-1" aria-hidden="true" />
-                  <span className="transition-colors duration-300  group-hover:text-foreground/80 text-sm">
-                    1999
-                  </span>
-                </div>
-              <div className="flex items-center space-x-1 space-x-reverse  backdrop-blur-sm rounded-md px-2 py-1">
-                <Globe size={15} className="mx-1" aria-hidden="true" />
-                <span className="transition-colors text-sm duration-300 group-hover:text-foreground/80 font-bold">
-                  مصر
-                </span>
-              </div>
-              </div> */}
-              {/* <div>
-               <button className="flex-1 py-2 px-3 w-full rounded-lg text-xl font-medium transition-colors bg-gray-700  hover:bg-amber-300">
-               قيّم</button>
-
-              </div> */}
+             
             </div>
           </div>
         </div>
@@ -198,4 +160,5 @@ const Series = () => {
   );
 };
 
-export default Series;
+export default LastFilme;
+

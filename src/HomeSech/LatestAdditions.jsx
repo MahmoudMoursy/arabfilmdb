@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Eye, Calendar, Star, Play, Heart, Share2, Clock, Globe } from 'lucide-react';
+import {  Star, Play, Heart, Share2 } from 'lucide-react';
 
 const LatestAdditions = () => {
   const [movie, setMovie] = useState({
@@ -151,29 +151,7 @@ const LatestAdditions = () => {
                 </div>
               </div>
               
-              {/* <div className="flex items-center justify-between text-xs text-muted-foreground">
-                <div className="flex items-center space-x-1 space-x-reverse  backdrop-blur-sm rounded-md px-2 py-1">
-                  <Clock size={15} className="mx-1" aria-hidden="true" />
-                  <span className='text-sm'>120 دقيقة</span>
-                </div>
-                <div className="flex items-center space-x-1 space-x-reverse  backdrop-blur-sm rounded-md px-2 py-1">
-                  <Calendar size={15} className="mx-1" aria-hidden="true" />
-                  <span className="transition-colors duration-300  group-hover:text-foreground/80 text-sm">
-                    1999
-                  </span>
-                </div>
-              <div className="flex items-center space-x-1 space-x-reverse  backdrop-blur-sm rounded-md px-2 py-1">
-                <Globe size={15} className="mx-1" aria-hidden="true" />
-                <span className="transition-colors text-sm duration-300 group-hover:text-foreground/80 font-bold">
-                  مصر
-                </span>
-              </div>
-              </div> */}
-              {/* <div>
-               <button className="flex-1 py-2 px-3 w-full rounded-lg text-xl font-medium transition-colors bg-gray-700  hover:bg-amber-300">
-               قيّم</button>
-
-              </div> */}
+             
             </div>
           </div>
         </div>

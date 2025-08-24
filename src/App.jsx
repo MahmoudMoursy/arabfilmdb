@@ -13,12 +13,9 @@ import Dashboard from './Dashboard/Dashboard';
 import ResetPassword from './Pages/ResetPassword';
 import MovieFilterDemo from './Pages/MovieFilterDemo';
 import SeriesFilterDemo from './Pages/SeriesFilterDemo';
-import { useEffect } from 'react';
-import { useDispatch,useSelector} from 'react-redux';
-import { setUser } from './redux/userData';
-// Protected Route component
-// 
-
+import Details from './Pages/Details';
+import AdminDashboard from './Dashboard/AdminDashboard';
+import Profile from './Pages/Profile';
 
 
 const ProtectedRoute = ({ children }) => {
@@ -66,6 +63,9 @@ console.log(user);
          />
          <Route path="/MovieFilterDemo" element={<MovieFilterDemo />} />
          <Route path="/SeriesFilterDemo" element={<SeriesFilterDemo />} />
+          <Route path="/Details" element={<Details />} />
+          <Route path="/AdminDashboard" element={<AdminDashboard />} />
+          <Route path="/Profile" element={<Profile />} />
          </Routes>
       </div>
     </>
