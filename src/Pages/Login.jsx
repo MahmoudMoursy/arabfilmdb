@@ -1,7 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from 'react-router-dom';
 import { useForm } from "react-hook-form";
 import { axiosInstance } from "../api/axiosInstance";
+import { useDispatch } from 'react-redux';
+import { setUser } from '../redux/userData';
 function Login() {
     const navigate = useNavigate();
     const { register, handleSubmit } = useForm();
@@ -9,7 +11,13 @@ function Login() {
     const [loading, setLoading] = useState(false);
     const [loginError, setLoginError] = useState("");
     const [showReset, setShowReset] = useState(false);
-
+    const dispatch = useDispatch();
+    useEffect(() => {
+                const storedUser = localStorage.getItem("user");
+                if (storedUser) {
+                    dispatch(setUser(JSON.parse(storedUser)));
+                }
+                }, []);
     const onSubmit = async (data) => {
         console.log(data);
 
@@ -25,7 +33,8 @@ function Login() {
             // Store user data in localStorage
             localStorage.setItem('user', JSON.stringify(response.data.user));
             localStorage.setItem('token', response.data.token);
-                navigate("/");
+            dispatch(setUser(response.data.user));
+            navigate("/");
             
             // Redirect based on role
             // if (response.data.user.role === 'admin') {

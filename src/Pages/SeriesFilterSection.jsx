@@ -1,20 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Filter, X, ChevronDown } from 'lucide-react';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchMovies } from '../redux/moviesSlice';
 
-const series = [
-    {
-        id: '1',
-        title: 'مسلسل الدراما العربي',
-        englishTitle: 'The Arabic Drama Series',
-        genre: 'drama',
-        year: '2023',
-        country: 'مصر',
-        description: 'مسلسل درامي مشوق يتناول قضايا اجتماعية معاصرة.',
-        rating: 4.7,
-        imageUrl: 'https://wyfkyzwy.manus.space/assets/tv2.jpg',
-    },
-
-];
 
 const SeriesFilterSection = () => {
 
@@ -22,13 +10,16 @@ const SeriesFilterSection = () => {
     const [selectedGenre, setSelectedGenre] = useState('');
     const [selectedYear, setSelectedYear] = useState('');
     const [selectedCountry, setSelectedCountry] = useState('');
-    const [filteredSeries, setFilteredSeries] = useState(series);
+    const [filteredSeries, setFilteredSeries] = useState([]);
     const [isFilterOpen, setIsFilterOpen] = useState(false);
     const [activeFilters, setActiveFilters] = useState(0);
 
     const [genreDropdownOpen, setGenreDropdownOpen] = useState(false);
     const [yearDropdownOpen, setYearDropdownOpen] = useState(false);
     const [countryDropdownOpen, setCountryDropdownOpen] = useState(false);
+    const { series,loading,error } = useSelector(state => state.movies);
+
+    const dispatch = useDispatch();
 
     const uniqueGenres = Array.from(new Set(series.map(m => m.genre))).filter(Boolean);
     const uniqueYears = Array.from(new Set(series.map(m => m.year))).filter(Boolean);
@@ -39,7 +30,14 @@ const SeriesFilterSection = () => {
     const getCountryName = (id) => id;
 
     useEffect(() => {
-        let filtered = series;
+        dispatch (fetchMovies());
+    }, [dispatch]);
+
+
+    useEffect(() => {
+        let filtered = [...series];
+        console.log(filtered);
+        
         if (searchTerm) {
             filtered = filtered.filter(item =>
                 item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -62,7 +60,7 @@ const SeriesFilterSection = () => {
         if (selectedYear) count++;
         if (selectedCountry) count++;
         setActiveFilters(count);
-    }, [searchTerm, selectedGenre, selectedYear, selectedCountry]);
+    }, [series,searchTerm, selectedGenre, selectedYear, selectedCountry]);
 
     const clearAllFilters = () => {
         setSearchTerm('');
@@ -262,16 +260,16 @@ const SeriesFilterSection = () => {
                 </div>
 
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
-                    {filteredSeries.map((item) => (
-                        <div key={item.id} className=" text-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1" style={{ backgroundColor: 'var(--color-dark)' }}>
+                    {filteredSeries.map((item,index) => (
+                        <div key={index} className=" text-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1" style={{ backgroundColor: 'var(--color-dark)' }}>
                             <div className="relative">
-                                <img src={item.imageUrl} alt={item.title} className="w-full h-full object-cover transition-all duration-300 group-hover:scale-105" />
+                                <img src={item.posterUrl} alt={item.title} className="w-full h-full object-cover transition-all duration-300 group-hover:scale-105" />
                                 <div className="absolute top-2 right-2 bg-black bg-opacity-70 text-white px-2 py-1 rounded-lg text-sm">⭐ {item.rating}</div>
                             </div>
                             <div className="p-4 ">
-                                <h3 className="font-bold text-lg text-white mb-1 line-clamp-1">{item.title}</h3>
-                                <p className="text-sm text-white mb-2">{item.englishTitle}</p>
-                                <p className="text-white text-sm mb-3 line-clamp-2">{item.description}</p>
+                                <h3 className="font-bold text-lg text-white mb-1 line-clamp-1">{item.nameArabic}</h3>
+                                <p className="text-sm text-white mb-2">{item.nameEnglish}</p>
+                                <p className="text-white text-sm mb-3 line-clamp-2">{item.summary}</p>
                                 <div className="flex flex-wrap gap-2 text-xs">
                                     <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full">{getGenreName(item.genre)}</span>
                                     <span className="px-2 py-1 bg-gray-100 text-gray-800 rounded-full">{item.year}</span>

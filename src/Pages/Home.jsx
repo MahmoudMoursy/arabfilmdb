@@ -9,7 +9,6 @@ import MediaSlider from '../SliderHome/MediaSlider';
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Dashboard from '../Dashboard/Dashboard';
-
 function Home() {
   const user = JSON.parse(localStorage.getItem('user'));
   const [dotCount, setDotCount] = useState(1);

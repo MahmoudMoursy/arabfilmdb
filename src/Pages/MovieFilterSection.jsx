@@ -1,45 +1,47 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Filter, X, ChevronDown } from 'lucide-react';
-
-
-
-const movies = [
-  {
-    id: '1',
-    title: 'فيلم الأكشن الكبير',
-    englishTitle: 'The Great Action Movie',
-    genre: 'action',
-    year: '2024',
-    country: 'مصر',
-    description: 'فيلم مليء بالإثارة والمغامرات يجعلك على حافة مقعدك.',
-    rating: 4.5,
-    imageUrl: 'https://wyfkyzwy.manus.space/assets/tv1.jpg',
-  },
-];
+import { axiosInstance } from "../api/axiosInstance";
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchMovies } from '../redux/moviesSlice';
 
 const MovieFilterSection = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedGenre, setSelectedGenre] = useState('');
   const [selectedYear, setSelectedYear] = useState('');
   const [selectedCountry, setSelectedCountry] = useState('');
-  const [filteredMovies, setFilteredMovies] = useState(movies);
+  const [filteredMovies, setFilteredMovies] = useState([]);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [activeFilters, setActiveFilters] = useState(0);
   const [genreDropdownOpen, setGenreDropdownOpen] = useState(false);
   const [yearDropdownOpen, setYearDropdownOpen] = useState(false);
   const [countryDropdownOpen, setCountryDropdownOpen] = useState(false);
+  // const [films, setFilms] = useState([]);
+  // const [loading, setLoading] = useState(true);
+  const dispatch = useDispatch();
+  const { films, loading, error } = useSelector(state => state.movies);
 
+
+ useEffect(() => {
+  dispatch(fetchMovies());
+}, [dispatch]);
+
+
+  // Filter whenever search/filter inputs change
   useEffect(() => {
-    let filtered = movies;
+    let filtered = [...films]; // start with full list    
+    console.log(filtered);
+    
     if (searchTerm) {
       filtered = filtered.filter(movie =>
-        movie.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        movie.englishTitle.toLowerCase().includes(searchTerm.toLowerCase())
+        movie.nameArabic.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        movie.nameEnglish.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
+
     if (selectedGenre) {
       filtered = filtered.filter(movie => movie.genre === selectedGenre);
     }
+
     if (selectedYear) {
       if (selectedYear === 'older') {
         filtered = filtered.filter(movie => parseInt(movie.year) < 2020);
@@ -47,16 +49,20 @@ const MovieFilterSection = () => {
         filtered = filtered.filter(movie => movie.year === selectedYear);
       }
     }
+
     if (selectedCountry) {
       filtered = filtered.filter(movie => movie.country === selectedCountry);
     }
+
     setFilteredMovies(filtered);
+
+    // Count active filters
     let count = 0;
     if (selectedGenre) count++;
     if (selectedYear) count++;
     if (selectedCountry) count++;
     setActiveFilters(count);
-  }, [searchTerm, selectedGenre, selectedYear, selectedCountry]);
+  }, [films, searchTerm, selectedGenre, selectedYear, selectedCountry]);
 
   const clearAllFilters = () => {
     setSearchTerm('');
@@ -68,9 +74,10 @@ const MovieFilterSection = () => {
     setCountryDropdownOpen(false);
     // نهاية الدالة الرئيسية
   }
-  const uniqueGenres = Array.from(new Set(movies.map(m => m.genre))).filter(Boolean);
-  const uniqueYears = Array.from(new Set(movies.map(m => m.year))).filter(Boolean);
-  const uniqueCountries = Array.from(new Set(movies.map(m => m.country))).filter(Boolean);
+
+  const uniqueGenres = Array.from(new Set(films.map(m => m.genre))).filter(Boolean);
+  const uniqueYears = Array.from(new Set(films.map(m => m.year))).filter(Boolean);
+  const uniqueCountries = Array.from(new Set(films.map(m => m.country))).filter(Boolean);
 
 
   const getGenreName = (id) => id;
@@ -347,17 +354,24 @@ const MovieFilterSection = () => {
           </p>
         </div>
 
-
+ {loading && (
+              <div className="flex justify-center items-center py-20">
+                <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-amber-300"></div>
+              </div>
+            )}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
-          {filteredMovies.map((movie) => (
+         
+          {filteredMovies.map((movie , index) => (
+            // console.log("a"),
+            
             <div
-              key={movie.id}
+              key={index}
               className=" text-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
               style={{ backgroundColor: 'var(--color-dark)' }}
             >
               <div className="relative">
                 <img
-                  src={movie.imageUrl}
+                  src={movie.posterUrl}
                   alt={movie.title}
                   className="w-full h-full object-cover transition-all duration-300 group-hover:scale-105"
                 />
@@ -367,11 +381,11 @@ const MovieFilterSection = () => {
               </div>
               <div className="p-4 ">
                 <h3 className="font-bold text-lg text-white mb-1 line-clamp-1">
-                  {movie.title}
+                  {movie.nameArabic}
                 </h3>
-                <p className="text-sm text-white mb-2">{movie.englishTitle}</p>
+                <p className="text-sm text-white mb-2">{movie.nameEnglish}</p>
                 <p className="text-white text-sm mb-3 line-clamp-2">
-                  {movie.description}
+                  {movie.summary}
                 </p>
                 <div className="flex flex-wrap gap-2 text-xs">
                   <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full">
@@ -389,23 +403,23 @@ const MovieFilterSection = () => {
           ))}
         </div>
 
-        {filteredMovies.length === 0 && (
-          <div className="text-center py-12">
-            <div className="text-6xl mb-4">🎬</div>
-            <h3 className="text-xl font-semibold text-white mb-2">
-              لم يتم العثور على أفلام
-            </h3>
-            <p className="text-white mb-4">
-              جرب تغيير معايير البحث أو الفلاتر
-            </p>
-            <button
-              onClick={clearAllFilters}
-              className="px-6 py-3 bg-amber-300 text-black rounded-xl hover:bg-amber-400 transition-colors duration-200"
-            >
-              مسح جميع الفلاتر
-            </button>
-          </div>
-        )}
+       {!loading && filteredMovies.length === 0 && (
+            <div className="text-center py-12">
+              <div className="text-6xl mb-4">🎬</div>
+              <h3 className="text-xl font-semibold text-white mb-2">
+                لم يتم العثور على أفلام
+              </h3>
+              <p className="text-white mb-4">
+                جرب تغيير معايير البحث أو الفلاتر
+              </p>
+              <button
+                onClick={clearAllFilters}
+                className="px-6 py-3 bg-amber-300 text-black rounded-xl hover:bg-amber-400 transition-colors duration-200"
+              >
+                مسح جميع الفلاتر
+              </button>
+            </div>
+          )}
       </div>
     </div>
   );

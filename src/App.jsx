@@ -13,17 +13,37 @@ import Dashboard from './Dashboard/Dashboard';
 import ResetPassword from './Pages/ResetPassword';
 import MovieFilterDemo from './Pages/MovieFilterDemo';
 import SeriesFilterDemo from './Pages/SeriesFilterDemo';
-
+import { useEffect } from 'react';
+import { useDispatch,useSelector} from 'react-redux';
+import { setUser } from './redux/userData';
 // Protected Route component
+// 
+
+
+
 const ProtectedRoute = ({ children }) => {
   const user = JSON.parse(localStorage.getItem('user'));
   if (!user || user.role !== 'admin') {
     return <Navigate to="/login" />;
   }
   return children;
+  
+  
+  
 };
 
 function App() {
+  const { user } = useSelector(state => state.user);
+  const dispatch = useDispatch();
+  useEffect(() => {
+  const storedUser = localStorage.getItem("user");
+  if (storedUser) {
+    dispatch(setUser(JSON.parse(storedUser)));
+  }
+}, []);
+console.log(user);
+
+
   return (
     <>
       <div> 
