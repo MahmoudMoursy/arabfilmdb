@@ -6,6 +6,8 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { axiosInstance } from "../api/axiosInstance";
 import { da } from "zod/locales";
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 function Register() {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
@@ -22,16 +24,15 @@ function Register() {
         path: ["confirmPassword"],
     });
 
-    const { register, handleSubmit, formState: { errors } } = useForm({
+    const { register, handleSubmit, formState: { errors }, reset } = useForm({
         resolver: zodResolver(schema)
     });
 
-    // 
-    // 
     const onSubmit = async (data) => {
         console.log("Form data:", data);
         setLoading(true);
-
+        toast.success("تم التسجيل بنجاح!");
+        reset();
         try {
             const response = await axiosInstance.post('/users/signup', {
                 username: data.name,
@@ -247,6 +248,9 @@ function Register() {
                                 {loading ? "جاري التسجيل..." : " تسجيل الدخول"}
                             </button>
                         </div>
+                        <ToastContainer
+                                  position="top-center"
+                                />
                     </form>
                     <div className="text-center"><a className="text-md text-gray-400 hover:text-white transition-colors" href="/" data-discover="true">العودة إلى الصفحة الرئيسية</a></div>
                 </div>

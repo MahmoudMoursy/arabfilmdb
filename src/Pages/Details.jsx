@@ -399,7 +399,7 @@ const Details = () => {
                           <div className="flex flex-col gap-2">
                       {actors.map((actor, index) => (
                     <div key={index} className="flex items-center gap-2 text-gray-300">
-                             <User size={18} className="text-wh" />
+                             <User size={18} className="text-white" />
                            <span>{actor}</span>
                         </div>
                                  ))}

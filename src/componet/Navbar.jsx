@@ -4,9 +4,11 @@ import logo from "/src/assets/WhatsApp Image 2025-08-03 at 23.32.06_4ba7b00e.jpg
 import MovieFilterDemo from '../Pages/MovieFilterDemo';
 import SeriesFilterDemo from '../Pages/SeriesFilterDemo';
 import { useNavigate } from 'react-router-dom';
+import { User,LogOut  } from "lucide-react";
 
 
 const Navbar = () => {
+    const [open, setOpen] = useState(false);
     const navigate = useNavigate();
     const user = JSON.parse(localStorage.getItem('user'));
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -35,7 +37,7 @@ const Navbar = () => {
         };
     }, [isMobileMenuOpen]);
 
-    const logout = () =>{
+    const logout = () => {
         localStorage.removeItem('user');
         localStorage.removeItem('token');
         navigate('/Login');
@@ -131,7 +133,7 @@ const Navbar = () => {
                                 </div>
                             </div>
 
-                           {(!user) ? ( <div className="flex items-center space-x-reverse space-x-4">
+                            {(!user) ? (<div className="flex items-center space-x-reverse space-x-4">
                                 <button
                                     onClick={() => navigate('/Login')}
                                     className="group flex items-center text-white mx-2 px-6 py-3 rounded-xl text-base font-semibold transition-all duration-300 hover:text-amber-300 hover:bg-white/10 backdrop-blur-sm border border-transparent hover:border-white/20 hover:shadow-lg
@@ -172,19 +174,37 @@ const Navbar = () => {
                                     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
                                 </button>
 
-                            </div>) : <button
-                                    onClick={() =>logout()}
-                                    className="group relative overflow-hidden border border-gray-600/50 hover:border-amber-300/50 mx-2 px-6 py-3 rounded-xl text-base font-bold transition-all duration-300 hover:shadow-lg hover:shadow-amber-300/20 hover:-translate-y-0.5
-                                                      sm:px-5 sm:py-2.5 sm:text-sm
-                                         max-sm:px-4 max-sm:py-2 max-sm:text-xs"
-                                    style={{ backgroundColor: "var(--color-accent)" }}
-                                >
-                                    <span className="relative z-10 text-white group-hover:text-white transition-colors duration-300">
-                                        تسحيل خروج
-                                    </span>
+                            </div>) : (
+                                <div className="relative inline-block text-left">
+                                    <button
+                                        onClick={() => setOpen(!open)}
+                                        className="flex items-center gap-2 px-12 py-2 rounded-lg border border-gray-600/50 bg-[var(--color-accent)] hover:border-amber-300/50 transition-all duration-300"
+                                    >
+                                        <User className="w-7 h-6 text-black" />
+                                        <span className="text-black font-bold">{user?.username}</span>
+                                    </button>
 
-                                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
-                                </button> }
+                                    {open && (
+                                        <div className="absolute right-0 mt-2 w-48 rounded-lg shadow-lg bg-[var(--color-secondary)] border border-gray-600/50 overflow-hidden z-20">
+                                            <button
+                                                onClick={() => navigate("/profile")}
+                                                className="w-full text-right px-6 py-3 text-white text-sm hover:bg-amber-500/20 transition-colors"
+                                            >
+                                                <User className="w-5 h-5 mx-2 text-white inline-block mr-2" />
+                                                الملف الشخصي
+                                            </button>
+
+                                            <button
+                                                onClick={logout}
+                                                className="flex items-center  gap-2 w-full text-right px-6 py-3 text-white text-sm hover:bg-red-500/20 transition-colors"
+                                            >
+                                                <LogOut className="w-5 h-5 mx-2 text-white inline-block mr-2" /> 
+                                                تسجيل خروج
+                                            </button>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
 
                             <div className="lg:hidden">
                                 <button
@@ -227,14 +247,14 @@ const Navbar = () => {
                                 الرئيسية
                             </a>
                             <a
-                                href="#"
+                                href="/MovieFilterDemo"
                                 className="block px-4 py-3 text-white hover:text-amber-300 hover:bg-white/10 rounded-xl font-semibold transition-all duration-300 border border-transparent hover:border-white/20"
                                 onClick={closeMobileMenu}
                             >
                                 الافلام
                             </a>
                             <a
-                                href="#"
+                                href="/SeriesFilterDemo"
                                 className="block px-4 py-3 text-white hover:text-amber-300 hover:bg-white/10 rounded-xl font-semibold transition-all duration-300 border border-transparent hover:border-white/20"
                                 onClick={closeMobileMenu}
                             >
@@ -265,7 +285,7 @@ const Navbar = () => {
                                 </div>
                             </div>
 
-                           {!user && <div className="pt-4 space-y-3">
+                            {!user && <div className="pt-4 space-y-3">
                                 <button
                                     onClick={() => {
                                         navigate('/Login');
@@ -302,7 +322,7 @@ const Navbar = () => {
                                 >
                                     إنشاء حساب
                                 </button>
-                            </div>} 
+                            </div>}
                         </div>
                     </div>
                 </nav>

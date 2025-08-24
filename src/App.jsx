@@ -14,6 +14,7 @@ import ResetPassword from './Pages/ResetPassword';
 import MovieFilterDemo from './Pages/MovieFilterDemo';
 import SeriesFilterDemo from './Pages/SeriesFilterDemo';
 import Details from './Pages/Details';
+import AdminDashboard from './Dashboard/AdminDashboard';
 
 // Protected Route component
 const ProtectedRoute = ({ children }) => {
@@ -48,6 +49,7 @@ function App() {
          <Route path="/MovieFilterDemo" element={<MovieFilterDemo />} />
          <Route path="/SeriesFilterDemo" element={<SeriesFilterDemo />} />
           <Route path="/Details" element={<Details />} />
+          <Route path="/AdminDashboard" element={<AdminDashboard />} />
          </Routes>
       </div>
     </>

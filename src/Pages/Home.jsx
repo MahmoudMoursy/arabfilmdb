@@ -38,6 +38,15 @@ function Home() {
           >
             أضافه
           </button>
+          <button
+            onClick={() => {
+              navigate('/AdminDashboard');
+            }}
+            className="w-58 px-1 py-2 rounded-xl font-bold transition-all duration-300 text-white hover:shadow-lg"
+            style={{ backgroundColor: "var(--color-accent)" }}
+          >
+            لوحة التحكم
+          </button>
       </div>
         ) : null}
       <div style={{ backgroundColor: 'var(--color-secondary)' }} >
