@@ -15,8 +15,9 @@ import MovieFilterDemo from './Pages/MovieFilterDemo';
 import SeriesFilterDemo from './Pages/SeriesFilterDemo';
 import Details from './Pages/Details';
 import AdminDashboard from './Dashboard/AdminDashboard';
+import Profile from './Pages/Profile';
 
-// Protected Route component
+
 const ProtectedRoute = ({ children }) => {
   const user = JSON.parse(localStorage.getItem('user'));
   if (!user || user.role !== 'admin') {
@@ -50,6 +51,7 @@ function App() {
          <Route path="/SeriesFilterDemo" element={<SeriesFilterDemo />} />
           <Route path="/Details" element={<Details />} />
           <Route path="/AdminDashboard" element={<AdminDashboard />} />
+          <Route path="/Profile" element={<Profile />} />
          </Routes>
       </div>
     </>
