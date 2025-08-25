@@ -1,7 +1,17 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Eye, Calendar, Star, Play, Heart, Share2, Clock, Globe } from 'lucide-react';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchMovies } from '../redux/moviesSlice';
 
 const Filme = () => {
+  const { films} = useSelector(state => state.movies);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(fetchMovies());
+  }, [dispatch]);
+
+
   const [movie, setMovie] = useState({
     id: 1,
     rating: 4.5,
@@ -58,13 +68,15 @@ const Filme = () => {
 
 
   return (
-    <div className="bg-background p-8 flex items-center justify-center" dir="rtl">
-      <div className="max-w-md">
-        <div className="group card-hover bg-card border text-3xl border-white/50  rounded-xl overflow-hidden transition-all duration-300 hover:shadow-md hover:shadow-amber-300/100 hover:-translate-y-10 text-white" style={{ backgroundColor: 'var(--color-dark)' }}>
-          <div
-            className="block cursor-pointer"
-            role="button"
-            aria-label={"مشاهدة الفيلم صيد العقارب"}          >
+    <div className="bg-background p-8" dir="rtl">
+    <div className="flex flex-row flex-nowrap gap-6 ">
+    {films.map((movie, index) => ( // 👈 يعرض 3 عناصر فقط
+      <div
+        key={index}
+        className="group card-hover bg-card border text-3xl border-white/50 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-md hover:shadow-amber-300/100 hover:-translate-y-5 text-white w-[320px] shrink-0 z-10"
+        style={{ backgroundColor: 'var(--color-dark)' }}
+      >
+          <div className="block cursor-pointer" role="button">
             <div className="relative aspect-[2/3] overflow-hidden">
               {!isImageLoaded && !imageError && (
                 <div className="absolute inset-0 bg-muted animate-pulse flex items-center justify-center">
@@ -72,20 +84,23 @@ const Filme = () => {
                 </div>
               )}
               <img
-                alt={"صيد العقارب"}
-                className={`w-full h-full object-cover transition-all duration-300 group-hover:scale-105 ${isImageLoaded ? 'opacity-100' : 'opacity-0'
-                  }`}
+                className={`w-full h-full object-cover transition-all duration-300 group-hover:scale-105 ${
+                  isImageLoaded ? 'opacity-100' : 'opacity-0'
+                }`}
                 loading="lazy"
-                src={"https://wyfkyzwy.manus.space/assets/tv1.jpg"}
+                src={movie?.posterUrl}
                 onLoad={() => setIsImageLoaded(true)}
                 onError={(e) => {
                   setImageError(true);
-                  e.target.src = 'https://via.placeholder.com/300x450/1f2937/9ca3af?text=صورة+غير+متوفرة';
+                  e.target.src =
+                    'https://via.placeholder.com/300x450/1f2937/9ca3af?text=صورة+غير+متوفرة';
                 }}
               />
 
-              <div className="absolute top-2 right-2 bg-amber-300 backdrop-blur-sm rounded-lg px-3 text-black font-extrabold py-1 transition-all duration-300 group-hover:bg-amber-400">
-                <span className="text-primary-foreground text-base font-bold">دراما</span>
+              
+
+              <div className="absolute top-2 right-2 bg-amber-300 backdrop-blur-sm rounded-lg px-2 text-black font-extrabold py-1 transition-all duration-300 group-hover:bg-amber-400">
+                <span className="text-primary-foreground text-xs font-medium">{movie?.genre}</span>
               </div>
 
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
@@ -96,10 +111,11 @@ const Filme = () => {
 
                   <button
                     onClick={handleFavoriteClick}
-                    className={`w-12 h-12 flex items-center justify-center  rounded-full transition-all duration-300 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-offset-2 ${movie.isFavorite
-                      ? 'bg-red-500/90 hover:bg-red-500 text-white focus:ring-red-500'
-                      : 'bg-white/20 hover:bg-white/30 text-amber-300 focus:ring-amber-300'
-                      }`}
+                    className={`w-12 h-12 flex items-center justify-center rounded-full transition-all duration-300 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+                      movie.isFavorite
+                        ? 'bg-red-500/90 hover:bg-red-500 text-white focus:ring-red-500'
+                        : 'bg-white/20 hover:bg-white/30 text-amber-300 focus:ring-amber-300'
+                    }`}
                   >
                     <Heart size={30} className={movie.isFavorite ? 'fill-current' : ''} />
                   </button>
@@ -130,49 +146,26 @@ const Filme = () => {
             <div className="p-4 space-y-3">
               <div>
                 <h3 className="font-bold text-foreground text-2xl line-clamp-2 group-hover:text-primary transition-colors duration-300">
-                  صيد العقارب
+                  {movie?.nameArabic}
                 </h3>
                 <p className="text-muted-foreground text-sm mt-1 ltr transition-colors duration-300 group-hover:text-muted-foreground/80">
-                  Scorpion Hunt
+                  {movie?.nameEnglish}
                 </p>
               </div>
               <div className="flex items-center justify-between">
-                <div className="flex items-center  text-amber-300 space-x-1 space-x-reverse">
+                <div className="flex items-center text-amber-300 space-x-1 space-x-reverse">
                   {renderStars(movie.rating)}
                   <span className="text text-xs mr-2 text-white transition-colors duration-300">
                     ({movie.rating})
                   </span>
                 </div>
               </div>
-              
-              {/* <div className="flex items-center justify-between text-xs text-muted-foreground">
-                <div className="flex items-center space-x-1 space-x-reverse  backdrop-blur-sm rounded-md px-2 py-1">
-                  <Clock size={15} className="mx-1" aria-hidden="true" />
-                  <span className='text-sm'>120 دقيقة</span>
-                </div>
-                <div className="flex items-center space-x-1 space-x-reverse  backdrop-blur-sm rounded-md px-2 py-1">
-                  <Calendar size={15} className="mx-1" aria-hidden="true" />
-                  <span className="transition-colors duration-300  group-hover:text-foreground/80 text-sm">
-                    1999
-                  </span>
-                </div>
-              <div className="flex items-center space-x-1 space-x-reverse  backdrop-blur-sm rounded-md px-2 py-1">
-                <Globe size={15} className="mx-1" aria-hidden="true" />
-                <span className="transition-colors text-sm duration-300 group-hover:text-foreground/80 font-bold">
-                  مصر
-                </span>
-              </div>
-              </div> */}
-              {/* <div>
-               <button className="flex-1 py-2 px-3 w-full rounded-lg text-xl font-medium transition-colors bg-gray-700  hover:bg-amber-300">
-               قيّم</button>
-
-              </div> */}
             </div>
           </div>
         </div>
-      </div>
+      ))}
     </div>
+  </div>
   );
 };
 

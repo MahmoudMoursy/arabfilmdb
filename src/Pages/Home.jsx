@@ -107,7 +107,7 @@ function Home() {
       </div>
       <div style={{ backgroundColor: 'var(--color-primary)' }} >
         <div className=" p-7 pt-9 flex justify-between items-center">
-          <h2 className="text-3xl font-bold text-white ">ألمسلسلات
+          <h2 className="text-3xl font-bold text-white ">المسلسلات
           </h2>
           <button className="flex items-center gap-3 bg-[#2b3441] px-6 py-3 rounded-full">
             <div className="flex items-center gap-1">

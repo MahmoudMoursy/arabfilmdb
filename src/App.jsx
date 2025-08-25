@@ -63,7 +63,7 @@ function App() {
          />
          <Route path="/MovieFilterDemo" element={<MovieFilterDemo />} />
          <Route path="/SeriesFilterDemo" element={<SeriesFilterDemo />} />
-          <Route path="/Details" element={<Details />} />
+          <Route path="/Details/:id" element={<Details />} />
           <Route path="/AdminDashboard" element={<AdminDashboard />} />
           <Route path="/Profile" element={<Profile />} />
          </Routes>

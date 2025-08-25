@@ -1,9 +1,31 @@
 import Navbar from '../componet/Navbar';
 import Footer from '../componet/Footer';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {  Star, Play, Heart,User } from 'lucide-react';
-const actors = ["أحمد خالد", "سارة محمد", "علي حسن"];
+import { fetchItemById } from '../redux/moviesSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
+
+
+
+
 const Details = () => {
+
+    const { id } = useParams();
+    const { selectedItem ,loading} = useSelector((state) => state.movies);
+    const dispatch = useDispatch();
+    
+    
+    console.log(selectedItem);
+
+    useEffect(() => {
+        if (id) {
+            dispatch(fetchItemById(id));
+        }
+    }, [dispatch, id]);
+    
+    console.log(selectedItem);
+    
     const similarMovies = [
   {
     id: 1,
@@ -75,11 +97,16 @@ const Details = () => {
             <Navbar />
             <div className="min-h-screen " >
                 <div className="relative h-[100vh] overflow-hidden" style={{ backgroundColor: 'var(--color-dark)' }}>
+             {loading && (
+              <div className="flex justify-center items-center py-20">
+                <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-amber-300"></div>
+              </div>
+            )}
                     <div className="absolute inset-5">
                         <img
                             alt="صغيرة على الحب"
                             className="w-full h-full object-cover blur-sm scale-100"
-                            src="https://media0084.elcinema.com/uploads/_640x_424c592c731316dcaf1b3581e530cb30dc7f88044eeb769cd3c97b3f0b5c19f8.jpg"
+                            src={selectedItem?.posterUrl }
                         />
                         <div className="absolute inset-0 bg-black/70" />
                     </div>
@@ -90,12 +117,12 @@ const Details = () => {
                                 <img
                                     alt="صغيرة على الحب"
                                     className="w-[170px] h-[280px] md:w-[360px] md:h-[500px] object-cover rounded-lg shadow-2xl"
-                                    src="https://media0084.elcinema.com/uploads/_640x_424c592c731316dcaf1b3581e530cb30dc7f88044eeb769cd3c97b3f0b5c19f8.jpg"
+                                      src={selectedItem?.posterUrl}
                                 />
                             </div>
                             <div className="flex-1 text-white pt-10 md:my-0">
-                                <h1 className="text-3xl md:text-6xl font-bold mb-2">صغيرة على الحب</h1>
-                                <p className="text-lg md:text-2xl text-gray-300 mb-4">Too Young to Love</p>
+                                <h1 className="text-3xl md:text-6xl font-bold mb-2"> {selectedItem?.nameArabic} </h1>
+                                <p className="text-lg md:text-2xl text-gray-300 mb-4">{selectedItem?.nameEnglish}</p>
                                 <div className="flex items-center gap-6 mb-6">
                                     <div className="flex items-center gap-1 ">
                                         <div className="flex items-center gap-0.5">
@@ -231,27 +258,58 @@ const Details = () => {
                                             <rect width={18} height={18} x={3} y={4} rx={2} />
                                             <path d="M3 10h18" />
                                         </svg>
-                                        <span className='font-normal text-xl '>2023</span>
+                                        <span className='font-normal text-xl '>{selectedItem?.year}</span>
                                     </div>
-                                    <div className="flex items-center gap-2">
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            width={20}
-                                            height={20}
-                                            viewBox="0 0 24 24"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            strokeWidth={2}
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            className="lucide lucide-clock"
-                                            aria-hidden="true"
-                                        >
-                                            <circle cx={12} cy={12} r={10} />
-                                            <polyline points="12 6 12 12 16 14" />
-                                        </svg>
-                                        <span className='font-normal text-xl '>120 دقيقة</span>
-                                    </div>
+
+                                   <div className="flex items-center gap-2">
+                                            {selectedItem?.type === 'film' ? (
+                                                <>
+                                                <svg
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    width={20}
+                                                    height={20}
+                                                    viewBox="0 0 24 24"
+                                                    fill="none"
+                                                    stroke="currentColor"
+                                                    strokeWidth={2}
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    className="lucide lucide-clock"
+                                                    aria-hidden="true"
+                                                >
+                                                    <circle cx={12} cy={12} r={10} />
+                                                    <polyline points="12 6 12 12 16 14" />
+                                                </svg>
+                                                <span className="font-normal text-xl">
+                                                    {selectedItem?.duration || 'مدة غير محددة'} {/* مثل: 120 دقيقة */}
+                                                </span>
+                                                </>
+                                            ) : selectedItem?.type === 'series' ? (
+                                                <>
+                                                <svg
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    width={20}
+                                                    height={20}
+                                                    viewBox="0 0 24 24"
+                                                    fill="none"
+                                                    stroke="currentColor"
+                                                    strokeWidth={2}
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    className="lucide lucide-tv"
+                                                    aria-hidden="true"
+                                                >
+                                                    <rect x="2" y="7" width="20" height="15" rx="2" ry="2" />
+                                                    <polyline points="17 2 12 7 7 2" />
+                                                </svg>
+                                                <span className="font-normal text-xl">
+                                                    {selectedItem?.episodesCount
+                                                    ? `عدد الحلقات: ${selectedItem.episodesCount}`
+                                                    : 'مسلسل - متعدد الحلقات'}
+                                                </span>
+                                                </>
+                                            ) : null}
+                                            </div>
                                     <div className="flex items-center gap-2">
                                         <svg
                                             xmlns="http://www.w3.org/2000/svg"
@@ -269,7 +327,7 @@ const Details = () => {
                                             <path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0" />
                                             <circle cx={12} cy={10} r={3} />
                                         </svg>
-                                        <span className='font-normal text-xl '>مصر</span>
+                                        <span className='font-normal text-xl '>{selectedItem?.country}</span>
                                     </div>
                                     <div className="flex items-center gap-2">
                                         <svg
@@ -288,14 +346,13 @@ const Details = () => {
                                             <path d="M17 10.5V7c0-1.1-.9-2-2-2H3C1.9 5 1 5.9 1 7v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2v-3.5l4 4v-11l-4 4z" />
                                         </svg>
                                         <span className="font-normal text-xl">
-                                            دراما
+                                            {selectedItem?.genre}
                                         </span>
                                     </div>
 
                                 </div>
                                 <p className="text-gray-300 mb-6 max-w-2xl leading-relaxed">
-                                    قصة حب مؤثرة تحكي عن فتاة صغيرة تواجه تحديات الحياة والحب في سن
-                                    مبكرة.
+                                   {selectedItem?.summary}
                                 </p>
                                 <div className="flex gap-4">
                                     <button className="flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-colors bg-white/20 text-white hover:bg-white/30">
@@ -375,29 +432,29 @@ const Details = () => {
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-6">
                                     <div className="bg-[#2a2a2a] p-4 rounded-lg shadow-sm">
                                         <h3 className="font-semibold text-white mb-1">🎥 المخرج</h3>
-                                        <p className="text-gray-300">أحمد خالد</p>
+                                        <p className="text-gray-300">{selectedItem?.director} </p>
                                     </div>
 
                                     <div className="bg-[#2a2a2a] p-4 rounded-lg shadow-sm">
                                         <h3 className="font-semibold text-white mb-1">📅 تاريخ الإصدار</h3>
-                                        <p className="text-gray-300">2023-01-01</p>
+                                        <p className="text-gray-300">{selectedItem?.createdAt}</p>
                                     </div>
 
                                     <div className="bg-[#2a2a2a] p-4 rounded-lg shadow-sm">
                                         <h3 className="font-semibold text-white mb-1">🎥 مساعد المخرج</h3>
-                                        <p className="text-gray-300">أحمد خالد</p>
+                                        <p className="text-gray-300"> {selectedItem?.assistantDirector}</p>
                                     </div>
 
                                     <div className="bg-[#2a2a2a] p-4 rounded-lg shadow-sm">
                                         <h3 className="font-semibold text-white mb-1">🎭 التصنيف</h3>
-                                        <p className="text-gray-300">دراما</p>
+                                        <p className="text-gray-300">{selectedItem?.genre}</p>
                                     </div>
                                       <div className="bg-[#2a2a2a] p-4 rounded-lg shadow-sm">
                    <h3 className="font-semibold text-white mb-2 flex items-center gap-2">
                            🎬 الأبطال
                      </h3>
                           <div className="flex flex-col gap-2">
-                      {actors.map((actor, index) => (
+                      {selectedItem?.cast.map((actor, index) => (
                     <div key={index} className="flex items-center gap-2 text-gray-300">
                              <User size={18} className="text-white" />
                            <span>{actor}</span>
@@ -410,7 +467,7 @@ const Details = () => {
                                         <h3 className="font-semibold text-white mb-1 flex items-center gap-2">
                                             📍 مكان التصوير
                                         </h3>
-                                        <p className="text-gray-300">القاهرة، الإسكندرية، أسوان</p>
+                                        <p className="text-gray-300">{selectedItem?.filmingLocation}</p>
                                     </div>
                                 </div>
 

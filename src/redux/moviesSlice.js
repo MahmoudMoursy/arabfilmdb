@@ -10,13 +10,20 @@ export const fetchMovies = createAsyncThunk(
     return response.data;
   }
 );
-
+export const fetchItemById = createAsyncThunk(
+  'movies/fetchItemById',
+  async (id) => {
+    const response = await axiosInstance.get(`/works/${id}`); // عدّل المسار حسب الـ API
+    return response.data;
+  }
+);
 const moviesSlice = createSlice({
   name: 'movies',
   initialState: {
     allMovies: [],
     films: [],
     series: [],
+    selectedItem: null, 
     loading: false,
     error: null,
   },
@@ -38,7 +45,22 @@ const moviesSlice = createSlice({
       .addCase(fetchMovies.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message;
-      });
+      })
+      // case user id
+       .addCase(fetchItemById.pending, (state) => {
+          state.loading = true;
+          state.error = null;
+          state.selectedItem = null;
+        })
+        .addCase(fetchItemById.fulfilled, (state, action) => {
+          state.loading = false;
+          state.selectedItem = action.payload;
+        })
+        .addCase(fetchItemById.rejected, (state, action) => {
+          state.loading = false;
+          state.error = action.error.message;
+          state.selectedItem = null;
+        });
   },
 });
 

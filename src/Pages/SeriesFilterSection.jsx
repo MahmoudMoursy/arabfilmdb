@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Search, Filter, X, ChevronDown } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchMovies } from '../redux/moviesSlice';
+import { Link } from 'react-router-dom';
 
 
 const SeriesFilterSection = () => {
@@ -120,7 +121,7 @@ const SeriesFilterSection = () => {
                                             onClick={() => setSearchTerm('')}
                                             className="hover:bg-blue-200 rounded-full p-0.5"
                                         >
-                                            <X className="h-3 w-3" />
+                                            <X className="h-3 w-3" /> 
                                         </button>
                                     </span>
                                 )}
@@ -261,6 +262,12 @@ const SeriesFilterSection = () => {
 
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
                     {filteredSeries.map((item,index) => (
+                    <Link 
+                        key={index}
+                        to={`/Details/${item._id}`}  // غير الرابط حسب الحاجة
+                        className="text-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+                        style={{ backgroundColor: 'var(--color-dark)' }}
+                        >
                         <div key={index} className=" text-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1" style={{ backgroundColor: 'var(--color-dark)' }}>
                             <div className="relative">
                                 <img src={item.posterUrl} alt={item.title} className="w-full h-full object-cover transition-all duration-300 group-hover:scale-105" />
@@ -277,6 +284,7 @@ const SeriesFilterSection = () => {
                                 </div>
                             </div>
                         </div>
+                    </Link>
                     ))}
                 </div>
 

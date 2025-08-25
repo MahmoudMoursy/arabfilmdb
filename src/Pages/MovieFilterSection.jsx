@@ -3,6 +3,7 @@ import { Search, Filter, X, ChevronDown } from 'lucide-react';
 import { axiosInstance } from "../api/axiosInstance";
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchMovies } from '../redux/moviesSlice';
+import { Link } from 'react-router-dom';
 
 const MovieFilterSection = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -362,8 +363,12 @@ const MovieFilterSection = () => {
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
          
           {filteredMovies.map((movie , index) => (
-            // console.log("a"),
-            
+            <Link 
+                        key={index}
+                        to={`/Details/${movie._id}`}  // غير الرابط حسب الحاجة
+                        className="text-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+                        style={{ backgroundColor: 'var(--color-dark)' }}
+                        >
             <div
               key={index}
               className=" text-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
@@ -400,7 +405,9 @@ const MovieFilterSection = () => {
                 </div>
               </div>
             </div>
-          ))}
+          </Link>
+          )
+          )}
         </div>
 
        {!loading && filteredMovies.length === 0 && (
