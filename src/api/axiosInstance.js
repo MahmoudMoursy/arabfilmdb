@@ -1,18 +1,18 @@
 import axios from 'axios';
 const axiosInstance = axios.create({
-  baseURL: 'https://arabfilmsserver.onrender.com/api', // غيرها حسب السيرفر بتاعك
+  baseURL: 'https://arabfilmsserver.onrender.com/api',
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
 // interceptor
-// axiosInstance.interceptors.request.use((config) => {
-//   const token = localStorage.getItem('token');
-//   if (token) {
-//     config.headers.Authorization = `Bearer ${token}`;
-//   }
-//   return config;
-// });
+axiosInstance.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
 
 export  {axiosInstance};

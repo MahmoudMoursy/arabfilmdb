@@ -7,11 +7,20 @@ export default function FilmForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-   useEffect(() => {
-   const verified = sessionStorage.getItem("dashboardVerified");
-    if (verified === "true") {
-    setIsVerified(true);
-    }
+  useEffect(() => {
+    // If already logged in on site with proper role, skip this mini-login
+    try {
+      const user = JSON.parse(localStorage.getItem('user'));
+      const token = localStorage.getItem('token');
+      if (user && token && (user.role === 'admin' || user.role === 'publisher')) {
+        setIsVerified(true);
+        return;
+      }
+    } catch (_) {}
+    const verified = sessionStorage.getItem("dashboardVerified");
+     if (verified === "true") {
+     setIsVerified(true);
+     }
   }, []);
   const API_URL = "https://arabfilmsserver.onrender.com/api/users/signin";
 

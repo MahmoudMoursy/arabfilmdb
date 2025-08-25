@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import {  Star, Play, Heart,User } from 'lucide-react';
 import { fetchItemById } from '../redux/moviesSlice';
 import { useDispatch, useSelector } from 'react-redux';
+import { axiosInstance } from '../api/axiosInstance';
 import { useParams } from 'react-router-dom';
 
 
@@ -43,6 +44,10 @@ const Details = () => {
         rating: 4.5,
         isFavorite: false
     });
+    const [avgRating, setAvgRating] = useState({ average: 0, count: 0 });
+    const [comments, setComments] = useState([]);
+    const [myRating, setMyRating] = useState(0);
+    const [newComment, setNewComment] = useState('');
 
     const [isImageLoaded, setIsImageLoaded] = useState(false);
     const [imageError, setImageError] = useState(false);
@@ -68,6 +73,27 @@ const Details = () => {
             navigator.clipboard.writeText(window.location.href);
             alert('تم نسخ الرابط!');
         }
+    };
+
+    useEffect(() => {
+        if (!id) return;
+        axiosInstance.get(`/ratings/average/${id}`).then((r) => setAvgRating(r.data));
+        axiosInstance.get(`/comments/work/${id}`).then((r) => setComments(r.data));
+    }, [id]);
+
+    const submitRating = (val) => {
+        setMyRating(val);
+        axiosInstance.post('/ratings', { workId: id, ratingValue: val }).then(() => {
+            axiosInstance.get(`/ratings/average/${id}`).then((r) => setAvgRating(r.data));
+        }).catch(() => {});
+    };
+
+    const submitComment = () => {
+        if (!newComment.trim()) return;
+        axiosInstance.post('/comments', { workId: id, commentText: newComment }).then((r) => {
+            setComments([r.data, ...comments]);
+            setNewComment('');
+        }).catch(() => {});
     };
 
     const renderStars = (rating) => {
@@ -233,7 +259,7 @@ const Details = () => {
                                             </button>
                                         </div>
                                         <span className="text-sm text-muted-foreground mr-1">
-                                            (4.2)
+                                            ({avgRating.average})
                                         </span>
                                     </div>
 
@@ -355,7 +381,7 @@ const Details = () => {
                                    {selectedItem?.summary}
                                 </p>
                                 <div className="flex gap-4">
-                                    <button className="flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-colors bg-white/20 text-white hover:bg-white/30">
+                                    <button onClick={() => submitRating(5)} className="flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-colors bg-white/20 text-white hover:bg-white/30">
                                         <svg
                                             xmlns="http://www.w3.org/2000/svg"
                                             width={20}
@@ -371,7 +397,7 @@ const Details = () => {
                                         >
                                             <path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z" />
                                         </svg>
-                                        قيّم الفيلم
+                                        قيّم الفيلم (5)
                                     </button>
                                     <button className="flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-colors bg-white/20 text-white hover:bg-white/30">
                                         <svg
@@ -514,12 +540,25 @@ const Details = () => {
                                     >
                                         <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
                                     </svg>
-                                    <p className="text-gray-300 text-lg font-medium">
-                                        لا توجد تقييمات بعد. <span className="text-yellow-400 font-semibold">كن أول من يقيم هذا الفيلم</span> وشارك رأيك مع الآخرين!
-                                    </p>
-                                    <button className="mt-6 px-5 py-2 bg-yellow-500 hover:bg-yellow-600 text-black font-semibold rounded-lg transition duration-200">
-                                        ✍️ أضف تقييمك الآن
-                                    </button>
+                                    <div className="px-4">
+                                      <div className="text-gray-300 text-lg font-medium mb-4">
+                                        متوسط التقييم: {avgRating.average} ({avgRating.count} تقييم)
+                                      </div>
+                                      <div className="flex justify-center gap-2 mb-6">
+                                        {[1,2,3,4,5].map(v => (
+                                          <button key={v} onClick={() => submitRating(v)} className={`px-3 py-1 rounded ${myRating>=v? 'bg-yellow-500 text-black':'bg-white/10 text-white'}`}>{v}</button>
+                                        ))}
+                                      </div>
+                                      <div className="flex gap-2">
+                                        <input value={newComment} onChange={e=>setNewComment(e.target.value)} placeholder="أضف تعليقك" className="flex-1 p-2 rounded bg-[#2a2a2a] text-white" />
+                                        <button onClick={submitComment} className="px-4 py-2 rounded bg-yellow-500 text-black">إرسال</button>
+                                      </div>
+                                      <div className="text-right mt-6 space-y-3">
+                                        {comments.map(c => (
+                                          <div key={c._id} className="p-3 bg-[#2a2a2a] rounded text-white text-right">{c.commentText}</div>
+                                        ))}
+                                      </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>

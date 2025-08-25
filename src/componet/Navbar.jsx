@@ -3,15 +3,17 @@ import "/src/App.css";
 import logo from "/src/assets/WhatsApp Image 2025-08-03 at 23.32.06_4ba7b00e.jpg"
 import MovieFilterDemo from '../Pages/MovieFilterDemo';
 import SeriesFilterDemo from '../Pages/SeriesFilterDemo';
-import { useNavigate } from 'react-router-dom';
-import { User,LogOut  } from "lucide-react";
+import { useNavigate, useLocation } from 'react-router-dom';
+import { User,LogOut, PlusCircle } from "lucide-react";
 
 
 const Navbar = () => {
     const [open, setOpen] = useState(false);
     const navigate = useNavigate();
+    const location = useLocation();
     const user = JSON.parse(localStorage.getItem('user'));
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const [search, setSearch] = useState('');
 
     const toggleMobileMenu = () => {
         setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -19,6 +21,20 @@ const Navbar = () => {
 
     const closeMobileMenu = () => {
         setIsMobileMenuOpen(false);
+    };
+
+    const getSearchTarget = () => {
+        const path = location.pathname || '';
+        if (path.toLowerCase().includes('/seriesfilterdemo')) return '/SeriesFilterDemo';
+        if (path.toLowerCase().includes('/moviefilterdemo')) return '/MovieFilterDemo';
+        return '/MovieFilterDemo';
+    };
+
+    const triggerSearch = () => {
+        const q = (search || '').trim();
+        const target = getSearchTarget();
+        const searchStr = q.length ? `?q=${encodeURIComponent(q)}` : '';
+        navigate(`${target}${searchStr}`);
     };
 
     useEffect(() => {
@@ -112,22 +128,27 @@ const Navbar = () => {
                                 <div className="relative group">
                                     <input
                                         type="text"
-                                        placeholder="البحث عن فيلم او مسلسل..."
+                                        placeholder="ابحث في الموقع..."
                                         className="w-72 pl-12 pr-4 py-3 border border-gray-600/50 rounded-2xl focus:ring-2 focus:ring-amber-300/50 focus:border-amber-300 focus:outline-none text-right text-white placeholder-gray-400 transition-all duration-300 backdrop-blur-sm hover:border-gray-500 focus:shadow-lg focus:shadow-amber-300/20"
                                         style={{ backgroundColor: "var(--color-grayy)" }}
+                                        value={search}
+                                        onChange={(e)=>setSearch(e.target.value)}
+                                        onKeyDown={(e)=>{ if(e.key==='Enter'){ e.preventDefault(); triggerSearch(); } }}
                                     />
-                                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                        <svg
-                                            className="w-5 h-5 text-gray-400 group-focus-within:text-amber-300 transition-colors duration-300"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            viewBox="0 0 24 24"
-                                            strokeWidth={2}
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                        >
-                                            <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                                        </svg>
+                                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center">
+                                        <button onClick={triggerSearch} className="text-gray-400 hover:text-amber-300 transition-colors duration-300">
+                                            <svg
+                                                className="w-5 h-5"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
+                                                strokeWidth={2}
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                            >
+                                                <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                            </svg>
+                                        </button>
                                     </div>
                                     <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-amber-300/10 to-yellow-500/10 opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
                                 </div>
@@ -175,34 +196,57 @@ const Navbar = () => {
                                 </button>
 
                             </div>) : (
-                                <div className="relative inline-block text-left">
-                                    <button
-                                        onClick={() => setOpen(!open)}
-                                        className="flex items-center gap-2 px-12 py-2 rounded-lg border border-gray-600/50 bg-[var(--color-accent)] hover:border-amber-300/50 transition-all duration-300"
-                                    >
-                                        <User className="w-7 h-6 text-black" />
-                                        <span className="text-black font-bold">{user?.username}</span>
-                                    </button>
-
-                                    {open && (
-                                        <div className="absolute right-0 mt-2 w-48 rounded-lg shadow-lg bg-[var(--color-secondary)] border border-gray-600/50 overflow-hidden z-20">
+                                <div className="relative inline-flex items-center gap-4 text-left">
+                                    <div className="flex items-center gap-3">
+                                        {(user?.role === 'admin' || user?.role === 'publisher') && (
                                             <button
-                                                onClick={() => navigate("/profile")}
-                                                className="w-full text-right px-6 py-3 text-white text-sm hover:bg-amber-500/20 transition-colors"
+                                                onClick={() => navigate('/AddForm')}
+                                                className="flex items-center gap-2 px-4 py-2 rounded-lg font-bold text-black hover:opacity-90 shadow"
+                                                style={{ backgroundColor: "var(--color-accent)" }}
                                             >
-                                                <User className="w-5 h-5 mx-2 text-white inline-block mr-2" />
-                                                الملف الشخصي
+                                                <PlusCircle className="w-5 h-5" />
+                                                إضافة عمل
                                             </button>
-
+                                        )}
+                                        {user?.role === 'admin' && (
                                             <button
-                                                onClick={logout}
-                                                className="flex items-center  gap-2 w-full text-right px-6 py-3 text-white text-sm hover:bg-red-500/20 transition-colors"
+                                                onClick={() => navigate('/AdminDashboard')}
+                                                className="flex items-center gap-2 px-4 py-2 rounded-lg font-bold text-black hover:opacity-90 shadow"
+                                                style={{ backgroundColor: "var(--color-accent)" }}
                                             >
-                                                <LogOut className="w-5 h-5 mx-2 text-white inline-block mr-2" /> 
-                                                تسجيل خروج
+                                                لوحة التحكم
                                             </button>
-                                        </div>
-                                    )}
+                                        )}
+                                    </div>
+                                    <div className="relative inline-block">
+                                        <button
+                                            onClick={() => setOpen(!open)}
+                                            className="flex items-center gap-2 px-12 py-2 rounded-lg border border-gray-600/50 bg-[var(--color-accent)] hover:border-amber-300/50 transition-all duration-300"
+                                        >
+                                            <User className="w-7 h-6 text-black" />
+                                            <span className="text-black font-bold">{user?.username}</span>
+                                        </button>
+
+                                        {open && (
+                                            <div className="absolute right-0 mt-2 w-48 rounded-lg shadow-lg bg-[var(--color-secondary)] border border-gray-600/50 overflow-hidden z-20">
+                                                <button
+                                                    onClick={() => navigate("/profile")}
+                                                    className="w-full text-right px-6 py-3 text-white text-sm hover:bg-amber-500/20 transition-colors"
+                                                >
+                                                    <User className="w-5 h-5 mx-2 text-white inline-block mr-2" />
+                                                    الملف الشخصي
+                                                </button>
+
+                                                <button
+                                                    onClick={logout}
+                                                    className="flex items_center  gap-2 w-full text-right px-6 py-3 text-white text-sm hover:bg-red-500/20 transition-colors"
+                                                >
+                                                    <LogOut className="w-5 h-5 mx-2 text-white inline-block mr-2" /> 
+                                                    تسجيل خروج
+                                                </button>
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
                             )}
 
@@ -261,29 +305,25 @@ const Navbar = () => {
                                 المسلسلات
                             </a>
 
-                            <div className="pt-4">
-                                <div className="relative">
-                                    <input
-                                        type="text"
-                                        placeholder="البحث..."
-                                        className="w-full pl-12 pr-4 py-3 border border-gray-600/50 rounded-xl focus:ring-2 focus:ring-amber-300/50 focus:border-amber-300 focus:outline-none text-right text-white placeholder-gray-400 transition-all duration-300"
-                                        style={{ backgroundColor: "var(--color-grayy)" }}
-                                    />
-                                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                        <svg
-                                            className="w-5 h-5 text-gray-400"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            viewBox="0 0 24 24"
-                                            strokeWidth={2}
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                        >
-                                            <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                                        </svg>
-                                    </div>
-                                </div>
-                            </div>
+                            {(user?.role === 'admin' || user?.role === 'publisher') && (
+                                <button
+                                    onClick={() => { navigate('/dashboard'); closeMobileMenu(); }}
+                                    className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-bold text-black transition-all duration-300"
+                                    style={{ backgroundColor: "var(--color-accent)" }}
+                                >
+                                    <PlusCircle className="w-5 h-5" />
+                                    إضافة عمل
+                                </button>
+                            )}
+                            {user?.role === 'admin' && (
+                                <button
+                                    onClick={() => { navigate('/AdminDashboard'); closeMobileMenu(); }}
+                                    className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-bold text-black transition-all duration-300"
+                                    style={{ backgroundColor: "var(--color-accent)" }}
+                                >
+                                    لوحة التحكم
+                                </button>
+                            )}
 
                             {!user && <div className="pt-4 space-y-3">
                                 <button

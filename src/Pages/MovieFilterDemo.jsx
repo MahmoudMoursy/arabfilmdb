@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import MovieFilterSection from './MovieFilterSection';
 import Navbar from '../componet/Navbar';
 import Footer from '../componet/Footer';
+import { useLocation } from 'react-router-dom';
 const useMovieFilters = () => {
   const [filters, setFilters] = useState({
     search: '',
@@ -49,7 +50,8 @@ const useMovieFilters = () => {
     updateFilter,
     clearAllFilters,
     getActiveFiltersCount,
-    rawSearch: filters.search
+    rawSearch: filters.search,
+    setFilters
   };
 };
 
@@ -115,8 +117,17 @@ const EnhancedMovieFilterSection = () => {
     updateFilter,
     clearAllFilters,
     getActiveFiltersCount,
-    rawSearch
+    rawSearch,
+    setFilters
   } = useMovieFilters()
+  const location = useLocation();
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const q = params.get('q') || '';
+    if (q) {
+      setFilters(prev => ({ ...prev, search: q }));
+    }
+  }, [location.search, setFilters]);
 
   const [movies] = useState([
     {
