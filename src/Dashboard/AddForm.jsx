@@ -59,7 +59,7 @@ export default function FilmForm() {
     }
   };
   const [formData, setFormData] = useState({
-    type: 'فيلم', 
+    type: 'film', 
     arabicName: '',
     englishName: '',
     year: '',
@@ -77,12 +77,12 @@ export default function FilmForm() {
  useEffect(() => {
     if (id) {
       setLoading(true);
-      workService.getAllWorks()
+      workService.getUserWorks()
         .then(works => {
           const work = works.find(w => w._id === id);
           if (work) {
             setFormData({
-              type: work.type === 'film' ? 'فيلم' : 'مسلسل',
+              type: work.type === 'film' ? 'film' : 'series',
               arabicName: work.nameArabic,
               englishName: work.nameEnglish,
               year: work.year,
@@ -97,6 +97,9 @@ export default function FilmForm() {
               seasons: work.seasonsCount || '',
               episodes: work.episodesCount || ''
             });
+          } else {
+            alert('لم يتم العثور على العمل المطلوب تعديله');
+            navigate('/dashboard');
           }
         })
         .finally(() => setLoading(false));
@@ -125,16 +128,16 @@ export default function FilmForm() {
 
             // Map frontend fields directly to backend schema - minimal processing
     const cleanedData = {
-      type: formData.type === 'فيلم' ? 'film' : 'series',
-      nameArabic: formData.arabicName || 'عمل جديد',
-      nameEnglish: formData.englishName || 'New Work',
+      type: formData.type == 'film' ? 'film' : 'series', // Keep original Arabic type for updateWork to handle
+      arabicName: formData.arabicName || 'عمل جديد',
+      englishName: formData.englishName || 'New Work',
       year: parseInt(formData.year) || 2000,
       director: formData.director || 'غير محدد',
       assistantDirector: formData.assistantDirector || 'غير محدد',
       genre: formData.genre || 'دراما',
       cast: validActors.length > 0 ? validActors : ['لم يتم تحديد الممثلين'],
       country: formData.country || 'مصر',
-      filmingLocation: formData.location || 'القاهرة',
+      location: formData.location || 'القاهرة',
       summary: formData.summary || 'لا يوجد ملخص متاح لهذا العمل.',
       posterUrl: formData.posterUrl || 'https://fastly.picsum.photos/id/237/500/500.jpg?hmac=idOEkrJhLd7nEU5pNrAGCyJ6HHJdR_sit1qDt5J3Wo0'
     };
@@ -147,10 +150,11 @@ export default function FilmForm() {
 
         // No validation check here anymore
 
-                try {
-                   if (id) {
+                                                  try {
+                     if (id && id !== 'undefined') {
         await workService.updateWork(id, cleanedData);
         alert('تم تعديل العمل بنجاح');
+        navigate('/dashboard'); // العودة للوحة التحكم بعد التعديل
       }else {
         await workService.createWork(cleanedData, true);
         alert('تم إضافة العمل بنجاح');
@@ -216,12 +220,35 @@ export default function FilmForm() {
     );
   }
   // Dashboard: hide Navbar and Footer
-  return (
-    <div className="bg-black py-20 min-h-screen">
-      <form
-        onSubmit={handleSubmit}
-        className="max-w-3xl mx-auto p-6 bg-gray-800 text-white rounded-lg shadow-lg space-y-6"
-      >
+     return (
+     <div className="bg-black py-20 min-h-screen">
+       <div className="max-w-3xl mx-auto mb-6">
+         <div className="flex items-center justify-between">
+           {id && (
+             <button
+               onClick={() => navigate('/dashboard')}
+               className="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition"
+             >
+               ← العودة للوحة التحكم
+             </button>
+           )}
+           <h1 className="text-3xl font-bold text-white text-center flex-1">
+             {id ? 'تعديل العمل' : 'إضافة عمل جديد'}
+           </h1>
+           {id && (
+             <button
+               onClick={() => navigate('/AddForm')}
+               className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition"
+             >
+               + إضافة عمل جديد
+             </button>
+           )}
+         </div>
+       </div>
+       <form
+         onSubmit={handleSubmit}
+         className="max-w-3xl mx-auto p-6 bg-gray-800 text-white rounded-lg shadow-lg space-y-6"
+       >
           <div>
             <label className="block mb-1">نوع العمل *</label>
             <select
@@ -405,12 +432,12 @@ export default function FilmForm() {
             </>
           )}
 
-          <button
-            type="submit"
-            className="bg-amber-300 text-black font-bold px-6 py-2 rounded hover:bg-amber-400 transition"
-          >
-            إرسال
-          </button>
+                     <button
+             type="submit"
+             className="bg-amber-300 text-black font-bold px-6 py-2 rounded hover:bg-amber-400 transition"
+           >
+             {id ? 'تعديل العمل' : 'إضافة عمل جديد'}
+           </button>
         </form>
       </div>
   );

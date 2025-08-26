@@ -6,7 +6,7 @@ import { axiosInstance } from '../api/axiosInstance';
 export const fetchMovies = createAsyncThunk(
   'movies/fetchMovies',
   async () => {
-    const response = await axiosInstance.get('/works');
+    const response = await axiosInstance.get('/works/public');
     return response.data;
   }
 );

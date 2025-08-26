@@ -589,7 +589,7 @@ const Details = () => {
                                 </div>
                                 <div className="flex gap-4 mt-5">
                                     <button
-                                    onClick={() => navigate(`/edit/${movie._id}`)}
+                                    
                                      className="w-full py-2 px-4 bg-amber-300 text-white rounded-lg hover:bg-primary-dark transition">
                                         تعديل
                                     </button>

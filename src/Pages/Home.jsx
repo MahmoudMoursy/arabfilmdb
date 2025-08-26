@@ -62,7 +62,7 @@ function Home() {
       <div className="flex flex-col md:flex-row justify-between items-center px-3 py-5 space-y-4 md:space-y-0 md:space-x-6" style={{ backgroundColor: 'var(--color-primary)' }}>
           <button
             onClick={() => {
-              navigate('/Dashboard');
+              navigate('/AddForm');
             }}
             className="w-58 px-1 py-2 rounded-xl font-bold transition-all duration-300 text-white hover:shadow-lg"
             style={{ backgroundColor: "var(--color-accent)" }}

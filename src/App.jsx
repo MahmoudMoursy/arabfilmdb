@@ -80,7 +80,14 @@ function App() {
           <Route path="/Details/:id" element={<Details />} />
           <Route path="/AdminDashboard" element={<AdminDashboard />} />
           <Route path="/Profile" element={<Profile />} />
-          <Route path="/edit/:id" element={<AddForm isEdit={true} />} />
+          <Route
+            path="/dashboard/edit/:id"
+            element={
+              <ProtectedRoute roles={["admin", "publisher"]}>
+                <AddForm />
+              </ProtectedRoute>
+            }
+          />
 
         </Routes>
       </div>
