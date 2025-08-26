@@ -5,7 +5,7 @@ import {  Star, Play, Heart,User } from 'lucide-react';
 import { fetchItemById } from '../redux/moviesSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { axiosInstance } from '../api/axiosInstance';
-import { useParams } from 'react-router-dom';
+import { useParams ,useNavigate} from 'react-router-dom';
 
 
 
@@ -15,7 +15,7 @@ const Details = () => {
     const { id } = useParams();
     const { selectedItem ,loading} = useSelector((state) => state.movies);
     const dispatch = useDispatch();
-    
+      const navigate = useNavigate();
     
     console.log(selectedItem);
 
@@ -588,7 +588,9 @@ const Details = () => {
                                     </div>
                                 </div>
                                 <div className="flex gap-4 mt-5">
-                                    <button className="w-full py-2 px-4 bg-amber-300 text-white rounded-lg hover:bg-primary-dark transition">
+                                    <button
+                                    onClick={() => navigate(`/edit/${movie._id}`)}
+                                     className="w-full py-2 px-4 bg-amber-300 text-white rounded-lg hover:bg-primary-dark transition">
                                         تعديل
                                     </button>
                                     <button className="w-full py-2 px-4 bg-red-500 text-white rounded-lg hover:bg-red-600 transition">

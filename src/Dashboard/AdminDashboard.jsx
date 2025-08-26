@@ -213,7 +213,7 @@ const AdminDashboard = () => {
         <main className="p-6 md:p-8">
           <div className="flex items-baseline justify-between mb-6">
             <h1 className="text-3xl font-extrabold text-white">نظرة عامة على الإحصائيات</h1>
-            <span className="text-sm text-gray-400">لوحة تحكم الإدارة</span>
+            <span className="text-sm text-white">لوحة تحكم الإدارة</span>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
@@ -224,7 +224,7 @@ const AdminDashboard = () => {
 
           <div className="mt-10">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-2xl font-bold text_white">كل الأعمال</h2>
+              <h2 className="text-2xl font-bold text-white">كل الأعمال</h2>
               <div className="relative w-full max-w-sm">
                 <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                 <input
@@ -250,10 +250,10 @@ const AdminDashboard = () => {
                   </thead>
                   <tbody>
                     {loading && (
-                      <tr><td colSpan="4" className="px-4 py-6 text-center text-gray-300">جاري التحميل...</td></tr>
+                      <tr><td colSpan="4" className="px-4 py-6 text-center text-white">جاري التحميل...</td></tr>
                     )}
                     {!loading && filtered.length === 0 && (
-                      <tr><td colSpan="4" className="px-4 py-6 text-center text-gray-300">لا توجد أعمال</td></tr>
+                      <tr><td colSpan="4" className="px-4 py-6 text-center text-white">لا توجد أعمال</td></tr>
                     )}
                     {!loading && filtered.map((w, idx) => (
                       <tr key={w._id} className={"border-t border-gray-700 " + (idx % 2 === 0 ? 'bg-black/5' : '')}>
@@ -275,7 +275,7 @@ const AdminDashboard = () => {
 
           <div className="mt-10">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-2xl font-bold text_white">المستخدمون</h2>
+              <h2 className="text-2xl font-bold text-white">المستخدمون</h2>
             </div>
             <div className="rounded-xl border border-gray-700 overflow-hidden" style={{ backgroundColor: 'var(--color-secondary)' }}>
               <div className="max-h-[420px] overflow-y-auto">

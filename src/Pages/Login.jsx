@@ -43,10 +43,14 @@ function Login() {
             //     navigate("/");
             // }
         } catch (errors) {
-            const message = errors.response?.data?.message || "حدث خطأ أثناء تسجيل الدخول";
-            console.error('Login error:', message);
-            setLoginError(message);
-        } finally {
+  let serverMsg = errors.response?.data?.message;
+
+  if (serverMsg === "Invalid credentials") {
+    serverMsg = "البريد الإلكتروني أو كلمة المرور غير صحيحة";
+  }
+
+  setLoginError(serverMsg || "حدث خطأ أثناء تسجيل الدخول");
+} finally {
             setLoading(false);
         }
     };

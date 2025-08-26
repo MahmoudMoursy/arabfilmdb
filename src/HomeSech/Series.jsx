@@ -3,6 +3,12 @@ import {  Star, Play, Heart, Share2 } from 'lucide-react';
 import { workService } from '../api/workService';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchMovies } from '../redux/moviesSlice';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation, Pagination } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination'
+import { Link } from 'react-router-dom';
 
 const Series = () => {
   const {series} = useSelector(state => state.movies);
@@ -60,11 +66,23 @@ const dispatch = useDispatch();
 
   return (
     <div className="bg-background p-8" dir="rtl">
-           <div className="flex flex-row flex-nowrap gap-6 ">
-           {series.map((movie, index) => ( // 👈 يعرض 3 عناصر فقط
+          <Swiper
+        modules={[Navigation, Pagination]}
+        spaceBetween={5}   // مسافة أصغر
+        slidesPerView={2}
+        navigation
+        pagination={{ clickable: true }}
+        breakpoints={{
+          640: { slidesPerView: 2, spaceBetween: 1 }, // موبايل
+          768: { slidesPerView: 3, spaceBetween: 1 }, // تابلت
+          1024: { slidesPerView: 5, spaceBetween: 1 } // ديسكتوب
+        }}
+      >
+           {series.map((movie, index) => (
+             <SwiperSlide key={index}>
              <div
                key={index}
-               className="group card-hover bg-card border text-3xl border-white/50 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-md hover:shadow-amber-300/100 hover:-translate-y-5 text-white w-[320px] shrink-0 z-10"
+              className="group card-hover bg-card border text-3xl border-white/50 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-md hover:shadow-amber-300/100 hover:-translate-y-5 text-white w-[160px] md:w-[280px] z-10"
                style={{ backgroundColor: 'var(--color-dark)' }}
              >
                  <div className="block cursor-pointer" role="button">
@@ -93,9 +111,16 @@ const dispatch = useDispatch();
        
                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex items-center gap-6">
-                         <button className="w-12 h-12 flex items-center justify-center bg-white/20 hover:bg-white/30 text-white rounded-full transition-all duration-300 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2">
-                           <Play size={30} className="fill-current" />
-                         </button>
+                        <Link 
+  key={index}
+  to={`/Details/${movie._id}`}  
+  className="bg-transparent"
+>
+  <button className="w-12 h-12 flex items-center justify-center bg-white/20 hover:bg-white/30 text-white rounded-full transition-all duration-300 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2">
+    <Play size={30} className="fill-current" />
+  </button>
+</Link>
+
        
                          <button
                            onClick={handleFavoriteClick}
@@ -151,9 +176,11 @@ const dispatch = useDispatch();
                    </div>
                  </div>
                </div>
+               </SwiperSlide>
              ))}
-           </div>
+           </Swiper>
          </div>
+
   );
 };
 

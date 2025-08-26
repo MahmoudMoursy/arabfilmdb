@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Star, Play, Heart, Share2 } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const MostRated = () => {
   const [movie, setMovie] = useState({

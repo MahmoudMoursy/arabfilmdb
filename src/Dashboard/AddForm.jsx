@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
-
+import { useParams, useNavigate } from 'react-router-dom';
 import { workService } from '../api/workService';
 
 export default function FilmForm() {
   const [isVerified, setIsVerified] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
+ const { id } = useParams(); // يجيب id من الرابط لو في وضع التعديل
+  const navigate = useNavigate();
+    const [loading, setLoading] = useState(false);
   useEffect(() => {
     // If already logged in on site with proper role, skip this mini-login
     try {
@@ -72,7 +74,34 @@ export default function FilmForm() {
     seasons: '', 
     episodes: '' 
   });
-
+ useEffect(() => {
+    if (id) {
+      setLoading(true);
+      workService.getAllWorks()
+        .then(works => {
+          const work = works.find(w => w._id === id);
+          if (work) {
+            setFormData({
+              type: work.type === 'film' ? 'فيلم' : 'مسلسل',
+              arabicName: work.nameArabic,
+              englishName: work.nameEnglish,
+              year: work.year,
+              director: work.director,
+              assistantDirector: work.assistantDirector,
+              genre: work.genre,
+              actors: work.cast || [''],
+              country: work.country,
+              location: work.filmingLocation,
+              summary: work.summary,
+              posterUrl: work.posterUrl,
+              seasons: work.seasonsCount || '',
+              episodes: work.episodesCount || ''
+            });
+          }
+        })
+        .finally(() => setLoading(false));
+    }
+  }, [ id]);
   const handleChange = (e, index = null) => {
     const { name, value } = e.target;
     if (name === 'actors' && index !== null) {
@@ -119,10 +148,13 @@ export default function FilmForm() {
         // No validation check here anymore
 
                 try {
-      console.log('Form data being sent:', cleanedData);
-      // Pass the data directly without letting workService remap it
-      await workService.createWork(cleanedData, true);
-      alert('تم إضافة العمل بنجاح');
+                   if (id) {
+        await workService.updateWork(id, cleanedData);
+        alert('تم تعديل العمل بنجاح');
+      }else {
+        await workService.createWork(cleanedData, true);
+        alert('تم إضافة العمل بنجاح');
+      }
       // Reset form
       setFormData({
         type: 'فيلم',
@@ -146,6 +178,7 @@ export default function FilmForm() {
       alert(errorMessage);
     }
     };
+    if (loading) return <p className="text-white">جاري التحميل...</p>;
   if (!isVerified) {
     return (
       <div className="min-h-screen bg-black text-white">

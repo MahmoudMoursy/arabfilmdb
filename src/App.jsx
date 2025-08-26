@@ -80,7 +80,8 @@ function App() {
           <Route path="/Details/:id" element={<Details />} />
           <Route path="/AdminDashboard" element={<AdminDashboard />} />
           <Route path="/Profile" element={<Profile />} />
-          {/* <Route path="/AddForm" element={<AddForm />} /> */}   
+          <Route path="/edit/:id" element={<AddForm isEdit={true} />} />
+
         </Routes>
       </div>
     </>
