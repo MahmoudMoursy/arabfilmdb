@@ -197,27 +197,18 @@ const Navbar = () => {
 
                             </div>) : (
                                 <div className="relative inline-flex items-center gap-4 text-left">
-                                    {/* <div className="flex items-center gap-3">
-                                        {(user?.role === 'admin' || user?.role === 'publisher') && (
+                                    <div className="flex items-center gap-3">
+                                        {( user?.role === 'publisher') && (
                                             <button
-                                                onClick={() => navigate('/AddForm')}
+                                                onClick={() => navigate('/dashboard')}
                                                 className="flex items-center gap-2 px-4 py-2 rounded-lg font-bold text-black hover:opacity-90 shadow"
                                                 style={{ backgroundColor: "var(--color-accent)" }}
                                             >
                                                 <PlusCircle className="w-5 h-5" />
-                                                إضافة عمل
-                                            </button>
-                                        )}
-                                        {user?.role === 'admin' && (
-                                            <button
-                                                onClick={() => navigate('/AdminDashboard')}
-                                                className="flex items-center gap-2 px-4 py-2 rounded-lg font-bold text-black hover:opacity-90 shadow"
-                                                style={{ backgroundColor: "var(--color-accent)" }}
-                                            >
                                                 لوحة التحكم
                                             </button>
                                         )}
-                                    </div> */}
+                                    </div>
                                     <div className="relative inline-block">
                                         <button
                                             onClick={() => setOpen(!open)}
@@ -236,6 +227,16 @@ const Navbar = () => {
                                                     <User className="w-5 h-5 mx-2 text-white inline-block mr-2" />
                                                     الملف الشخصي
                                                 </button>
+
+                                                {(user?.role === 'admin' || user?.role === 'publisher') && (
+                                                    <button
+                                                        onClick={() => navigate("/dashboard")}
+                                                        className="w-full text-right px-6 py-3 text-white text-sm hover:bg-amber-500/20 transition-colors"
+                                                    >
+                                                        <PlusCircle className="w-5 h-5 mx-2 text-white inline-block mr-2" />
+                                                        لوحة التحكم
+                                                    </button>
+                                                )}
 
                                                 <button
                                                     onClick={logout}

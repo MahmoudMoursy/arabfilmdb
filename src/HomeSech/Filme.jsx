@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Eye, Calendar, Star, Play, Heart, Share2, Clock, Globe } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchMovies } from '../redux/moviesSlice';
+import { fetchMovies, fetchAverageRatings } from '../redux/moviesSlice';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination } from 'swiper/modules';
 import 'swiper/css';
@@ -11,13 +11,20 @@ import { Link } from 'react-router-dom';
 
 
 const Filme = () => {
-  const { films } = useSelector(state => state.movies);
+  const { films, ratings, ratingsLoading } = useSelector(state => state.movies);
   const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(fetchMovies());
   }, [dispatch]);
 
+  // Fetch ratings when films are loaded
+  useEffect(() => {
+    if (films.length > 0) {
+      const workIds = films.map(film => film._id);
+      dispatch(fetchAverageRatings(workIds));
+    }
+  }, [films, dispatch]);
 
   const [movie, setMovie] = useState({
     id: 1,
@@ -27,8 +34,6 @@ const Filme = () => {
 
   const [isImageLoaded, setIsImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
-
-
 
   const handleFavoriteClick = (e) => {
     e.stopPropagation();
@@ -64,8 +69,7 @@ const Filme = () => {
         <Star
           key={i}
           size={14}
-          className={`lucide lucide-star fill-current text-primary transition-colors duration-200 ${isFilled ? '' : isHalf ? 'opacity-75' : 'opacity-50'
-            }`}
+          className={`lucide lucide-star fill-current text-primary transition-colors duration-200 ${isFilled ? '' : isHalf ? 'opacity-75' : 'opacity-50'}`}
         />
       );
     }
@@ -73,6 +77,22 @@ const Filme = () => {
     return stars;
   };
 
+  // Get rating for a specific movie
+  const getMovieRating = (movieId) => {
+    const rating = ratings[movieId];
+    if (rating && rating.average > 0) {
+      return {
+        average: rating.average,
+        count: rating.count,
+        displayText: `${rating.average.toFixed(1)} (${rating.count})`
+      };
+    }
+    return {
+      average: 0,
+      count: 0,
+      displayText: 'لا توجد تقييمات'
+    };
+  };
 
   return (
     <div className="bg-background p-8" dir="rtl">
@@ -88,7 +108,9 @@ const Filme = () => {
           1024: { slidesPerView: 5, spaceBetween: 1 } // ديسكتوب
         }}
       >
-        {films.slice(-5).map((movie, index) => (
+        {films.slice(-5).map((movie, index) => {
+          const movieRating = getMovieRating(movie._id);
+          return (
           <SwiperSlide key={index}>
 
             <div
@@ -104,19 +126,15 @@ const Filme = () => {
                     </div>
                   )}
                   <img
-                    className={`w-full h-full object-cover transition-all duration-300 group-hover:scale-105 ${isImageLoaded ? 'opacity-100' : 'opacity-0'
-                      }`}
+                    className={`w-full h-full object-cover transition-all duration-300 group-hover:scale-105 ${isImageLoaded ? 'opacity-100' : 'opacity-0'}`}
                     loading="lazy"
                     src={movie?.posterUrl}
                     onLoad={() => setIsImageLoaded(true)}
                     onError={(e) => {
                       setImageError(true);
-                      e.target.src =
-                        'https://via.placeholder.com/300x450/1f2937/9ca3af?text=صورة+غير+متوفرة';
+                      e.target.src = 'https://via.placeholder.com/300x450/1f2937/9ca3af?text=صورة+غير+متوفرة';
                     }}
                   />
-
-
 
                   <div className="absolute top-2 right-2 bg-amber-300 backdrop-blur-sm rounded-lg px-2 text-black font-extrabold py-1 transition-all duration-300 group-hover:bg-amber-400">
                     <span className="text-primary-foreground text-xs font-medium">{movie?.genre}</span>
@@ -124,23 +142,15 @@ const Filme = () => {
 
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                     <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex items-center gap-6">
-<Link 
-  key={index}
-  to={`/Details/${movie._id}`}  
-  className="bg-transparent"
->
-  <button className="w-12 h-12 flex items-center justify-center bg-white/20 hover:bg-white/30 text-white rounded-full transition-all duration-300 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2">
-    <Play size={30} className="fill-current" />
-  </button>
-</Link>
-
+                      <Link to={`/Details/${movie._id}`}>
+                        <button className="w-12 h-12 flex items-center justify-center bg-white/20 hover:bg-white/30 text-white rounded-full transition-all duration-300 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2">
+                          <Play size={30} className="fill-current" />
+                        </button>
+                      </Link>
 
                       <button
                         onClick={handleFavoriteClick}
-                        className={`w-12 h-12 flex items-center justify-center rounded-full transition-all duration-300 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-offset-2 ${movie.isFavorite
-                            ? 'bg-red-500/90 hover:bg-red-500 text-white focus:ring-red-500'
-                            : 'bg-white/20 hover:bg-white/30 text-amber-300 focus:ring-amber-300'
-                          }`}
+                        className={`w-12 h-12 flex items-center justify-center rounded-full transition-all duration-300 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-offset-2 ${movie.isFavorite ? 'bg-red-500/90 hover:bg-red-500 text-white focus:ring-red-500' : 'bg-white/20 hover:bg-white/30 text-amber-300 focus:ring-amber-300'}`}
                       >
                         <Heart size={30} className={movie.isFavorite ? 'fill-current' : ''} />
                       </button>
@@ -154,18 +164,21 @@ const Filme = () => {
                     </div>
                   </div>
 
-                  <div className="absolute bottom-2 right-2 bg-black/80 backdrop-blur-sm rounded-lg px-2 py-1 transition-all duration-300 group-hover:bg-primary/90">
-                    <div className="flex items-center space-x-1 space-x-reverse">
-                      <Star
-                        size={12}
-                        className="lucide lucide-star fill-current text-primary group-hover:text-primary-foreground transition-colors duration-300"
-                        aria-hidden="true"
-                      />
-                      <span className="text-white text-xs font-medium group-hover:text-primary-foreground transition-colors duration-300">
-                        {movie.rating}
-                      </span>
+                  {/* Rating display on poster */}
+                  {movieRating.average > 0 && (
+                    <div className="absolute bottom-2 right-2 bg-black/80 backdrop-blur-sm rounded-lg px-2 py-1 transition-all duration-300 group-hover:bg-primary/90">
+                      <div className="flex items-center space-x-1 space-x-reverse">
+                        <Star
+                          size={12}
+                          className="lucide lucide-star fill-current text-yellow-400 group-hover:text-primary-foreground transition-colors duration-300"
+                          aria-hidden="true"
+                        />
+                        <span className="text-white text-xs font-medium group-hover:text-primary-foreground transition-colors duration-300">
+                          {movieRating.average.toFixed(1)}
+                        </span>
+                      </div>
                     </div>
-                  </div>
+                  )}
                 </div>
 
                 <div className="p-4 space-y-3">
@@ -179,17 +192,27 @@ const Filme = () => {
                   </div>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center text-amber-300 space-x-1 space-x-reverse">
-                      {renderStars(movie.rating)}
-                      <span className="text text-xs mr-2 text-white transition-colors duration-300">
-                        ({movie.rating})
-                      </span>
+                      {ratingsLoading ? (
+                        <div className="animate-pulse bg-gray-600 h-4 w-16 rounded"></div>
+                      ) : movieRating.average > 0 ? (
+                        <>
+                          {renderStars(movieRating.average)}
+                          <span className="text text-xs mr-2 text-white transition-colors duration-300">
+                            ({movieRating.displayText})
+                          </span>
+                        </>
+                      ) : (
+                        <span className="text text-xs mr-2 text-gray-400 transition-colors duration-300">
+                          {movieRating.displayText}
+                        </span>
+                      )}
                     </div>
                   </div>
                 </div>
               </div>
             </div>
           </SwiperSlide>
-        ))}
+        )})}
       </Swiper>
     </div>
   );

@@ -1,10 +1,11 @@
 
 import React, { useState } from 'react';
-import { Star, Play, Heart, Share2 } from 'lucide-react';
+import { Star, Play, Heart, Share2, PlusCircle } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const ProfilePage = () => {
-
-    const user = {
+    const navigate = useNavigate();
+    const user = JSON.parse(localStorage.getItem('user')) || {
         name: 'أحمد محمد',
         email: 'ahmed@example.com',
     }
@@ -66,8 +67,18 @@ const ProfilePage = () => {
         <div className="min-h-screen text-white" style={{ backgroundColor: 'var(--color-primary)' }}>
             <div className="flex flex-col items-center py-6" style={{ backgroundColor: 'var(--color-secondary)' }}>
                 <img src="https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg?semt=ais_hybrid&w=740&q=80 " alt="User Avatar" className="rounded-full w-32 h-32 mb-4 border-4" style={{ borderColor: 'var(--color-accent)' }} />
-                <h2 className="text-xl font-bold">{user.name}</h2>
+                <h2 className="text-xl font-bold">{user.username || user.name}</h2>
                 <p className="text-sm text-gray-300">{user.email}</p>
+                {(user.role === 'admin' || user.role === 'publisher') && (
+                    <button
+                        onClick={() => navigate('/dashboard')}
+                        className="mt-4 flex items-center gap-2 px-6 py-3 rounded-lg font-bold text-black hover:opacity-90 shadow transition-all duration-300"
+                        style={{ backgroundColor: "var(--color-accent)" }}
+                    >
+                        <PlusCircle className="w-5 h-5" />
+                        لوحة التحكم
+                    </button>
+                )}
             </div>
 
 

@@ -34,14 +34,13 @@ function Login() {
             localStorage.setItem('user', JSON.stringify(response.data.user));
             localStorage.setItem('token', response.data.token);
             dispatch(setUser(response.data.user));
-            navigate("/");
             
             // Redirect based on role
-            // if (response.data.user.role === 'admin') {
-            //     navigate("/");
-            // } else {
-            //     navigate("/");
-            // }
+            if (response.data.user.role === 'admin' || response.data.user.role === 'publisher') {
+                navigate("/dashboard");
+            } else {
+                navigate("/");
+            }
         } catch (errors) {
   let serverMsg = errors.response?.data?.message;
 

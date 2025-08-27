@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import "../App.css";
 import { Star, Play, Heart, Share2 } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchMovies } from '../redux/moviesSlice';
+import { fetchMovies, fetchAverageRatings } from '../redux/moviesSlice';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination } from 'swiper/modules';
 import 'swiper/css';
@@ -14,12 +14,20 @@ import { Link } from 'react-router-dom';
 const LatestAdditions = () => {
   const date = new Date();
   const year = date.getFullYear();
-  const { allMovies } = useSelector(state => state.movies);
+  const { allMovies, ratings, ratingsLoading } = useSelector(state => state.movies);
   const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(fetchMovies());
   }, [dispatch]);
+
+  // Fetch ratings when movies are loaded
+  useEffect(() => {
+    if (allMovies.length > 0) {
+      const workIds = allMovies.map(movie => movie._id);
+      dispatch(fetchAverageRatings(workIds));
+    }
+  }, [allMovies, dispatch]);
 
   const [movieState, setMovieState] = useState({
     id: 1,
@@ -71,6 +79,23 @@ const LatestAdditions = () => {
     return stars;
   };
 
+  // Get rating for a specific movie
+  const getMovieRating = (movieId) => {
+    const rating = ratings[movieId];
+    if (rating && rating.average > 0) {
+      return {
+        average: rating.average,
+        count: rating.count,
+        displayText: `${rating.average.toFixed(1)} (${rating.count})`
+      };
+    }
+    return {
+      average: 0,
+      count: 0,
+      displayText: 'لا توجد تقييمات'
+    };
+  };
+
   return (
     <div className="bg-background p-8" dir="rtl">
       <Swiper
@@ -89,7 +114,9 @@ const LatestAdditions = () => {
 
         {allMovies
           .filter(movie => movie.year === year || movie.year === year - 1)
-          .map((movie, index) => (
+          .map((movie, index) => {
+            const movieRating = getMovieRating(movie._id);
+            return (
             <SwiperSlide key={index}>
               <div
                 className="group card-hover bg-card border text-3xl border-white/50 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-md hover:shadow-amber-300/100 hover:-translate-y-5 text-white w-[160px] md:w-[280px] z-10"
@@ -153,18 +180,21 @@ const LatestAdditions = () => {
                       </div>
                     </div>
 
-                    <div className="absolute bottom-2 right-2 bg-black/80 backdrop-blur-sm rounded-lg px-2 py-1 transition-all duration-300 group-hover:bg-primary/90">
-                      <div className="flex items-center space-x-1 space-x-reverse">
-                        <Star
-                          size={12}
-                          className="lucide lucide-star fill-current text-primary group-hover:text-primary-foreground transition-colors duration-300"
-                          aria-hidden="true"
-                        />
-                        <span className="text-white text-xs font-medium group-hover:text-primary-foreground transition-colors duration-300">
-                          {movie.rating}
-                        </span>
+                    {/* Rating display on poster */}
+                    {movieRating.average > 0 && (
+                      <div className="absolute bottom-2 right-2 bg-black/80 backdrop-blur-sm rounded-lg px-2 py-1 transition-all duration-300 group-hover:bg-primary/90">
+                        <div className="flex items-center space-x-1 space-x-reverse">
+                          <Star
+                            size={12}
+                            className="lucide lucide-star fill-current text-yellow-400 group-hover:text-primary-foreground transition-colors duration-300"
+                            aria-hidden="true"
+                          />
+                          <span className="text-white text-xs font-medium group-hover:text-primary-foreground transition-colors duration-300">
+                            {movieRating.average.toFixed(1)}
+                          </span>
+                        </div>
                       </div>
-                    </div>
+                    )}
                   </div>
 
                   <div className="p-4 space-y-3">
@@ -178,17 +208,27 @@ const LatestAdditions = () => {
                     </div>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center text-amber-300 space-x-1 space-x-reverse">
-                        {renderStars(movie.rating)}
-                        <span className="text text-xs mr-2 text-white transition-colors duration-300">
-                          ({movie.rating})
-                        </span>
+                        {ratingsLoading ? (
+                          <div className="animate-pulse bg-gray-600 h-4 w-16 rounded"></div>
+                        ) : movieRating.average > 0 ? (
+                          <>
+                            {renderStars(movieRating.average)}
+                            <span className="text text-xs mr-2 text-white transition-colors duration-300">
+                              ({movieRating.displayText})
+                            </span>
+                          </>
+                        ) : (
+                          <span className="text text-xs mr-2 text-gray-400 transition-colors duration-300">
+                            {movieRating.displayText}
+                          </span>
+                        )}
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
             </SwiperSlide>
-          ))}
+          )})}
       </Swiper>
     </div>
   );

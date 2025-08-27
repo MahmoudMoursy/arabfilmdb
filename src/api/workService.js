@@ -84,6 +84,14 @@ export const workService = {
     return response.data;
   },
 
+  getWorkById: async (id) => {
+    if (!id || id === 'undefined') {
+      throw new Error('Work ID is required');
+    }
+    const response = await axiosInstance.get(`/works/${id}`);
+    return response.data;
+  },
+
   updateWork: async (id, workData) => {
     if (!id || id === 'undefined') {
       throw new Error('Work ID is required for update');
@@ -93,20 +101,20 @@ export const workService = {
       throw new Error('Invalid work data');
     }
 
-    // Convert form data to match backend schema (same as createWork)
+    // Convert form data to match backend schema
     let requestData = {
       type: workData.type === 'فيلم' ? 'film' : 'series',
-      nameArabic: workData.nameArabic || workData.arabicName || '',
-      nameEnglish: workData.nameEnglish || workData.englishName || '',
-      year: parseInt(workData.year) || 0,
+      nameArabic: workData.arabicName || workData.nameArabic || '',
+      nameEnglish: workData.englishName || workData.nameEnglish || '',
+      year: parseInt(workData.year) || 2000,
       director: workData.director || '',
       assistantDirector: workData.assistantDirector || '',
       genre: workData.genre || '',
       cast: Array.isArray(workData.cast) ? workData.cast.filter(actor => actor && actor.trim() !== '') : [],
       country: workData.country || '',
-      filmingLocation: workData.filmingLocation || workData.location || '',
+      filmingLocation: workData.location || workData.filmingLocation || '',
       summary: workData.summary || '',
-      posterUrl: workData.posterUrl || undefined,
+      posterUrl: workData.posterUrl || '',
     };
 
     // Add series-specific fields if type is series
@@ -131,10 +139,14 @@ export const workService = {
     if (!requestData.cast || !Array.isArray(requestData.cast) || requestData.cast.length === 0) {
       requestData.cast = ['لم يتم تحديد الممثلين'];
     } else {
-      // Convert any non-string values to strings
-      requestData.cast = requestData.cast.map(actor => 
-        actor && typeof actor === 'string' ? actor : 'لم يتم تحديد الاسم'
-      );
+      // Convert any non-string values to strings and filter empty ones
+      requestData.cast = requestData.cast
+        .map(actor => actor && typeof actor === 'string' ? actor.trim() : '')
+        .filter(actor => actor !== '');
+      
+      if (requestData.cast.length === 0) {
+        requestData.cast = ['لم يتم تحديد الممثلين'];
+      }
     }
 
     // For series, ensure seasonsCount and episodesCount are present

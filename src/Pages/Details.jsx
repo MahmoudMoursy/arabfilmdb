@@ -48,6 +48,10 @@ const Details = () => {
     const [comments, setComments] = useState([]);
     const [myRating, setMyRating] = useState(0);
     const [newComment, setNewComment] = useState('');
+    const [ratingLoading, setRatingLoading] = useState(false);
+    const [commentLoading, setCommentLoading] = useState(false);
+    const [userRatingLoading, setUserRatingLoading] = useState(false);
+    const [hasRated, setHasRated] = useState(false);
 
     const [isImageLoaded, setIsImageLoaded] = useState(false);
     const [imageError, setImageError] = useState(false);
@@ -77,23 +81,116 @@ const Details = () => {
 
     useEffect(() => {
         if (!id) return;
-        axiosInstance.get(`/ratings/average/${id}`).then((r) => setAvgRating(r.data));
-        axiosInstance.get(`/comments/work/${id}`).then((r) => setComments(r.data));
+        
+        // Simple server health check
+        console.log('🔍 Checking server health...');
+        axiosInstance.get('/ratings/average/' + id)
+            .then(() => console.log('✅ Server is responding'))
+            .catch((error) => {
+                console.error('❌ Server health check failed:', error);
+                if (error.code === 'NETWORK_ERROR' || error.message.includes('Network Error')) {
+                    console.error('❌ Network error - server might be down');
+                }
+            });
+        
+        // Fetch average rating
+        setRatingLoading(true);
+        axiosInstance.get(`/ratings/average/${id}`)
+            .then((r) => setAvgRating(r.data))
+            .catch((error) => {
+                console.error('Error fetching average rating:', error);
+                setAvgRating({ average: 0, count: 0 });
+            })
+            .finally(() => setRatingLoading(false));
+        
+        // Fetch comments
+        setCommentLoading(true);
+        axiosInstance.get(`/comments/work/${id}`)
+            .then((r) => setComments(r.data))
+            .catch((error) => {
+                console.error('Error fetching comments:', error);
+                setComments([]);
+            })
+            .finally(() => setCommentLoading(false));
+        
+        // Fetch user's rating if logged in
+        const token = localStorage.getItem('token');
+        if (token) {
+            setUserRatingLoading(true);
+            axiosInstance.get(`/ratings/user/${id}`)
+                .then((r) => {
+                    setMyRating(r.data.ratingValue);
+                    setHasRated(r.data.ratingValue > 0);
+                })
+                .catch((error) => {
+                    console.error('Error fetching user rating:', error);
+                    setMyRating(0);
+                    setHasRated(false);
+                })
+                .finally(() => setUserRatingLoading(false));
+        }
     }, [id]);
 
     const submitRating = (val) => {
-        setMyRating(val);
-        axiosInstance.post('/ratings', { workId: id, ratingValue: val }).then(() => {
-            axiosInstance.get(`/ratings/average/${id}`).then((r) => setAvgRating(r.data));
-        }).catch(() => {});
+        const token = localStorage.getItem('token');
+        if (!token) {
+            alert('يجب تسجيل الدخول لتقييم هذا العمل');
+            navigate('/login');
+            return;
+        }
+        
+        if (hasRated) {
+            alert('لقد قمت بتقييم هذا العمل مسبقاً بتقييم ' + myRating + '/5 نجوم.\nلا يمكنك التقييم مرة أخرى أو تغيير تقييمك.');
+            return;
+        }
+        
+        setRatingLoading(true);
+        console.log('Submitting rating:', { workId: id, ratingValue: val });
+        
+        axiosInstance.post('/ratings', { workId: id, ratingValue: val })
+            .then((response) => {
+                console.log('Rating submitted successfully:', response.data);
+                setMyRating(val);
+                setHasRated(true);
+                // Refresh average rating
+                return axiosInstance.get(`/ratings/average/${id}`);
+            })
+            .then((r) => {
+                setAvgRating(r.data);
+                // رسالة نجاح التقييم الأول
+                alert(`تم تقييم العمل بنجاح! تقييمك: ${val}/5 نجوم`);
+            })
+            .catch((error) => {
+                console.error('Error submitting rating:', error);
+                console.error('Error details:', error.response?.data);
+                alert('حدث خطأ أثناء إرسال التقييم. يرجى المحاولة مرة أخرى.');
+            })
+            .finally(() => setRatingLoading(false));
     };
+
+
 
     const submitComment = () => {
         if (!newComment.trim()) return;
-        axiosInstance.post('/comments', { workId: id, commentText: newComment }).then((r) => {
-            setComments([r.data, ...comments]);
-            setNewComment('');
-        }).catch(() => {});
+        
+        const token = localStorage.getItem('token');
+        if (!token) {
+            alert('يجب تسجيل الدخول لإضافة تعليق');
+            navigate('/login');
+            return;
+        }
+        
+        setCommentLoading(true);
+        axiosInstance.post('/comments', { workId: id, commentText: newComment })
+            .then((r) => {
+                setComments([r.data, ...comments]);
+                setNewComment('');
+            })
+            .catch((error) => {
+                console.error('Error submitting comment:', error);
+                alert('حدث خطأ أثناء إرسال التعليق. يرجى المحاولة مرة أخرى.');
+            })
+            .finally(() => setCommentLoading(false));
     };
 
     const renderStars = (rating) => {
@@ -152,114 +249,55 @@ const Details = () => {
                                 <div className="flex items-center gap-6 mb-6">
                                     <div className="flex items-center gap-1 ">
                                         <div className="flex items-center gap-0.5">
-                                            <button
-                                                type="button"
-                                                className="transition-colors cursor-default"
-                                                disabled=""
-                                            >
-                                                <svg
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    width={24}
-                                                    height={24}
-                                                    viewBox="0 0 24 24"
-                                                    fill="none"
-                                                    stroke="currentColor"
-                                                    strokeWidth={2}
-                                                    strokeLinecap="round"
-                                                    strokeLinejoin="round"
-                                                    className="lucide lucide-star fill-yellow-400 text-yellow-400 transition-colors"
-                                                    aria-hidden="true"
+                                            {[1, 2, 3, 4, 5].map((star) => (
+                                                <button
+                                                    key={star}
+                                                    type="button"
+                                                    onClick={() => submitRating(star)}
+                                                    disabled={ratingLoading || userRatingLoading || hasRated}
+                                                    className={`transition-colors ${(ratingLoading || userRatingLoading || hasRated) ? 'cursor-not-allowed opacity-50' : 'cursor-pointer hover:scale-110'}`}
+                                                    title={hasRated ? `لقد قيّمت هذا العمل مسبقاً` : `قيّم العمل بـ ${star}/5 نجوم`}
                                                 >
-                                                    <path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z" />
-                                                </svg>
-                                            </button>
-                                            <button
-                                                type="button"
-                                                className="transition-colors cursor-default"
-                                                disabled=""
-                                            >
-                                                <svg
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    width={24}
-                                                    height={24}
-                                                    viewBox="0 0 24 24"
-                                                    fill="none"
-                                                    stroke="currentColor"
-                                                    strokeWidth={2}
-                                                    strokeLinecap="round"
-                                                    strokeLinejoin="round"
-                                                    className="lucide lucide-star fill-yellow-400 text-yellow-400 transition-colors"
-                                                    aria-hidden="true"
-                                                >
-                                                    <path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z" />
-                                                </svg>
-                                            </button>
-                                            <button
-                                                type="button"
-                                                className="transition-colors cursor-default"
-                                                disabled=""
-                                            >
-                                                <svg
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    width={24}
-                                                    height={24}
-                                                    viewBox="0 0 24 24"
-                                                    fill="none"
-                                                    stroke="currentColor"
-                                                    strokeWidth={2}
-                                                    strokeLinecap="round"
-                                                    strokeLinejoin="round"
-                                                    className="lucide lucide-star fill-yellow-400 text-yellow-400 transition-colors"
-                                                    aria-hidden="true"
-                                                >
-                                                    <path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z" />
-                                                </svg>
-                                            </button>
-                                            <button
-                                                type="button"
-                                                className="transition-colors cursor-default"
-                                                disabled=""
-                                            >
-                                                <svg
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    width={24}
-                                                    height={24}
-                                                    viewBox="0 0 24 24"
-                                                    fill="none"
-                                                    stroke="currentColor"
-                                                    strokeWidth={2}
-                                                    strokeLinecap="round"
-                                                    strokeLinejoin="round"
-                                                    className="lucide lucide-star fill-yellow-400 text-yellow-400 transition-colors"
-                                                    aria-hidden="true"
-                                                >
-                                                    <path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z" />
-                                                </svg>
-                                            </button>
-                                            <button
-                                                type="button"
-                                                className="transition-colors cursor-default"
-                                                disabled=""
-                                            >
-                                                <svg
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    width={24}
-                                                    height={24}
-                                                    viewBox="0 0 24 24"
-                                                    fill="none"
-                                                    stroke="currentColor"
-                                                    strokeWidth={2}
-                                                    strokeLinecap="round"
-                                                    strokeLinejoin="round"
-                                                    className="lucide lucide-star fill-transparent text-gray-300 dark:text-gray-600 transition-colors"
-                                                    aria-hidden="true"
-                                                >
-                                                    <path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z" />
-                                                </svg>
-                                            </button>
+                                                    <svg
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        width={24}
+                                                        height={24}
+                                                        viewBox="0 0 24 24"
+                                                        fill="none"
+                                                        stroke="currentColor"
+                                                        strokeWidth={2}
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
+                                                        className={`lucide lucide-star transition-colors ${
+                                                            hasRated && myRating >= star
+                                                                ? 'fill-yellow-400 text-yellow-400' 
+                                                                : avgRating.average >= star 
+                                                                ? 'fill-yellow-400/50 text-yellow-400/50' 
+                                                                : 'fill-transparent text-gray-300'
+                                                        }`}
+                                                        aria-hidden="true"
+                                                    >
+                                                        <path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z" />
+                                                    </svg>
+                                                </button>
+                                            ))}
+                                          
+                                         
+                                         
                                         </div>
                                         <span className="text-sm text-muted-foreground mr-1">
-                                            ({avgRating.average})
+                                            {ratingLoading ? (
+                                                <div className="animate-pulse bg-gray-600 h-4 w-8 rounded"></div>
+                                            ) : (
+                                                <div className="flex items-center gap-2">
+                                                    <span>{`(${avgRating.average.toFixed(1)})`}</span>
+                                                    {hasRated && (
+                                                        <span className="text-xs bg-green-500 text-white px-2 py-1 rounded-full">
+                                                            قيّمت
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            )}
                                         </span>
                                     </div>
 
@@ -381,7 +419,15 @@ const Details = () => {
                                    {selectedItem?.summary}
                                 </p>
                                 <div className="flex gap-4">
-                                    <button onClick={() => submitRating(5)} className="flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-colors bg-white/20 text-white hover:bg-white/30">
+                                    <button 
+                                        onClick={() => submitRating(5)} 
+                                        disabled={ratingLoading || userRatingLoading || hasRated}
+                                        className={`flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-colors ${
+                                            hasRated 
+                                                ? 'bg-gray-500/20 text-gray-400 cursor-not-allowed' 
+                                                : 'bg-white/20 text-white hover:bg-white/30'
+                                        } ${(ratingLoading || userRatingLoading || hasRated) ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                    >
                                         <svg
                                             xmlns="http://www.w3.org/2000/svg"
                                             width={20}
@@ -397,7 +443,7 @@ const Details = () => {
                                         >
                                             <path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z" />
                                         </svg>
-                                        قيّم الفيلم (5)
+                                        {hasRated ? `تم التقييم مسبقاً` : `قيّم الفيلم (5)`}
                                     </button>
                                     <button className="flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-colors bg-white/20 text-white hover:bg-white/30">
                                         <svg
@@ -504,24 +550,7 @@ const Details = () => {
                                     <h2 className="text-3xl font-bold text-white tracking-tight">
                                         ⭐ التقييمات والآراء
                                     </h2>
-                                    <button className="flex items-center gap-2 px-4 py-2 bg-yellow-500 text-black font-semibold rounded-lg hover:bg-yellow-600 transition duration-200">
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            width={18}
-                                            height={18}
-                                            viewBox="0 0 24 24"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            strokeWidth={2}
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            className="lucide lucide-star"
-                                            aria-hidden="true"
-                                        >
-                                            <path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z" />
-                                        </svg>
-                                        أضف تقييمك
-                                    </button>
+                                
                                 </div>
 
                                 <div className="text-center py-10 bg-[#1f1f1f] rounded-xl shadow-md">
@@ -542,21 +571,91 @@ const Details = () => {
                                     </svg>
                                     <div className="px-4">
                                       <div className="text-gray-300 text-lg font-medium mb-4">
-                                        متوسط التقييم: {avgRating.average} ({avgRating.count} تقييم)
+                                        {ratingLoading ? (
+                                            <div className="animate-pulse bg-gray-600 h-6 w-48 rounded mx-auto"></div>
+                                        ) : (
+                                            `متوسط التقييم: ${avgRating.average.toFixed(1)} (${avgRating.count} تقييم)`
+                                        )}
                                       </div>
-                                      <div className="flex justify-center gap-2 mb-6">
-                                        {[1,2,3,4,5].map(v => (
-                                          <button key={v} onClick={() => submitRating(v)} className={`px-3 py-1 rounded ${myRating>=v? 'bg-yellow-500 text-black':'bg-white/10 text-white'}`}>{v}</button>
-                                        ))}
-                                      </div>
+                                      
+                                      {/* User Rating Status */}
+                                      {userRatingLoading ? (
+                                        <div className="text-center mb-4">
+                                          <div className="animate-pulse bg-gray-600 h-4 w-32 rounded mx-auto mb-2"></div>
+                                        </div>
+                                                                             ) : hasRated ? (
+                                         <div className="text-center mb-4">
+                                           <div className="text-yellow-400 font-semibold mb-2">
+                                             تقييمك: {myRating}/5 ⭐
+                                           </div>
+                                           <div className="text-sm text-gray-400">
+                                             لا يمكنك تغيير تقييمك بعد التقييم
+                                           </div>
+                                         </div>
+                                      ) : (
+                                        <div className="text-center mb-4">
+                                          <div className="text-white font-semibold mb-2">
+                                            قيّم هذا العمل
+                                          </div>
+                                          <div className="text-sm text-gray-400">
+                                            اختر من 1 إلى 5 نجوم
+                                          </div>
+                                        </div>
+                                      )}
+                                      
+                                                                             <div className="flex justify-center gap-2 mb-6">
+                                         {[1,2,3,4,5].map(v => (
+                                           <button 
+                                             key={v} 
+                                             onClick={() => submitRating(v)} 
+                                             disabled={ratingLoading || userRatingLoading || hasRated}
+                                             title={hasRated ? `لقد قيّمت هذا العمل مسبقاً` : `قيّم العمل بـ ${v}/5 نجوم`}
+                                             className={`px-3 py-1 rounded transition-all duration-200 ${
+                                               myRating >= v 
+                                                 ? 'bg-yellow-500 text-black' 
+                                                 : 'bg-white/10 text-white'
+                                             } ${(ratingLoading || userRatingLoading || hasRated) ? 'opacity-50 cursor-not-allowed' : 'hover:bg-white/20'}`}
+                                           >
+                                             {v}
+                                           </button>
+                                         ))}
+                                       </div>
                                       <div className="flex gap-2">
-                                        <input value={newComment} onChange={e=>setNewComment(e.target.value)} placeholder="أضف تعليقك" className="flex-1 p-2 rounded bg-[#2a2a2a] text-white" />
-                                        <button onClick={submitComment} className="px-4 py-2 rounded bg-yellow-500 text-black">إرسال</button>
+                                        <input 
+                                          value={newComment} 
+                                          onChange={e=>setNewComment(e.target.value)} 
+                                          placeholder="أضف تعليقك" 
+                                          className="flex-1 p-2 rounded bg-[#2a2a2a] text-white" 
+                                          disabled={commentLoading}
+                                        />
+                                        <button 
+                                          onClick={submitComment} 
+                                          disabled={commentLoading || !newComment.trim()}
+                                          className={`px-4 py-2 rounded transition-all duration-200 ${
+                                            commentLoading || !newComment.trim() 
+                                              ? 'bg-gray-500 text-gray-300 cursor-not-allowed' 
+                                              : 'bg-yellow-500 text-black hover:bg-yellow-600'
+                                          }`}
+                                        >
+                                          {commentLoading ? 'جاري الإرسال...' : 'إرسال'}
+                                        </button>
                                       </div>
                                       <div className="text-right mt-6 space-y-3">
-                                        {comments.map(c => (
-                                          <div key={c._id} className="p-3 bg-[#2a2a2a] rounded text-white text-right">{c.commentText}</div>
-                                        ))}
+                                        {commentLoading ? (
+                                          <div className="animate-pulse space-y-3">
+                                            {[1, 2, 3].map(i => (
+                                              <div key={i} className="p-3 bg-[#2a2a2a] rounded">
+                                                <div className="animate-pulse bg-gray-600 h-4 w-full rounded"></div>
+                                              </div>
+                                            ))}
+                                          </div>
+                                        ) : (
+                                          comments.map(c => (
+                                            <div key={c._id} className="p-3 bg-[#2a2a2a] rounded text-white text-right">
+                                              {c.commentText}
+                                            </div>
+                                          ))
+                                        )}
                                       </div>
                                     </div>
                                 </div>
@@ -572,19 +671,78 @@ const Details = () => {
                                         <span className="text-gray-400 flex items-center gap-2">
                                             ⭐ التقييم
                                         </span>
-                                        <span className="font-semibold text-yellow-400">4.2 / 5</span>
+                                        {ratingLoading ? (
+                                            <div className="animate-pulse bg-gray-600 h-4 w-16 rounded"></div>
+                                        ) : (
+                                            <div className="flex items-center gap-2">
+                                                <span className="font-semibold text-yellow-400">
+                                                    {avgRating.average.toFixed(1)} / 5
+                                                </span>
+                                                {hasRated && (
+                                                    <span className="text-xs bg-green-500 text-white px-2 py-1 rounded-full">
+                                                        قيّمت
+                                                    </span>
+                                                )}
+                                            </div>
+                                        )}
                                     </div>
                                     <div className="flex justify-between items-center">
                                         <span className="text-gray-400 flex items-center gap-2">
                                             👁️‍🗨️ المشاهدات
                                         </span>
-                                        <span className="font-semibold text-white">15,420</span>
+                                        <span className="font-semibold text-white">
+                                            {selectedItem?.viewCount || 0}
+                                        </span>
                                     </div>
                                     <div className="flex justify-between items-center">
                                         <span className="text-gray-400 flex items-center gap-2">
                                             📝 عدد التقييمات
                                         </span>
-                                        <span className="font-semibold text-white">0</span>
+                                        {ratingLoading ? (
+                                            <div className="animate-pulse bg-gray-600 h-4 w-8 rounded"></div>
+                                        ) : (
+                                            <span className="font-semibold text-white">
+                                                {avgRating.count}
+                                            </span>
+                                        )}
+                                    </div>
+                                        {hasRated && (
+                                        <div className="flex justify-between items-center">
+                                            <span className="text-gray-400 flex items-center gap-2">
+                                                ⭐ تقييمك
+                                            </span>
+                                            <span className="font-semibold text-yellow-400">
+                                                {myRating} / 5
+                                            </span>
+                                        </div>
+                                    )}
+                                    <div className="flex justify-between items-center">
+                                        <span className="text-gray-400 flex items-center gap-2">
+                                            💬 عدد التعليقات
+                                        </span>
+                                        {commentLoading ? (
+                                            <div className="animate-pulse bg-gray-600 h-4 w-8 rounded"></div>
+                                        ) : (
+                                            <span className="font-semibold text-white">
+                                                {comments.length}
+                                            </span>
+                                        )}
+                                    </div>
+                                    <div className="flex justify-between items-center">
+                                        <span className="text-gray-400 flex items-center gap-2">
+                                            🎭 النوع
+                                        </span>
+                                        <span className="font-semibold text-white">
+                                            {selectedItem?.genre || 'غير محدد'}
+                                        </span>
+                                    </div>
+                                    <div className="flex justify-between items-center">
+                                        <span className="text-gray-400 flex items-center gap-2">
+                                            📅 السنة
+                                        </span>
+                                        <span className="font-semibold text-white">
+                                            {selectedItem?.year || 'غير محدد'}
+                                        </span>
                                     </div>
                                 </div>
                                 <div className="flex gap-4 mt-5">
