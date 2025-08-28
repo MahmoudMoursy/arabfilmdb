@@ -98,17 +98,18 @@ const LatestAdditions = () => {
   };
 
   return (
-    <div className="bg-background p-8" dir="rtl">
+    <div className="bg-background p-8 " dir="rtl">
       <Swiper
-        modules={[Navigation, Pagination]}
-        spaceBetween={5}   // مسافة أصغر
-        slidesPerView={2}
-        navigation
-        pagination={{ clickable: true }}
-        breakpoints={{
-          640: { slidesPerView: 2, spaceBetween: 1 }, // موبايل
-          768: { slidesPerView: 3, spaceBetween: 1 }, // تابلت
-          1024: { slidesPerView: 5, spaceBetween: 1 } // ديسكتوب
+       style={{ width: "100%", height: "100%" }}
+               modules={[Navigation, Pagination]}
+               navigation
+               pagination={{ clickable: true }}
+               spaceBetween={10}
+               slidesPerView={2}
+               breakpoints={{
+                 640: { slidesPerView: 1, spaceBetween: 5 },
+                 768: { slidesPerView: 3, spaceBetween: 10 },
+                 1024: { slidesPerView: 5, spaceBetween: 20 }
         }}
       >
 
@@ -120,7 +121,7 @@ const LatestAdditions = () => {
             return (
             <SwiperSlide key={index}>
               <div
-                className="group card-hover bg-card border text-3xl border-white/50 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-md hover:shadow-amber-300/100 hover:-translate-y-5 text-white w-[160px] md:w-[280px] z-10"
+                className="group card-hover bg-card border text-3xl border-white/50 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-md hover:shadow-amber-300/100 hover:-translate-y-5 text-white w-[160px] md:w-[300px] z-10"
                 style={{ backgroundColor: 'var(--color-dark)' }}
               >
                 <div className="block cursor-pointer" role="button">

@@ -47,7 +47,7 @@ const Details = () => {
                 setAvgRating({ average: 0, count: 0 });
             })
             .finally(() => setRatingLoading(false));
-        
+
         // Fetch comments
         setCommentLoading(true);
         axiosInstance.get(`/comments/work/${id}`)
@@ -57,7 +57,7 @@ const Details = () => {
                 setComments([]);
             })
             .finally(() => setCommentLoading(false));
-        
+
         // Fetch user's rating if logged in
         const token = localStorage.getItem('token');
         if (token) {
@@ -154,15 +154,15 @@ const Details = () => {
             navigate('/login');
             return;
         }
-        
+
         if (hasRated) {
             alert('لقد قمت بتقييم هذا العمل مسبقاً بتقييم ' + myRating + '/5 نجوم.\nلا يمكنك التقييم مرة أخرى أو تغيير تقييمك.');
             return;
         }
-        
+
         setRatingLoading(true);
         console.log('Submitting rating:', { workId: id, ratingValue: val });
-        
+
         axiosInstance.post('/ratings', { workId: id, ratingValue: val })
             .then((response) => {
                 console.log('Rating submitted successfully:', response.data);
@@ -184,14 +184,14 @@ const Details = () => {
 
     const submitComment = () => {
         if (!newComment.trim()) return;
-        
+
         const token = localStorage.getItem('token');
         if (!token) {
             alert('يجب تسجيل الدخول لإضافة تعليق');
             navigate('/login');
             return;
         }
-        
+
         setCommentLoading(true);
         axiosInstance.post('/comments', { workId: id, commentText: newComment })
             .then((r) => {
@@ -355,14 +355,13 @@ const Details = () => {
 
                                 {/* Action Buttons */}
                                 <div className="flex gap-4">
-                                    <button 
-                                        onClick={() => submitRating(5)} 
+                                    <button
+                                        onClick={() => submitRating(5)}
                                         disabled={ratingLoading || userRatingLoading || hasRated}
-                                        className={`flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-colors ${
-                                            hasRated 
-                                                ? 'bg-gray-500/20 text-gray-400 cursor-not-allowed' 
+                                        className={`flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-colors ${hasRated
+                                                ? 'bg-gray-500/20 text-gray-400 cursor-not-allowed'
                                                 : 'bg-white/20 text-white hover:bg-white/30'
-                                        } ${(ratingLoading || userRatingLoading || hasRated) ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                            } ${(ratingLoading || userRatingLoading || hasRated) ? 'opacity-50 cursor-not-allowed' : ''}`}
                                     >
                                         <Star size={20} />
                                         {hasRated ? `تم التقييم مسبقاً` : `قيّم الفيلم (5)`}
@@ -587,6 +586,7 @@ const Details = () => {
                                             <span className="font-semibold text-white">{avgRating.count}</span>
                                         )}
                                     </div>
+                                    {hasRated && (
                                     {hasRated && (
                                         <div className="flex justify-between items-center">
                                             <span className="text-gray-400 flex items-center gap-2">⭐ تقييمك</span>
