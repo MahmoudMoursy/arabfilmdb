@@ -3,6 +3,11 @@ import { Star, Play, Heart, Share2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchMovies, fetchAverageRatings } from '../redux/moviesSlice';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation, Pagination } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
 
 const MostRated = () => {
   const { allMovies, ratings, ratingsLoading } = useSelector(state => state.movies);
@@ -12,7 +17,6 @@ const MostRated = () => {
     dispatch(fetchMovies());
   }, [dispatch]);
 
-  // Fetch ratings when movies are loaded
   useEffect(() => {
     if (allMovies.length > 0) {
       const workIds = allMovies.map(movie => movie._id);
@@ -20,7 +24,7 @@ const MostRated = () => {
     }
   }, [allMovies, dispatch]);
 
-  const [movie, setMovie] = useState({
+  const [ setMovie] = useState({
     id: 1,
     rating: 4.5,
     isFavorite: false
@@ -32,18 +36,12 @@ const MostRated = () => {
   const handleFavoriteClick = (e) => {
     e.stopPropagation();
     setMovie(prev => ({ ...prev, isFavorite: !prev.isFavorite }));
-    console.log('تم تغيير حالة المفضلة:', !movie.isFavorite);
   };
 
   const handleShareClick = (e) => {
     e.stopPropagation();
-    console.log('تم النقر على مشاركة:', movie);
-
-
     if (navigator.share) {
-      navigator.share({
-        url: window.location.href
-      });
+      navigator.share({ url: window.location.href });
     } else {
       navigator.clipboard.writeText(window.location.href);
       alert('تم نسخ الرابط!');
@@ -58,21 +56,19 @@ const MostRated = () => {
     for (let i = 0; i < 5; i++) {
       const isFilled = i < fullStars;
       const isHalf = i === fullStars && hasHalfStar;
-
       stars.push(
         <Star
           key={i}
           size={14}
-          className={`lucide lucide-star fill-current text-primary transition-colors duration-200 ${isFilled ? '' : isHalf ? 'opacity-75' : 'opacity-50'
-            }`}
+          className={`lucide lucide-star fill-current text-primary transition-colors duration-200 ${
+            isFilled ? '' : isHalf ? 'opacity-75' : 'opacity-50'
+          }`}
         />
       );
     }
-
     return stars;
   };
 
-  // Get top rated movies
   const getTopRatedMovies = () => {
     const moviesWithRatings = allMovies.map(movie => {
       const rating = ratings[movie._id];
@@ -83,20 +79,34 @@ const MostRated = () => {
       };
     });
 
-    // Sort by average rating (descending) and filter out movies with no ratings
     return moviesWithRatings
       .filter(movie => movie.averageRating > 0)
       .sort((a, b) => b.averageRating - a.averageRating)
-      .slice(0, 5); // Get top 5
+      .slice(0, 5);
   };
 
   const topRatedMovies = getTopRatedMovies();
 
   return (
-    <div className="bg-background p-8 flex items-center justify-center" dir="rtl">
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 w-full max-w-6xl">
+    <div className="bg-background p-8 w-full" dir="rtl">
+      <Swiper
+        style={{ width: "100%", height: "100%" }}
+        modules={[Navigation, Pagination]}
+        navigation
+        pagination={{ clickable: true }}
+        spaceBetween={10}
+        slidesPerView={2}
+        breakpoints={{
+          640: { slidesPerView: 1, spaceBetween: 5 },
+          768: { slidesPerView: 3, spaceBetween: 10 },
+          1024: { slidesPerView: 5, spaceBetween: 20 }
+        }}
+      >
         {topRatedMovies.map((movie, index) => (
-          <div key={movie._id} className="group card-hover bg-card border text-3xl border-white/50 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-md hover:shadow-amber-300/100 hover:-translate-y-10 text-white" style={{ backgroundColor: 'var(--color-dark)' }}>
+          <SwiperSlide
+            key={movie._id}
+            className="group card-hover bg-card border text-3xl border-white/50 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-md hover:shadow-amber-300/100 hover:-translate-y-5 text-white w-[160px] md:w-[280px] z-10"
+          >
             <div
               className="block cursor-pointer"
               role="button"
@@ -110,18 +120,23 @@ const MostRated = () => {
                 )}
                 <img
                   alt={movie.nameArabic}
-                  className={`w-full h-full object-cover transition-all duration-300 group-hover:scale-105 ${isImageLoaded ? 'opacity-100' : 'opacity-0'}`}
+                  className={`w-full h-full object-cover transition-all duration-300 group-hover:scale-105 ${
+                    isImageLoaded ? 'opacity-100' : 'opacity-0'
+                  }`}
                   loading="lazy"
                   src={movie.posterUrl}
                   onLoad={() => setIsImageLoaded(true)}
                   onError={(e) => {
                     setImageError(true);
-                    e.target.src = 'https://via.placeholder.com/300x450/1f2937/9ca3af?text=صورة+غير+متوفرة';
+                    e.target.src =
+                      'https://via.placeholder.com/300x450/1f2937/9ca3af?text=صورة+غير+متوفرة';
                   }}
                 />
 
                 <div className="absolute top-2 right-2 bg-amber-300 backdrop-blur-sm rounded-lg px-3 text-black font-extrabold py-1 transition-all duration-300 group-hover:bg-amber-400">
-                  <span className="text-primary-foreground text-base font-bold">{movie.genre}</span>
+                  <span className="text-primary-foreground text-base font-bold">
+                    {movie.genre}
+                  </span>
                 </div>
 
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
@@ -134,9 +149,16 @@ const MostRated = () => {
 
                     <button
                       onClick={handleFavoriteClick}
-                      className={`w-12 h-12 flex items-center justify-center rounded-full transition-all duration-300 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-offset-2 ${movie.isFavorite ? 'bg-red-500/90 hover:bg-red-500 text-white focus:ring-red-500' : 'bg-white/20 hover:bg-white/30 text-amber-300 focus:ring-amber-300'}`}
+                      className={`w-12 h-12 flex items-center justify-center rounded-full transition-all duration-300 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+                        movie.isFavorite
+                          ? 'bg-red-500/90 hover:bg-red-500 text-white focus:ring-red-500'
+                          : 'bg-white/20 hover:bg-white/30 text-amber-300 focus:ring-amber-300'
+                      }`}
                     >
-                      <Heart size={30} className={movie.isFavorite ? 'fill-current' : ''} />
+                      <Heart
+                        size={30}
+                        className={movie.isFavorite ? 'fill-current' : ''}
+                      />
                     </button>
 
                     <button
@@ -148,7 +170,7 @@ const MostRated = () => {
                   </div>
                 </div>
 
-                {/* Rating display on poster */}
+                {/* Rating display */}
                 <div className="absolute bottom-2 right-2 bg-black/80 backdrop-blur-sm rounded-lg px-2 py-1 transition-all duration-300 group-hover:bg-primary/90">
                   <div className="flex items-center space-x-1 space-x-reverse">
                     <Star
@@ -164,7 +186,9 @@ const MostRated = () => {
 
                 {/* Rank badge */}
                 <div className="absolute top-2 left-2 bg-yellow-500/90 backdrop-blur-sm rounded-lg px-2 py-1">
-                  <span className="text-black text-xs font-bold">#{index + 1}</span>
+                  <span className="text-black text-xs font-bold">
+                    #{index + 1}
+                  </span>
                 </div>
               </div>
 
@@ -193,9 +217,9 @@ const MostRated = () => {
                 </div>
               </div>
             </div>
-          </div>
+          </SwiperSlide>
         ))}
-      </div>
+      </Swiper>
     </div>
   );
 };

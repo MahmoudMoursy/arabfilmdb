@@ -197,7 +197,7 @@ const Navbar = () => {
 
                             </div>) : (
                                 <div className="relative inline-flex items-center gap-4 text-left">
-                                    <div className="flex items-center gap-3">
+                                    {/* <div className="flex items-center gap-3">
                                         {( user?.role === 'publisher') && (
                                             <button
                                                 onClick={() => navigate('/dashboard')}
@@ -208,7 +208,7 @@ const Navbar = () => {
                                                 لوحة التحكم
                                             </button>
                                         )}
-                                    </div>
+                                    </div> */}
                                     <div className="relative inline-block">
                                         <button
                                             onClick={() => setOpen(!open)}

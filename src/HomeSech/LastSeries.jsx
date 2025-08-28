@@ -103,9 +103,9 @@ const LastSeries = () => {
         navigation
         pagination={{ clickable: true }}
         breakpoints={{
-          640: { slidesPerView: 2, spaceBetween: 1 }, // موبايل
-          768: { slidesPerView: 3, spaceBetween: 1 }, // تابلت
-          1024: { slidesPerView: 5, spaceBetween: 1 } // ديسكتوب
+          640: { slidesPerView: 2, spaceBetween: 5 }, // موبايل
+          768: { slidesPerView: 3, spaceBetween: 10 }, // تابلت
+          1024: { slidesPerView: 5, spaceBetween: 20 } // ديسكتوب
         }}
       >
         {series.slice(-5).map((serie, index) => {
@@ -115,7 +115,7 @@ const LastSeries = () => {
 
             <div
               key={index}
-              className="group card-hover bg-card border text-3xl border-white/50 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-md hover:shadow-amber-300/100 hover:-translate-y-5 text-white w-[160px] md:w-[280px] z-10"
+              className="group card-hover bg-card border text-3xl border-white/50 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-md hover:shadow-amber-300/100 hover:-translate-y-5 text-white w-[160px] md:w-[310px] z-10"
               style={{ backgroundColor: 'var(--color-dark)' }}
             >
               <div className="block cursor-pointer" role="button">
