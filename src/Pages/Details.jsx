@@ -110,7 +110,7 @@ const Details = () => {
 
     useEffect(() => {
         if (!id) return;
-        
+
         // Simple server health check
         console.log('🔍 Checking server health...');
         axiosInstance.get('/ratings/average/' + id)
@@ -121,7 +121,7 @@ const Details = () => {
                     console.error('❌ Network error - server might be down');
                 }
             });
-        
+
         // Fetch average rating
         setRatingLoading(true);
         axiosInstance.get(`/ratings/average/${id}`)
@@ -131,7 +131,7 @@ const Details = () => {
                 setAvgRating({ average: 0, count: 0 });
             })
             .finally(() => setRatingLoading(false));
-        
+
         // Fetch comments
         setCommentLoading(true);
         axiosInstance.get(`/comments/work/${id}`)
@@ -141,7 +141,7 @@ const Details = () => {
                 setComments([]);
             })
             .finally(() => setCommentLoading(false));
-        
+
         // Fetch user's rating if logged in
         const token = localStorage.getItem('token');
         if (token) {
@@ -167,15 +167,15 @@ const Details = () => {
             navigate('/login');
             return;
         }
-        
+
         if (hasRated) {
             alert('لقد قمت بتقييم هذا العمل مسبقاً بتقييم ' + myRating + '/5 نجوم.\nلا يمكنك التقييم مرة أخرى أو تغيير تقييمك.');
             return;
         }
-        
+
         setRatingLoading(true);
         console.log('Submitting rating:', { workId: id, ratingValue: val });
-        
+
         axiosInstance.post('/ratings', { workId: id, ratingValue: val })
             .then((response) => {
                 console.log('Rating submitted successfully:', response.data);
@@ -201,14 +201,14 @@ const Details = () => {
 
     const submitComment = () => {
         if (!newComment.trim()) return;
-        
+
         const token = localStorage.getItem('token');
         if (!token) {
             alert('يجب تسجيل الدخول لإضافة تعليق');
             navigate('/login');
             return;
         }
-        
+
         setCommentLoading(true);
         axiosInstance.post('/comments', { workId: id, commentText: newComment })
             .then((r) => {
@@ -249,16 +249,16 @@ const Details = () => {
             <Navbar />
             <div className="min-h-screen " >
                 <div className="relative h-[100vh] overflow-hidden" style={{ backgroundColor: 'var(--color-dark)' }}>
-             {loading && (
-              <div className="flex justify-center items-center py-20">
-                <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-amber-300"></div>
-              </div>
-            )}
+                    {loading && (
+                        <div className="flex justify-center items-center py-20">
+                            <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-amber-300"></div>
+                        </div>
+                    )}
                     <div className="absolute inset-5">
                         <img
                             alt="صغيرة على الحب"
                             className="w-full h-full object-cover blur-sm scale-100"
-                            src={selectedItem?.posterUrl }
+                            src={selectedItem?.posterUrl}
                         />
                         <div className="absolute inset-0 bg-black/70" />
                     </div>
@@ -269,7 +269,7 @@ const Details = () => {
                                 <img
                                     alt="صغيرة على الحب"
                                     className="w-[170px] h-[280px] md:w-[360px] md:h-[500px] object-cover rounded-lg shadow-2xl"
-                                      src={selectedItem?.posterUrl}
+                                    src={selectedItem?.posterUrl}
                                 />
                             </div>
                             <div className="flex-1 text-white pt-10 md:my-0">
@@ -297,22 +297,21 @@ const Details = () => {
                                                         strokeWidth={2}
                                                         strokeLinecap="round"
                                                         strokeLinejoin="round"
-                                                        className={`lucide lucide-star transition-colors ${
-                                                            hasRated && myRating >= star
-                                                                ? 'fill-yellow-400 text-yellow-400' 
-                                                                : avgRating.average >= star 
-                                                                ? 'fill-yellow-400/50 text-yellow-400/50' 
-                                                                : 'fill-transparent text-gray-300'
-                                                        }`}
+                                                        className={`lucide lucide-star transition-colors ${hasRated && myRating >= star
+                                                                ? 'fill-yellow-400 text-yellow-400'
+                                                                : avgRating.average >= star
+                                                                    ? 'fill-yellow-400/50 text-yellow-400/50'
+                                                                    : 'fill-transparent text-gray-300'
+                                                            }`}
                                                         aria-hidden="true"
                                                     >
                                                         <path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z" />
                                                     </svg>
                                                 </button>
                                             ))}
-                                          
-                                         
-                                         
+
+
+
                                         </div>
                                         <span className="text-sm text-muted-foreground mr-1">
                                             {ratingLoading ? (
@@ -354,9 +353,9 @@ const Details = () => {
                                         <span className='font-normal text-xl '>{selectedItem?.year}</span>
                                     </div>
 
-                                   <div className="flex items-center gap-2">
-                                            {selectedItem?.type === 'film' ? (
-                                                <>
+                                    <div className="flex items-center gap-2">
+                                        {selectedItem?.type === 'film' ? (
+                                            <>
                                                 <svg
                                                     xmlns="http://www.w3.org/2000/svg"
                                                     width={20}
@@ -376,9 +375,9 @@ const Details = () => {
                                                 <span className="font-normal text-xl">
                                                     {selectedItem?.duration || 'مدة غير محددة'} {/* مثل: 120 دقيقة */}
                                                 </span>
-                                                </>
-                                            ) : selectedItem?.type === 'series' ? (
-                                                <>
+                                            </>
+                                        ) : selectedItem?.type === 'series' ? (
+                                            <>
                                                 <svg
                                                     xmlns="http://www.w3.org/2000/svg"
                                                     width={20}
@@ -397,12 +396,12 @@ const Details = () => {
                                                 </svg>
                                                 <span className="font-normal text-xl">
                                                     {selectedItem?.episodesCount
-                                                    ? `عدد الحلقات: ${selectedItem.episodesCount}`
-                                                    : 'مسلسل - متعدد الحلقات'}
+                                                        ? `عدد الحلقات: ${selectedItem.episodesCount}`
+                                                        : 'مسلسل - متعدد الحلقات'}
                                                 </span>
-                                                </>
-                                            ) : null}
-                                            </div>
+                                            </>
+                                        ) : null}
+                                    </div>
                                     <div className="flex items-center gap-2">
                                         <svg
                                             xmlns="http://www.w3.org/2000/svg"
@@ -445,17 +444,16 @@ const Details = () => {
 
                                 </div>
                                 <p className="text-gray-300 mb-6 max-w-2xl leading-relaxed">
-                                   {selectedItem?.summary}
+                                    {selectedItem?.summary}
                                 </p>
                                 <div className="flex gap-4">
-                                    <button 
-                                        onClick={() => submitRating(5)} 
+                                    <button
+                                        onClick={() => submitRating(5)}
                                         disabled={ratingLoading || userRatingLoading || hasRated}
-                                        className={`flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-colors ${
-                                            hasRated 
-                                                ? 'bg-gray-500/20 text-gray-400 cursor-not-allowed' 
+                                        className={`flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-colors ${hasRated
+                                                ? 'bg-gray-500/20 text-gray-400 cursor-not-allowed'
                                                 : 'bg-white/20 text-white hover:bg-white/30'
-                                        } ${(ratingLoading || userRatingLoading || hasRated) ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                            } ${(ratingLoading || userRatingLoading || hasRated) ? 'opacity-50 cursor-not-allowed' : ''}`}
                                     >
                                         <svg
                                             xmlns="http://www.w3.org/2000/svg"
@@ -550,19 +548,19 @@ const Details = () => {
                                         <h3 className="font-semibold text-white mb-1">🎭 التصنيف</h3>
                                         <p className="text-gray-300">{selectedItem?.genre}</p>
                                     </div>
-                                      <div className="bg-[#2a2a2a] p-4 rounded-lg shadow-sm">
-                   <h3 className="font-semibold text-white mb-2 flex items-center gap-2">
-                           🎬 الأبطال
-                     </h3>
-                          <div className="flex flex-col gap-2">
-                      {selectedItem?.cast.map((actor, index) => (
-                    <div key={index} className="flex items-center gap-2 text-gray-300">
-                             <User size={18} className="text-white" />
-                           <span>{actor}</span>
-                        </div>
-                                 ))}
-                    </div>
-                                  </div>
+                                    <div className="bg-[#2a2a2a] p-4 rounded-lg shadow-sm">
+                                        <h3 className="font-semibold text-white mb-2 flex items-center gap-2">
+                                            🎬 الأبطال
+                                        </h3>
+                                        <div className="flex flex-col gap-2">
+                                            {selectedItem?.cast.map((actor, index) => (
+                                                <div key={index} className="flex items-center gap-2 text-gray-300">
+                                                    <User size={18} className="text-white" />
+                                                    <span>{actor}</span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
 
                                     <div className="bg-[#2a2a2a] p-4 rounded-lg shadow-sm">
                                         <h3 className="font-semibold text-white mb-1 flex items-center gap-2">
@@ -579,7 +577,7 @@ const Details = () => {
                                     <h2 className="text-3xl font-bold text-white tracking-tight">
                                         ⭐ التقييمات والآراء
                                     </h2>
-                                
+
                                 </div>
 
                                 <div className="text-center py-10 bg-[#1f1f1f] rounded-xl shadow-md">
@@ -599,93 +597,91 @@ const Details = () => {
                                         <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
                                     </svg>
                                     <div className="px-4">
-                                      <div className="text-gray-300 text-lg font-medium mb-4">
-                                        {ratingLoading ? (
-                                            <div className="animate-pulse bg-gray-600 h-6 w-48 rounded mx-auto"></div>
-                                        ) : (
-                                            `متوسط التقييم: ${avgRating.average.toFixed(1)} (${avgRating.count} تقييم)`
-                                        )}
-                                      </div>
-                                      
-                                      {/* User Rating Status */}
-                                      {userRatingLoading ? (
-                                        <div className="text-center mb-4">
-                                          <div className="animate-pulse bg-gray-600 h-4 w-32 rounded mx-auto mb-2"></div>
+                                        <div className="text-gray-300 text-lg font-medium mb-4">
+                                            {ratingLoading ? (
+                                                <div className="animate-pulse bg-gray-600 h-6 w-48 rounded mx-auto"></div>
+                                            ) : (
+                                                `متوسط التقييم: ${avgRating.average.toFixed(1)} (${avgRating.count} تقييم)`
+                                            )}
                                         </div>
-                                                                             ) : hasRated ? (
-                                         <div className="text-center mb-4">
-                                           <div className="text-yellow-400 font-semibold mb-2">
-                                             تقييمك: {myRating}/5 ⭐
-                                           </div>
-                                           <div className="text-sm text-gray-400">
-                                             لا يمكنك تغيير تقييمك بعد التقييم
-                                           </div>
-                                         </div>
-                                      ) : (
-                                        <div className="text-center mb-4">
-                                          <div className="text-white font-semibold mb-2">
-                                            قيّم هذا العمل
-                                          </div>
-                                          <div className="text-sm text-gray-400">
-                                            اختر من 1 إلى 5 نجوم
-                                          </div>
-                                        </div>
-                                      )}
-                                      
-                                                                             <div className="flex justify-center gap-2 mb-6">
-                                         {[1,2,3,4,5].map(v => (
-                                           <button 
-                                             key={v} 
-                                             onClick={() => submitRating(v)} 
-                                             disabled={ratingLoading || userRatingLoading || hasRated}
-                                             title={hasRated ? `لقد قيّمت هذا العمل مسبقاً` : `قيّم العمل بـ ${v}/5 نجوم`}
-                                             className={`px-3 py-1 rounded transition-all duration-200 ${
-                                               myRating >= v 
-                                                 ? 'bg-yellow-500 text-black' 
-                                                 : 'bg-white/10 text-white'
-                                             } ${(ratingLoading || userRatingLoading || hasRated) ? 'opacity-50 cursor-not-allowed' : 'hover:bg-white/20'}`}
-                                           >
-                                             {v}
-                                           </button>
-                                         ))}
-                                       </div>
-                                      <div className="flex gap-2">
-                                        <input 
-                                          value={newComment} 
-                                          onChange={e=>setNewComment(e.target.value)} 
-                                          placeholder="أضف تعليقك" 
-                                          className="flex-1 p-2 rounded bg-[#2a2a2a] text-white" 
-                                          disabled={commentLoading}
-                                        />
-                                        <button 
-                                          onClick={submitComment} 
-                                          disabled={commentLoading || !newComment.trim()}
-                                          className={`px-4 py-2 rounded transition-all duration-200 ${
-                                            commentLoading || !newComment.trim() 
-                                              ? 'bg-gray-500 text-gray-300 cursor-not-allowed' 
-                                              : 'bg-yellow-500 text-black hover:bg-yellow-600'
-                                          }`}
-                                        >
-                                          {commentLoading ? 'جاري الإرسال...' : 'إرسال'}
-                                        </button>
-                                      </div>
-                                      <div className="text-right mt-6 space-y-3">
-                                        {commentLoading ? (
-                                          <div className="animate-pulse space-y-3">
-                                            {[1, 2, 3].map(i => (
-                                              <div key={i} className="p-3 bg-[#2a2a2a] rounded">
-                                                <div className="animate-pulse bg-gray-600 h-4 w-full rounded"></div>
-                                              </div>
-                                            ))}
-                                          </div>
-                                        ) : (
-                                          comments.map(c => (
-                                            <div key={c._id} className="p-3 bg-[#2a2a2a] rounded text-white text-right">
-                                              {c.commentText}
+
+                                        {/* User Rating Status */}
+                                        {userRatingLoading ? (
+                                            <div className="text-center mb-4">
+                                                <div className="animate-pulse bg-gray-600 h-4 w-32 rounded mx-auto mb-2"></div>
                                             </div>
-                                          ))
+                                        ) : hasRated ? (
+                                            <div className="text-center mb-4">
+                                                <div className="text-yellow-400 font-semibold mb-2">
+                                                    تقييمك: {myRating}/5 ⭐
+                                                </div>
+                                                <div className="text-sm text-gray-400">
+                                                    لا يمكنك تغيير تقييمك بعد التقييم
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            <div className="text-center mb-4">
+                                                <div className="text-white font-semibold mb-2">
+                                                    قيّم هذا العمل
+                                                </div>
+                                                <div className="text-sm text-gray-400">
+                                                    اختر من 1 إلى 5 نجوم
+                                                </div>
+                                            </div>
                                         )}
-                                      </div>
+
+                                        <div className="flex justify-center gap-2 mb-6">
+                                            {[1, 2, 3, 4, 5].map(v => (
+                                                <button
+                                                    key={v}
+                                                    onClick={() => submitRating(v)}
+                                                    disabled={ratingLoading || userRatingLoading || hasRated}
+                                                    title={hasRated ? `لقد قيّمت هذا العمل مسبقاً` : `قيّم العمل بـ ${v}/5 نجوم`}
+                                                    className={`px-3 py-1 rounded transition-all duration-200 ${myRating >= v
+                                                            ? 'bg-yellow-500 text-black'
+                                                            : 'bg-white/10 text-white'
+                                                        } ${(ratingLoading || userRatingLoading || hasRated) ? 'opacity-50 cursor-not-allowed' : 'hover:bg-white/20'}`}
+                                                >
+                                                    {v}
+                                                </button>
+                                            ))}
+                                        </div>
+                                        <div className="flex gap-2">
+                                            <input
+                                                value={newComment}
+                                                onChange={e => setNewComment(e.target.value)}
+                                                placeholder="أضف تعليقك"
+                                                className="flex-1 p-2 rounded bg-[#2a2a2a] text-white"
+                                                disabled={commentLoading}
+                                            />
+                                            <button
+                                                onClick={submitComment}
+                                                disabled={commentLoading || !newComment.trim()}
+                                                className={`px-4 py-2 rounded transition-all duration-200 ${commentLoading || !newComment.trim()
+                                                        ? 'bg-gray-500 text-gray-300 cursor-not-allowed'
+                                                        : 'bg-yellow-500 text-black hover:bg-yellow-600'
+                                                    }`}
+                                            >
+                                                {commentLoading ? 'جاري الإرسال...' : 'إرسال'}
+                                            </button>
+                                        </div>
+                                        <div className="text-right mt-6 space-y-3">
+                                            {commentLoading ? (
+                                                <div className="animate-pulse space-y-3">
+                                                    {[1, 2, 3].map(i => (
+                                                        <div key={i} className="p-3 bg-[#2a2a2a] rounded">
+                                                            <div className="animate-pulse bg-gray-600 h-4 w-full rounded"></div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            ) : (
+                                                comments.map(c => (
+                                                    <div key={c._id} className="p-3 bg-[#2a2a2a] rounded text-white text-right">
+                                                        {c.commentText}
+                                                    </div>
+                                                ))
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -717,10 +713,11 @@ const Details = () => {
                                     </div>
                                     <div className="flex justify-between items-center">
                                         <span className="text-gray-400 flex items-center gap-2">
-                                            👁️‍🗨️ المشاهدات
+                                              <Heart className="w-5 h-5" />
+                                            المفضلة
                                         </span>
                                         <span className="font-semibold text-white">
-                                            {selectedItem?.viewCount || 0}
+                                            {selectedItem?.favoriteCount || 0}
                                         </span>
                                     </div>
                                     <div className="flex justify-between items-center">
@@ -735,7 +732,7 @@ const Details = () => {
                                             </span>
                                         )}
                                     </div>
-                                        {hasRated && (
+                                    {hasRated && (
                                         <div className="flex justify-between items-center">
                                             <span className="text-gray-400 flex items-center gap-2">
                                                 ⭐ تقييمك
@@ -776,8 +773,8 @@ const Details = () => {
                                 </div>
                                 <div className="flex gap-4 mt-5">
                                     <button
-                                    
-                                     className="w-full py-2 px-4 bg-amber-300 text-white rounded-lg hover:bg-primary-dark transition">
+
+                                        className="w-full py-2 px-4 bg-amber-300 text-white rounded-lg hover:bg-primary-dark transition">
                                         تعديل
                                     </button>
                                     <button className="w-full py-2 px-4 bg-red-500 text-white rounded-lg hover:bg-red-600 transition">
@@ -918,7 +915,7 @@ const Details = () => {
                 </div>
             </div>
 
-<Footer/>
+            <Footer />
         </>
     );
 };
