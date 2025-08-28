@@ -1,16 +1,18 @@
 import Navbar from '../componet/Navbar';
 import Footer from '../componet/Footer';
 import React, { useEffect, useState } from 'react';
-import { Star, Play, User, Heart, Share2 } from 'lucide-react';
-import { fetchItemById } from '../redux/moviesSlice';
+import { Star, Play, User, Heart, Share2, Link } from 'lucide-react';
+import { fetchAverageRatings, fetchItemById, fetchMovies } from '../redux/moviesSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { axiosInstance } from '../api/axiosInstance';
 import { useParams, useNavigate } from 'react-router-dom';
 import FavoriteButton from '../componet/FavoriteButton';
+import { SwiperSlide } from 'swiper/react';
 
 const Details = () => {
     const { id } = useParams();
     const { selectedItem, loading, error } = useSelector((state) => state.movies);
+    const { allMovies, ratings, ratingsLoading } = useSelector(state => state.movies);
     const dispatch = useDispatch();
     const navigate = useNavigate();
     
@@ -88,20 +90,20 @@ const Details = () => {
         console.log('تم تغيير حالة المفضلة:', !movie.isFavorite);
     };
 
-    const handleShareClick = (e) => {
-        e.stopPropagation();
-        console.log('تم النقر على مشاركة:', movie);
+    // const handleShareClick = (e) => {
+    //     e.stopPropagation();
+    //     console.log('تم النقر على مشاركة:', movie);
 
 
-        if (navigator.share) {
-            navigator.share({
-                url: window.location.href
-            });
-        } else {
-            navigator.clipboard.writeText(window.location.href);
-            alert('تم نسخ الرابط!');
-        }
-    };
+    //     if (navigator.share) {
+    //         navigator.share({
+    //             url: window.location.href
+    //         });
+    //     } else {
+    //         navigator.clipboard.writeText(window.location.href);
+    //         alert('تم نسخ الرابط!');
+    //     }
+    // };
 
     useEffect(() => {
         if (!id || !selectedItem) return;
@@ -643,7 +645,9 @@ const Details = () => {
                                         )}
                                     </div>
                                     <div className="flex justify-between items-center">
-                                        <span className="text-gray-400 flex items-center gap-2">👁️‍🗨️ المشاهدات</span>
+                                        <span className="text-gray-400 flex items-center gap-2">
+                                            <Heart className="w-5 h-5" />
+                                         المفضلة</span>
                                         <span className="font-semibold text-white">
                                             {selectedItem.viewCount || 0}
                                         </span>
