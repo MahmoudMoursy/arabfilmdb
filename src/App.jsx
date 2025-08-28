@@ -1,6 +1,8 @@
 import "./App.css";
 import React from "react";
 import { Route, Routes, Navigate } from "react-router-dom";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import Home from "./Pages/Home";
 import Register from "./Pages/Register";
 import Login from "./Pages/Login";
@@ -41,6 +43,7 @@ function App() {
       <div>
         <Routes>
           <Route path="/" index element={<Home />} />
+          
           <Route path="/Register" element={<Register />} />
           <Route path="/Login" element={<Login />} />
           <Route path="/Footer" element={<Footer />} />
@@ -75,11 +78,28 @@ function App() {
               </ProtectedRoute>
             }
           />
+          {/* Public Routes - No authentication required */}
           <Route path="/MovieFilterDemo" element={<MovieFilterDemo />} />
           <Route path="/SeriesFilterDemo" element={<SeriesFilterDemo />} />
           <Route path="/Details/:id" element={<Details />} />
-          <Route path="/AdminDashboard" element={<AdminDashboard />} />
-          <Route path="/Profile" element={<Profile />} />
+
+          {/* Protected Routes - Authentication required */}
+          <Route
+            path="/AdminDashboard"
+            element={
+              <ProtectedRoute roles={["admin"]}>
+                <AdminDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/Profile"
+            element={
+              <ProtectedRoute roles={["user", "admin", "publisher"]}>
+                <Profile />
+              </ProtectedRoute>
+            }
+          />
           <Route
             path="/dashboard/edit/:id"
             element={
@@ -91,6 +111,27 @@ function App() {
 
         </Routes>
       </div>
+      
+      {/* Toast Container for notifications */}
+      <ToastContainer
+        position="top-center"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={true}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+        toastStyle={{
+          backgroundColor: '#1f2937',
+          color: '#ffffff',
+          borderRadius: '12px',
+          fontSize: '14px',
+          fontWeight: '500',
+        }}
+      />
     </>
   );
 }

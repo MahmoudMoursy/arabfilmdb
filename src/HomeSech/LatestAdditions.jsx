@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import "../App.css";
-import { Star, Play, Heart, Share2 } from 'lucide-react';
+import { Star, Play, Share2 } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchMovies, fetchAverageRatings } from '../redux/moviesSlice';
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -9,6 +9,7 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import { Link } from 'react-router-dom';
+import AddToFavoritesButton from '../componet/AddToFavoritesButton';
 
 
 const LatestAdditions = () => {
@@ -164,12 +165,7 @@ const LatestAdditions = () => {
 </Link>
 
 
-                        <button
-                          onClick={handleFavoriteClick}
-                          className={`w-12 h-12 flex items-center justify-center rounded-full transition-all duration-300 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-offset-2 ${movieState.isFavorite ? 'bg-red-500/90 hover:bg-red-500 text-white focus:ring-red-500' : 'bg-white/20 hover:bg-white/30 text-amber-300 focus:ring-amber-300'}`}
-                        >
-                          <Heart size={30} className={movieState.isFavorite ? 'fill-current' : ''} />
-                        </button>
+                        <AddToFavoritesButton workId={movie._id} />
 
                         <button
                           onClick={handleShareClick}

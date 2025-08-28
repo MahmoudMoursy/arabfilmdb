@@ -110,7 +110,7 @@ function Home() {
         <div className=" p-7 pt-9 ">
           <h2 className="text-3xl font-bold text-white "> الأكثر تقييماً</h2>
         </div >
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-1">
+        <div className="px-7 pb-7">
           <MostRated />
         </div>
       </div>

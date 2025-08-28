@@ -88,7 +88,7 @@ export const workService = {
     if (!id || id === 'undefined') {
       throw new Error('Work ID is required');
     }
-    const response = await axiosInstance.get(`/works/${id}`);
+    const response = await axiosInstance.get(`/works/public/${id}`);
     return response.data;
   },
 
