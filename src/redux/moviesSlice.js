@@ -33,7 +33,7 @@ export const fetchAverageRatings = createAsyncThunk(
 export const fetchItemById = createAsyncThunk(
   'movies/fetchItemById',
   async (id) => {
-    const response = await axiosInstance.get(`/works/${id}`); // عدّل المسار حسب الـ API
+    const response = await axiosInstance.get(`/works/public/${id}`); // Use public endpoint
     return response.data;
   }
 );
@@ -98,7 +98,7 @@ const moviesSlice = createSlice({
           state.loading = false;
           state.error = action.error.message;
           state.selectedItem = null;
-        });
+        })
   },
 });
 
