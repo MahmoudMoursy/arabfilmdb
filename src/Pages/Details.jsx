@@ -39,9 +39,7 @@ const Details = () => {
           dispatch(fetchAverageRatings(workIds));
         }
     }, [allMovies, dispatch]);
-    
-    console.log(allMovies);
-        const getMovieRating = (movieId) => {
+            const getMovieRating = (movieId) => {
             const rating = ratings[movieId];
             if (rating && rating.average > 0) {
             return {
@@ -58,16 +56,15 @@ const Details = () => {
         };
     console.log(selectedItem);
     
-    const similarMovies = allMovies.filter(
-        (movie) => movie.genre === selectedItem?.genre ); // Get up to 5 similar movies
-    console.log(similarMovies);
+    // const similarMovies = allMovies.filter(
+    //     (movie) => movie.genre === selectedItem?.genre ); // Get up to 5 similar movies
 
 
-    const [movie, setMovie] = useState({
-        id: 1,
-        rating: 4.5,
-        isFavorite: false
-    });
+    // const [movie, setMovie] = useState({
+    //     id: 1,
+    //     rating: 4.5,
+    //     isFavorite: false
+    // });
     const [avgRating, setAvgRating] = useState({ average: 0, count: 0 });
     const [comments, setComments] = useState([]);
     const [myRating, setMyRating] = useState(0);
@@ -86,6 +83,10 @@ const Details = () => {
         rating: 4.5,
         isFavorite: false
       });
+
+    
+    
+
 
     const handleFavoriteClick = (e) => {
         e.stopPropagation();
@@ -791,24 +792,23 @@ const Details = () => {
                         </h3>
 
                         <div className="grid grid-cols-1 mt-10 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
-                            {console.log(selectedItem)}
                             {allMovies.filter(movie =>  movie.genre==selectedItem?.genre && movie.type == selectedItem?.type
                         ).map((movie, index) => {
                                 {if (movie._id === selectedItem?._id) return null;} // تخطي الفيلم الحالي
-            const movieRating = getMovieRating(movie._id);
-            return (
-            <SwiperSlide key={index}>
-              <div
-                className="group card-hover bg-card border text-3xl border-white/50 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-md hover:shadow-amber-300/100 hover:-translate-y-5 text-white w-[160px] md:w-[300px] z-10"
-                style={{ backgroundColor: 'var(--color-dark)' }}
-              >
-                <div className="block cursor-pointer" role="button">
-                  <div className="relative aspect-[2/3] overflow-hidden">
-                    {!isImageLoaded && !imageError && (
-                      <div className="absolute inset-0 bg-muted animate-pulse flex items-center justify-center">
-                        <div className="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
-                      </div>
-                    )}
+                            const movieRating = getMovieRating(movie._id);
+                            return (
+                            <SwiperSlide key={index}>
+                            <div
+                                className="group card-hover bg-card border text-3xl border-white/50 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-md hover:shadow-amber-300/100 hover:-translate-y-5 text-white w-[160px] md:w-[300px] z-10"
+                                style={{ backgroundColor: 'var(--color-dark)' }}
+                            >
+                                <div className="block cursor-pointer" role="button">
+                                <div className="relative aspect-[2/3] overflow-hidden">
+                                    {!isImageLoaded && !imageError && (
+                                    <div className="absolute inset-0 bg-muted animate-pulse flex items-center justify-center">
+                                        <div className="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
+                                    </div>
+                                    )}
                     <img
                       className={`w-full h-full object-cover transition-all duration-300 group-hover:scale-105 ${isImageLoaded ? 'opacity-100' : 'opacity-0'}`}
                       loading="lazy"
