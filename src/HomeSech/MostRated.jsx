@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Star, Play, Share2 } from 'lucide-react';
+import { Star, Play, Share2, Heart } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchMovies, fetchAverageRatings } from '../redux/moviesSlice';
+import AddToFavoritesButton from '../componet/AddToFavoritesButton';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination } from 'swiper/modules';
 import 'swiper/css';
@@ -24,24 +25,18 @@ const MostRated = () => {
     }
   }, [allMovies, dispatch]);
 
-  const [ setMovie] = useState({
-    id: 1,
-    rating: 4.5,
-    isFavorite: false
-  });
+  const [imageStates, setImageStates] = useState({});
 
-  const [isImageLoaded, setIsImageLoaded] = useState(false);
-  const [imageError, setImageError] = useState(false);
 
   const handleShareClick = (e, movie) => {
     e.stopPropagation();
-    setMovie(prev => ({ ...prev, isFavorite: !prev.isFavorite }));
-  };
-
-  const handleShareClick = (e) => {
-    e.stopPropagation();
+    const shareUrl = `${window.location.origin}/Details/${movie._id}`;
+    
     if (navigator.share) {
-      navigator.share({ url: window.location.href });
+      navigator.share({
+        title: movie.nameArabic,
+        url: shareUrl
+      });
     } else {
       navigator.clipboard.writeText(shareUrl);
       alert('تم نسخ الرابط!');
@@ -60,8 +55,8 @@ const MostRated = () => {
         <Star
           key={i}
           size={14}
-          className={`lucide lucide-star fill-current text-primary transition-colors duration-200 ${
-            isFilled ? '' : isHalf ? 'opacity-75' : 'opacity-50'
+          className={`fill-current transition-colors duration-200 ${
+            isFilled ? 'text-yellow-400' : isHalf ? 'text-yellow-400 opacity-75' : 'text-gray-400'
           }`}
         />
       );
@@ -126,28 +121,27 @@ const MostRated = () => {
               aria-label={`مشاهدة الفيلم ${movie.nameArabic}`}
             >
               <div className="relative aspect-[2/3] overflow-hidden">
-                {!isImageLoaded && !imageError && (
-                  <div className="absolute inset-0 bg-muted animate-pulse flex items-center justify-center">
-                    <div className="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
+                {!imageStates[movie._id]?.loaded && !imageStates[movie._id]?.error && (
+                  <div className="absolute inset-0 bg-gray-700 animate-pulse flex items-center justify-center">
+                    <div className="w-12 h-12 border-4 border-amber-300/20 border-t-amber-300 rounded-full animate-spin"></div>
                   </div>
                 )}
                 <img
                   alt={movie.nameArabic}
                   className={`w-full h-full object-cover transition-all duration-300 group-hover:scale-105 ${
-                    isImageLoaded ? 'opacity-100' : 'opacity-0'
+                    imageStates[movie._id]?.loaded ? 'opacity-100' : 'opacity-0'
                   }`}
                   loading="lazy"
                   src={movie.posterUrl}
-                  onLoad={() => setIsImageLoaded(true)}
+                  onLoad={() => setImageStates(prev => ({ ...prev, [movie._id]: { loaded: true, error: false } }))}
                   onError={(e) => {
-                    setImageError(true);
-                    e.target.src =
-                      'https://via.placeholder.com/300x450/1f2937/9ca3af?text=صورة+غير+متوفرة';
+                    setImageStates(prev => ({ ...prev, [movie._id]: { loaded: false, error: true } }));
+                    e.target.src = 'https://via.placeholder.com/300x450/1f2937/9ca3af?text=صورة+غير+متوفرة';
                   }}
                 />
 
-                <div className="absolute top-2 right-2 bg-amber-300 backdrop-blur-sm rounded-lg px-3 text-black font-extrabold py-1 transition-all duration-300 group-hover:bg-amber-400">
-                  <span className="text-primary-foreground text-base font-bold">
+                <div className="absolute top-2 right-2 bg-amber-300 backdrop-blur-sm rounded-lg px-3 text-black font-bold py-1 transition-all duration-300 group-hover:bg-amber-400">
+                  <span className="text-sm font-bold">
                     {movie.genre}
                   </span>
                 </div>
@@ -160,19 +154,7 @@ const MostRated = () => {
                     </button>
                   </Link>
 
-                    <button
-                      onClick={handleFavoriteClick}
-                      className={`w-12 h-12 flex items-center justify-center rounded-full transition-all duration-300 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-offset-2 ${
-                        movie.isFavorite
-                          ? 'bg-red-500/90 hover:bg-red-500 text-white focus:ring-red-500'
-                          : 'bg-white/20 hover:bg-white/30 text-amber-300 focus:ring-amber-300'
-                      }`}
-                    >
-                      <Heart
-                        size={30}
-                        className={movie.isFavorite ? 'fill-current' : ''}
-                      />
-                    </button>
+                  <AddToFavoritesButton workId={movie._id} />
 
                   <button
                     onClick={(e) => handleShareClick(e, movie)}
@@ -184,14 +166,14 @@ const MostRated = () => {
               </div>
 
                 {/* Rating display */}
-                <div className="absolute bottom-2 right-2 bg-black/80 backdrop-blur-sm rounded-lg px-2 py-1 transition-all duration-300 group-hover:bg-primary/90">
-                  <div className="flex items-center space-x-1 space-x-reverse">
+                <div className="absolute bottom-2 right-2 bg-black/80 backdrop-blur-sm rounded-lg px-2 py-1 transition-all duration-300 group-hover:bg-amber-500/90">
+                  <div className="flex items-center gap-1">
                     <Star
                       size={12}
-                      className="lucide lucide-star fill-current text-yellow-400 group-hover:text-primary-foreground transition-colors duration-300"
+                      className="fill-current text-yellow-400 group-hover:text-white transition-colors duration-300"
                       aria-hidden="true"
                     />
-                    <span className="text-white text-xs font-medium group-hover:text-primary-foreground transition-colors duration-300">
+                    <span className="text-white text-xs font-medium group-hover:text-white transition-colors duration-300">
                       {movie.averageRating.toFixed(1)}
                     </span>
                   </div>
@@ -207,21 +189,21 @@ const MostRated = () => {
 
               <div className="p-4 space-y-3">
                 <div>
-                  <h3 className="font-bold text-foreground text-xl line-clamp-2 group-hover:text-primary transition-colors duration-300">
+                  <h3 className="font-bold text-white text-lg line-clamp-2 group-hover:text-amber-300 transition-colors duration-300">
                     {movie.nameArabic}
                   </h3>
-                  <p className="text-muted-foreground text-sm mt-1 ltr transition-colors duration-300 group-hover:text-muted-foreground/80">
+                  <p className="text-gray-300 text-sm mt-1 transition-colors duration-300 group-hover:text-gray-200">
                     {movie.nameEnglish}
                   </p>
                 </div>
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center text-amber-300 space-x-1 space-x-reverse">
+                  <div className="flex items-center text-amber-300 gap-1">
                     {ratingsLoading ? (
                       <div className="animate-pulse bg-gray-600 h-4 w-16 rounded"></div>
                     ) : (
                       <>
                         {renderStars(movie.averageRating)}
-                        <span className="text text-xs mr-2 text-white transition-colors duration-300">
+                        <span className="text-xs text-white transition-colors duration-300 mr-2">
                           ({movie.averageRating.toFixed(1)} - {movie.ratingCount})
                         </span>
                       </>

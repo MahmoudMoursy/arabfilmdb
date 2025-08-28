@@ -586,7 +586,7 @@ const Details = () => {
                                             <span className="font-semibold text-white">{avgRating.count}</span>
                                         )}
                                     </div>
-                                    {hasRated && (
+                            
                                     {hasRated && (
                                         <div className="flex justify-between items-center">
                                             <span className="text-gray-400 flex items-center gap-2">⭐ تقييمك</span>
