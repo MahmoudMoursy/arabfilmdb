@@ -41,8 +41,10 @@ const SeriesFilterSection = () => {
         
         if (searchTerm) {
             filtered = filtered.filter(item =>
-                item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                item.englishTitle.toLowerCase().includes(searchTerm.toLowerCase())
+                (item.title && item.title.toLowerCase().includes(searchTerm.toLowerCase())) ||
+                (item.englishTitle && item.englishTitle.toLowerCase().includes(searchTerm.toLowerCase())) ||
+                (item.nameArabic && item.nameArabic.toLowerCase().includes(searchTerm.toLowerCase())) ||
+                (item.nameEnglish && item.nameEnglish.toLowerCase().includes(searchTerm.toLowerCase()))
             );
         }
         if (selectedGenre) {
