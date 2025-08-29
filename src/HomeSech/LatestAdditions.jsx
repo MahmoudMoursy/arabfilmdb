@@ -115,13 +115,13 @@ const LatestAdditions = () => {
 
 
         {allMovies
-          .filter(movie => movie.year === year || movie.year === year - 1)
-          .map((movie, index) => {
+          .filter(movie => movie.year === year || movie.year === year - 9)
+          .slice(-10).map((movie, index) => {
             const movieRating = getMovieRating(movie._id);
             return (
             <SwiperSlide key={index}>
               <div
-                className="group card-hover bg-card border text-3xl border-white/50 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-md hover:shadow-amber-300/100 hover:-translate-y-5 text-white w-[160px] md:w-[300px] z-10"
+              className="group card-hover bg-card border text-3xl border-white/50 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-md hover:shadow-amber-300/100 hover:-translate-y-5 text-white w-[160px] md:w-[310px] z-10"
                 style={{ backgroundColor: 'var(--color-dark)' }}
               >
                 <div className="block cursor-pointer" role="button">
@@ -149,7 +149,7 @@ const LatestAdditions = () => {
                     <div className="absolute top-2 right-2 bg-amber-300 backdrop-blur-sm rounded-lg px-2 text-black font-extrabold py-1 transition-all duration-300 group-hover:bg-amber-400">
                       <span className="text-primary-foreground text-xs font-medium">{movie?.genre}</span>
                     </div>
-                    <div className="absolute top-2 right-18 bg-amber-400 backdrop-blur-sm rounded-lg px-2 text-black font-extrabold py-1 transition-all duration-300 group-hover:bg-amber-400">
+                    <div className="absolute top-2 right-18 bg-amber-400 backdrop-blur-sm rounded-lg px-2 text-black font-extrabold py-1 transition-all duration-300 group-hover:bg-amber-400 mx-4">
                       <span className="text-primary-foreground text-xs font-medium">{movie?.type}</span>
                     </div>
 

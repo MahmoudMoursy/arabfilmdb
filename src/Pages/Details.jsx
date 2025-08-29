@@ -15,43 +15,43 @@ const Details = () => {
     const { allMovies, ratings, ratingsLoading } = useSelector(state => state.movies);
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    
+
     console.log(selectedItem);
-    
+
     useEffect(() => {
         if (id) {
             dispatch(fetchItemById(id));
         }
     }, [dispatch, id]);
-    
-    
+
+
     useEffect(() => {
         dispatch(fetchMovies());
-      }, [dispatch]);
-    
-     useEffect(() => {
+    }, [dispatch]);
+
+    useEffect(() => {
         if (allMovies.length > 0) {
-          const workIds = allMovies.map(movie => movie._id);
-          dispatch(fetchAverageRatings(workIds));
+            const workIds = allMovies.map(movie => movie._id);
+            dispatch(fetchAverageRatings(workIds));
         }
     }, [allMovies, dispatch]);
-            const getMovieRating = (movieId) => {
-            const rating = ratings[movieId];
-            if (rating && rating.average > 0) {
+    const getMovieRating = (movieId) => {
+        const rating = ratings[movieId];
+        if (rating && rating.average > 0) {
             return {
                 average: rating.average,
                 count: rating.count,
                 displayText: `${rating.average.toFixed(1)} (${rating.count})`
             };
-            }
-            return {
+        }
+        return {
             average: 0,
             count: 0,
             displayText: 'لا توجد تقييمات'
-            };
         };
+    };
     console.log(selectedItem);
-    
+
     // const similarMovies = allMovies.filter(
     //     (movie) => movie.genre === selectedItem?.genre ); // Get up to 5 similar movies
 
@@ -74,14 +74,14 @@ const Details = () => {
     const [imageError, setImageError] = useState(false);
 
 
-     const [movieState, setMovieState] = useState({
+    const [movieState, setMovieState] = useState({
         id: 1,
         rating: 4.5,
         isFavorite: false
-      });
+    });
 
-    
-    
+
+
 
 
     const handleFavoriteClick = (e) => {
@@ -107,9 +107,9 @@ const Details = () => {
 
     useEffect(() => {
         if (!id || !selectedItem) return;
-        
+
         console.log('Item loaded, fetching ratings and comments...');
-        
+
         // Fetch average rating
         setRatingLoading(true);
         axiosInstance.get(`/ratings/average/${id}`)
@@ -172,7 +172,7 @@ const Details = () => {
                     <div className="text-center">
                         <div className="text-red-400 text-lg mb-4">حدث خطأ في تحميل البيانات</div>
                         <p className="text-gray-300 mb-4">{error}</p>
-                        <button 
+                        <button
                             onClick={() => navigate('/')}
                             className="px-6 py-3 bg-amber-300 text-black rounded-lg hover:bg-amber-400 transition-colors"
                         >
@@ -192,7 +192,7 @@ const Details = () => {
                 <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'var(--color-primary)' }}>
                     <div className="text-center">
                         <div className="text-gray-400 text-lg mb-4">لم يتم العثور على العمل المطلوب</div>
-                        <button 
+                        <button
                             onClick={() => navigate('/')}
                             className="px-6 py-3 bg-amber-300 text-black rounded-lg hover:bg-amber-400 transition-colors"
                         >
@@ -207,7 +207,7 @@ const Details = () => {
     const handleShareClick = (e) => {
         e.stopPropagation();
         const shareUrl = `${window.location.origin}/Details/${id}`;
-        
+
         if (navigator.share) {
             navigator.share({
                 title: selectedItem.nameArabic,
@@ -290,9 +290,8 @@ const Details = () => {
                 <Star
                     key={i}
                     size={14}
-                    className={`lucide lucide-star fill-current text-primary transition-colors duration-200 ${
-                        isFilled ? '' : isHalf ? 'opacity-75' : 'opacity-50'
-                    }`}
+                    className={`lucide lucide-star fill-current text-primary transition-colors duration-200 ${isFilled ? '' : isHalf ? 'opacity-75' : 'opacity-50'
+                        }`}
                 />
             );
         }
@@ -325,7 +324,7 @@ const Details = () => {
                             <div className="flex-1 text-white pt-10 md:my-0">
                                 <h1 className="text-3xl md:text-6xl font-bold mb-2">{selectedItem.nameArabic}</h1>
                                 <p className="text-lg md:text-2xl text-gray-300 mb-4">{selectedItem.nameEnglish}</p>
-                                
+
                                 {/* Rating Section */}
                                 <div className="flex items-center gap-6 mb-6">
                                     <div className="flex items-center gap-1">
@@ -341,13 +340,12 @@ const Details = () => {
                                                 >
                                                     <Star
                                                         size={24}
-                                                        className={`transition-colors ${
-                                                            hasRated && myRating >= star
-                                                                ? 'fill-yellow-400 text-yellow-400' 
-                                                                : avgRating.average >= star 
-                                                                ? 'fill-yellow-400/50 text-yellow-400/50' 
-                                                                : 'fill-transparent text-gray-300'
-                                                        }`}
+                                                        className={`transition-colors ${hasRated && myRating >= star
+                                                                ? 'fill-yellow-400 text-yellow-400'
+                                                                : avgRating.average >= star
+                                                                    ? 'fill-yellow-400/50 text-yellow-400/50'
+                                                                    : 'fill-transparent text-gray-300'
+                                                            }`}
                                                     />
                                                 </button>
                                             ))}
@@ -402,8 +400,9 @@ const Details = () => {
                                                 </span>
                                             </>
                                         ) : null}
+
                                     </div>
-                                    
+
                                     <div className="flex items-center gap-2">
                                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0" />
@@ -411,7 +410,15 @@ const Details = () => {
                                         </svg>
                                         <span className='font-normal text-xl'>{selectedItem.country}</span>
                                     </div>
-                                    
+                                    {selectedItem.type === "series" && (<div className="flex items-center gap-2">
+                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <rect x="2" y="7" width="20" height="15" rx="2" ry="2" />
+                                            <polyline points="17 2 12 7 7 2" />
+                                        </svg>
+                                        <span className="font-normal text-xl">
+                                            عدد المواسم: {selectedItem.seasonsCount || 0}
+                                        </span>
+                                    </div>)}
                                     <div className="flex items-center gap-2">
                                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path d="M17 10.5V7c0-1.1-.9-2-2-2H3C1.9 5 1 5.9 1 7v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2v-3.5l4 4v-11l-4 4z" />
@@ -431,23 +438,23 @@ const Details = () => {
                                         onClick={() => submitRating(5)}
                                         disabled={ratingLoading || userRatingLoading || hasRated}
                                         className={`flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-colors ${hasRated
-                                                ? 'bg-gray-500/20 text-gray-400 cursor-not-allowed'
-                                                : 'bg-white/20 text-white hover:bg-white/30'
+                                            ? 'bg-gray-500/20 text-gray-400 cursor-not-allowed'
+                                            : 'bg-white/20 text-white hover:bg-white/30'
                                             } ${(ratingLoading || userRatingLoading || hasRated) ? 'opacity-50 cursor-not-allowed' : ''}`}
                                     >
                                         <Star size={20} />
                                         {hasRated ? `تم التقييم مسبقاً` : `قيّم الفيلم (5)`}
                                     </button>
-                                    
+
                                     <div className="flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-colors bg-white/20 text-white hover:bg-white/30">
-                                        <FavoriteButton 
-                                            workId={id} 
+                                        <FavoriteButton
+                                            workId={id}
                                             size={20}
                                             className="!w-auto !h-auto !bg-transparent !hover:bg-transparent"
                                         />
                                         <span>أضف للمفضلة</span>
                                     </div>
-                                    
+
                                     <button onClick={handleShareClick} className="flex items-center gap-2 px-6 py-3 bg-white/20 text-white rounded-lg hover:bg-white/30 transition-colors">
                                         <Share2 size={20} />
                                         مشاركة
@@ -513,6 +520,17 @@ const Details = () => {
                                         </h3>
                                         <p className="text-gray-300">{selectedItem.filmingLocation || 'غير محدد'}</p>
                                     </div>
+                                    <div className="bg-[#2a2a2a] p-4 rounded-lg shadow-sm">
+                                        <h3 className="font-semibold text-white mb-1 flex items-center gap-2">
+                                            📅 السنة
+                                        </h3>
+                                        <p className="text-gray-300">{selectedItem.year || 'غير محدد'}</p>
+                                    </div>
+                                    <div className="bg-[#2a2a2a] p-4 rounded-lg shadow-sm">
+                                        <h3 className="font-semibold text-white mb-1 flex items-center gap-2">
+                                            🎭 النوع                                        </h3>
+                                        <p className="text-gray-300">{selectedItem.genre || 'غير محدد'}</p>
+                                    </div>
                                 </div>
                             </div>
 
@@ -533,7 +551,7 @@ const Details = () => {
                                                 `متوسط التقييم: ${avgRating.average.toFixed(1)} (${avgRating.count} تقييم)`
                                             )}
                                         </div>
-                                        
+
                                         {/* User Rating Status */}
                                         {userRatingLoading ? (
                                             <div className="text-center mb-4">
@@ -558,46 +576,44 @@ const Details = () => {
                                                 </div>
                                             </div>
                                         )}
-                                        
+
                                         <div className="flex justify-center gap-2 mb-6">
-                                            {[1,2,3,4,5].map(v => (
-                                                <button 
-                                                    key={v} 
-                                                    onClick={() => submitRating(v)} 
+                                            {[1, 2, 3, 4, 5].map(v => (
+                                                <button
+                                                    key={v}
+                                                    onClick={() => submitRating(v)}
                                                     disabled={ratingLoading || userRatingLoading || hasRated}
                                                     title={hasRated ? `لقد قيّمت هذا العمل مسبقاً` : `قيّم العمل بـ ${v}/5 نجوم`}
-                                                    className={`px-3 py-1 rounded transition-all duration-200 ${
-                                                        myRating >= v 
-                                                            ? 'bg-yellow-500 text-black' 
+                                                    className={`px-3 py-1 rounded transition-all duration-200 ${myRating >= v
+                                                            ? 'bg-yellow-500 text-black'
                                                             : 'bg-white/10 text-white'
-                                                    } ${(ratingLoading || userRatingLoading || hasRated) ? 'opacity-50 cursor-not-allowed' : 'hover:bg-white/20'}`}
+                                                        } ${(ratingLoading || userRatingLoading || hasRated) ? 'opacity-50 cursor-not-allowed' : 'hover:bg-white/20'}`}
                                                 >
                                                     {v}
                                                 </button>
                                             ))}
                                         </div>
-                                        
+
                                         <div className="flex gap-2">
-                                            <input 
-                                                value={newComment} 
-                                                onChange={e => setNewComment(e.target.value)} 
-                                                placeholder="أضف تعليقك" 
-                                                className="flex-1 p-2 rounded bg-[#2a2a2a] text-white" 
+                                            <input
+                                                value={newComment}
+                                                onChange={e => setNewComment(e.target.value)}
+                                                placeholder="أضف تعليقك"
+                                                className="flex-1 p-2 rounded bg-[#2a2a2a] text-white"
                                                 disabled={commentLoading}
                                             />
-                                            <button 
-                                                onClick={submitComment} 
+                                            <button
+                                                onClick={submitComment}
                                                 disabled={commentLoading || !newComment.trim()}
-                                                className={`px-4 py-2 rounded transition-all duration-200 ${
-                                                    commentLoading || !newComment.trim() 
-                                                        ? 'bg-gray-500 text-gray-300 cursor-not-allowed' 
+                                                className={`px-4 py-2 rounded transition-all duration-200 ${commentLoading || !newComment.trim()
+                                                        ? 'bg-gray-500 text-gray-300 cursor-not-allowed'
                                                         : 'bg-yellow-500 text-black hover:bg-yellow-600'
-                                                }`}
+                                                    }`}
                                             >
                                                 {commentLoading ? 'جاري الإرسال...' : 'إرسال'}
                                             </button>
                                         </div>
-                                        
+
                                         <div className="text-right mt-6 space-y-3">
                                             {commentLoading ? (
                                                 <div className="animate-pulse space-y-3">
@@ -619,7 +635,7 @@ const Details = () => {
                                 </div>
                             </div>
                         </div>
-                        
+
                         {/* Statistics Sidebar */}
                         <div className="space-y-6">
                             <div className="bg-gradient-to-br from-[#1f1f1f] to-[#2c2c2c] border border-gray-700 rounded-xl p-6 shadow-lg">
@@ -644,14 +660,14 @@ const Details = () => {
                                             </div>
                                         )}
                                     </div>
-                                    <div className="flex justify-between items-center">
+                                    {/* <div className="flex justify-between items-center">
                                         <span className="text-gray-400 flex items-center gap-2">
                                             <Heart className="w-5 h-5" />
-                                         المفضلة</span>
+                                            المفضلة</span>
                                         <span className="font-semibold text-white">
-                                            {selectedItem.viewCount || 0}
+                                            {selectedItem.Favorite}
                                         </span>
-                                    </div>
+                                    </div> */}
                                     <div className="flex justify-between items-center">
                                         <span className="text-gray-400 flex items-center gap-2">📝 عدد التقييمات</span>
                                         {ratingLoading ? (
@@ -660,7 +676,7 @@ const Details = () => {
                                             <span className="font-semibold text-white">{avgRating.count}</span>
                                         )}
                                     </div>
-                            
+
                                     {hasRated && (
                                         <div className="flex justify-between items-center">
                                             <span className="text-gray-400 flex items-center gap-2">⭐ تقييمك</span>
@@ -675,14 +691,7 @@ const Details = () => {
                                             <span className="font-semibold text-white">{comments.length}</span>
                                         )}
                                     </div>
-                                    <div className="flex justify-between items-center">
-                                        <span className="text-gray-400 flex items-center gap-2">🎭 النوع</span>
-                                        <span className="font-semibold text-white">{selectedItem.genre || 'غير محدد'}</span>
-                                    </div>
-                                    <div className="flex justify-between items-center">
-                                        <span className="text-gray-400 flex items-center gap-2">📅 السنة</span>
-                                        <span className="font-semibold text-white">{selectedItem.year || 'غير محدد'}</span>
-                                    </div>
+                                    
                                 </div>
                             </div>
 
@@ -694,125 +703,143 @@ const Details = () => {
                         </h3>
 
                         <div className="grid grid-cols-1 mt-10 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
-                            {allMovies.filter(movie =>  movie.genre==selectedItem?.genre && movie.type == selectedItem?.type
-                        ).map((movie, index) => {
-                                {if (movie._id === selectedItem?._id) return null;} // تخطي الفيلم الحالي
-                            const movieRating = getMovieRating(movie._id);
-                            return (
-                            <SwiperSlide key={index}>
-                            <div
-                                className="group card-hover bg-card border text-3xl border-white/50 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-md hover:shadow-amber-300/100 hover:-translate-y-5 text-white w-[160px] md:w-[300px] z-10"
-                                style={{ backgroundColor: 'var(--color-dark)' }}
-                            >
-                                <div className="block cursor-pointer" role="button">
-                                <div className="relative aspect-[2/3] overflow-hidden">
-                                    {!isImageLoaded && !imageError && (
-                                    <div className="absolute inset-0 bg-muted animate-pulse flex items-center justify-center">
-                                        <div className="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
-                                    </div>
-                                    )}
-                    <img
-                      className={`w-full h-full object-cover transition-all duration-300 group-hover:scale-105 ${isImageLoaded ? 'opacity-100' : 'opacity-0'}`}
-                      loading="lazy"
-                      src={movie?.posterUrl}
-                      onLoad={() => setIsImageLoaded(true)}
-                      onError={(e) => {
-                        setImageError(true);
-                        e.target.src = 'https://via.placeholder.com/300x450/1f2937/9ca3af?text=صورة+غير+متوفرة';
-                      }}
+  {allMovies
+    .filter(
+      (movie) =>
+        movie.genre == selectedItem?.genre &&
+        movie.type == selectedItem?.type
+    )
+    .map((movie, index) => {
+      if (movie._id === selectedItem?._id) return null; // تخطي الفيلم الحالي
+      const movieRating = getMovieRating(movie._id);
+
+      return (
+        <div
+          key={index}
+          className="group card-hover bg-card border text-3xl border-white/50 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-md hover:shadow-amber-300/100 hover:-translate-y-5 text-white"
+          style={{ backgroundColor: "var(--color-dark)" }}
+        >
+          <div className="block cursor-pointer" role="button">
+            <div className="relative aspect-[2/3] overflow-hidden">
+              {!isImageLoaded && !imageError && (
+                <div className="absolute inset-0 bg-muted animate-pulse flex items-center justify-center">
+                  <div className="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
+                </div>
+              )}
+              <img
+                className={`w-full h-full object-cover transition-all duration-300 group-hover:scale-105 ${
+                  isImageLoaded ? "opacity-100" : "opacity-0"
+                }`}
+                loading="lazy"
+                src={movie?.posterUrl}
+                onLoad={() => setIsImageLoaded(true)}
+                onError={(e) => {
+                  setImageError(true);
+                  e.target.src =
+                    "https://via.placeholder.com/300x450/1f2937/9ca3af?text=صورة+غير+متوفرة";
+                }}
+              />
+
+              {/* باقي العناصر فوق الصورة */}
+              <div className="absolute top-2 left-2 bg-red-500/90 backdrop-blur-sm rounded-lg px-2 py-1 animate-pulse">
+                <span className="text-white text-xs font-bold">جديد</span>
+              </div>
+
+              <div className="absolute top-2 right-2 bg-amber-300 backdrop-blur-sm rounded-lg px-2 text-black font-extrabold py-1 transition-all duration-300 group-hover:bg-amber-400">
+                <span className="text-primary-foreground text-xs font-medium">
+                  {movie?.genre}
+                </span>
+              </div>
+
+              <div className="absolute top-2 right-18 bg-amber-400 backdrop-blur-sm rounded-lg px-2 text-black font-extrabold py-1 transition-all duration-300 group-hover:bg-amber-400">
+                <span className="text-primary-foreground text-xs font-medium">
+                  {movie?.type}
+                </span>
+              </div>
+
+              {/* Overlay buttons */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex items-center gap-6">
+                  <Link to={`/Details/${movie._id}`} className="bg-transparent">
+                    <button className="w-12 h-12 flex items-center justify-center bg-white/20 hover:bg-white/30 text-white rounded-full transition-all duration-300 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2">
+                      <Play size={30} className="fill-current" />
+                    </button>
+                  </Link>
+
+                  <button
+                    onClick={handleFavoriteClick}
+                    className={`w-12 h-12 flex items-center justify-center rounded-full transition-all duration-300 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+                      movieState.isFavorite
+                        ? "bg-red-500/90 hover:bg-red-500 text-white focus:ring-red-500"
+                        : "bg-white/20 hover:bg-white/30 text-amber-300 focus:ring-amber-300"
+                    }`}
+                  >
+                    <Heart
+                      size={30}
+                      className={movieState.isFavorite ? "fill-current" : ""}
                     />
+                  </button>
 
-                    <div className="absolute top-2 left-2 bg-red-500/90 backdrop-blur-sm rounded-lg px-2 py-1 animate-pulse">
-                      <span className="text-white text-xs font-bold">جديد</span>
-                    </div>
-
-                    <div className="absolute top-2 right-2 bg-amber-300 backdrop-blur-sm rounded-lg px-2 text-black font-extrabold py-1 transition-all duration-300 group-hover:bg-amber-400">
-                      <span className="text-primary-foreground text-xs font-medium">{movie?.genre}</span>
-                    </div>
-                    <div className="absolute top-2 right-18 bg-amber-400 backdrop-blur-sm rounded-lg px-2 text-black font-extrabold py-1 transition-all duration-300 group-hover:bg-amber-400">
-                      <span className="text-primary-foreground text-xs font-medium">{movie?.type}</span>
-                    </div>
-
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex items-center gap-6">
-                        <Link
-                              key={index}
-                              to={`/Details/${movie._id}`}  
-                              className="bg-transparent"
-                            >
-                              <button className="w-12 h-12 flex items-center justify-center bg-white/20 hover:bg-white/30 text-white rounded-full transition-all duration-300 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2">
-                                <Play size={30} className="fill-current" />
-                              </button>
-                            </Link>
-
-
-                        <button
-                          onClick={handleFavoriteClick}
-                          className={`w-12 h-12 flex items-center justify-center rounded-full transition-all duration-300 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-offset-2 ${movieState.isFavorite ? 'bg-red-500/90 hover:bg-red-500 text-white focus:ring-red-500' : 'bg-white/20 hover:bg-white/30 text-amber-300 focus:ring-amber-300'}`}
-                        >
-                          <Heart size={30} className={movieState.isFavorite ? 'fill-current' : ''} />
-                        </button>
-
-                        <button
-                          onClick={handleShareClick}
-                          className="w-12 h-12 flex items-center justify-center bg-white/20 hover:bg-white/30 text-blue-700 rounded-full transition-all duration-300 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2"
-                        >
-                          <Share2 size={30} />
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* Rating display on poster */}
-                    {movieRating.average > 0 && (
-                      <div className="absolute bottom-2 right-2 bg-black/80 backdrop-blur-sm rounded-lg px-2 py-1 transition-all duration-300 group-hover:bg-primary/90">
-                        <div className="flex items-center space-x-1 space-x-reverse">
-                          <Star
-                            size={12}
-                            className="lucide lucide-star fill-current text-yellow-400 group-hover:text-primary-foreground transition-colors duration-300"
-                            aria-hidden="true"
-                          />
-                          <span className="text-white text-xs font-medium group-hover:text-primary-foreground transition-colors duration-300">
-                            {movieRating.average.toFixed(1)}
-                          </span>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="p-4 space-y-3">
-                    <div>
-                      <h3 className="font-bold text-foreground text-2xl line-clamp-2 group-hover:text-primary transition-colors duration-300">
-                        {movie?.nameArabic}
-                      </h3>
-                      <p className="text-muted-foreground text-sm mt-1 ltr transition-colors duration-300 group-hover:text-muted-foreground/80">
-                        {movie?.nameEnglish}
-                      </p>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center text-amber-300 space-x-1 space-x-reverse">
-                        {ratingsLoading ? (
-                          <div className="animate-pulse bg-gray-600 h-4 w-16 rounded"></div>
-                        ) : movieRating.average > 0 ? (
-                          <>
-                            {renderStars(movieRating.average)}
-                            <span className="text text-xs mr-2 text-white transition-colors duration-300">
-                              ({movieRating.displayText})
-                            </span>
-                          </>
-                        ) : (
-                          <span className="text text-xs mr-2 text-gray-400 transition-colors duration-300">
-                            {movieRating.displayText}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  </div>
+                  <button
+                    onClick={handleShareClick}
+                    className="w-12 h-12 flex items-center justify-center bg-white/20 hover:bg-white/30 text-blue-700 rounded-full transition-all duration-300 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2"
+                  >
+                    <Share2 size={30} />
+                  </button>
                 </div>
               </div>
-            </SwiperSlide   >
-          )}
-                            )}
-                        </div>
+
+              {/* Rating display */}
+              {movieRating.average > 0 && (
+                <div className="absolute bottom-2 right-2 bg-black/80 backdrop-blur-sm rounded-lg px-2 py-1 transition-all duration-300 group-hover:bg-primary/90">
+                  <div className="flex items-center space-x-1 space-x-reverse">
+                    <Star
+                      size={12}
+                      className="lucide lucide-star fill-current text-yellow-400 group-hover:text-primary-foreground transition-colors duration-300"
+                      aria-hidden="true"
+                    />
+                    <span className="text-white text-xs font-medium group-hover:text-primary-foreground transition-colors duration-300">
+                      {movieRating.average.toFixed(1)}
+                    </span>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="p-4 space-y-3">
+              <div>
+                <h3 className="font-bold text-foreground text-2xl line-clamp-2 group-hover:text-primary transition-colors duration-300">
+                  {movie?.nameArabic}
+                </h3>
+                <p className="text-muted-foreground text-sm mt-1 ltr transition-colors duration-300 group-hover:text-muted-foreground/80">
+                  {movie?.nameEnglish}
+                </p>
+              </div>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center text-amber-300 space-x-1 space-x-reverse">
+                  {ratingsLoading ? (
+                    <div className="animate-pulse bg-gray-600 h-4 w-16 rounded"></div>
+                  ) : movieRating.average > 0 ? (
+                    <>
+                      {renderStars(movieRating.average)}
+                      <span className="text text-xs mr-2 text-white transition-colors duration-300">
+                        ({movieRating.displayText})
+                      </span>
+                    </>
+                  ) : (
+                    <span className="text text-xs mr-2 text-gray-400 transition-colors duration-300">
+                      {movieRating.displayText}
+                    </span>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    })}
+</div>
+
                     </div>
                 </div>
             </div>

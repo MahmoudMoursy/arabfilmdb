@@ -109,7 +109,7 @@ const LastSeries = () => {
           1024: { slidesPerView: 5, spaceBetween: 20 } // ديسكتوب
         }}
       >
-        {series.slice(-5).map((serie, index) => {
+        {series.slice(-10).map((serie, index) => {
           const seriesRating = getSeriesRating(serie._id);
           return (
           <SwiperSlide key={index}>
