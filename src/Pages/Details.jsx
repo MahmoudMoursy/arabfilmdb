@@ -1,20 +1,26 @@
 import Navbar from '../componet/Navbar';
 import Footer from '../componet/Footer';
 import React, { useEffect, useState } from 'react';
-import { Star, Play, User, Heart, Share2, Link } from 'lucide-react';
+import { Star, Play, User, Heart, Share2, Link, Trash2 } from 'lucide-react';
 import { fetchAverageRatings, fetchItemById, fetchMovies } from '../redux/moviesSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { axiosInstance } from '../api/axiosInstance';
+import { commentService } from '../api/commentService';
 import { useParams, useNavigate } from 'react-router-dom';
 import FavoriteButton from '../componet/FavoriteButton';
 import { SwiperSlide } from 'swiper/react';
+import { toast } from 'react-toastify';
 
 const Details = () => {
     const { id } = useParams();
     const { selectedItem, loading, error } = useSelector((state) => state.movies);
     const { allMovies, ratings, ratingsLoading } = useSelector(state => state.movies);
+    const { currentUser } = useSelector((state) => state.user);
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    
+    // Fallback to localStorage if Redux state is not available
+    const user = currentUser || JSON.parse(localStorage.getItem('user'));
     
     console.log(selectedItem);
     
@@ -277,6 +283,21 @@ const Details = () => {
             .finally(() => setCommentLoading(false));
     };
 
+    const deleteComment = async (commentId) => {
+        if (!confirm('هل أنت متأكد من حذف هذا التعليق؟')) {
+            return;
+        }
+
+        try {
+            await commentService.deleteComment(commentId);
+            setComments(comments.filter(comment => comment._id !== commentId));
+            toast.success('تم حذف التعليق بنجاح');
+        } catch (error) {
+            console.error('Error deleting comment:', error);
+            toast.error('حدث خطأ أثناء حذف التعليق');
+        }
+    };
+
     const renderStars = (rating) => {
         const stars = [];
         const fullStars = Math.floor(rating);
@@ -396,8 +417,12 @@ const Details = () => {
                                                     <polyline points="17 2 12 7 7 2" />
                                                 </svg>
                                                 <span className="font-normal text-xl">
-                                                    {selectedItem.episodesCount
-                                                        ? `عدد الحلقات: ${selectedItem.episodesCount}`
+                                                    {selectedItem.seasonsCount && selectedItem.episodesCount
+                                                        ? `${selectedItem.seasonsCount} مواسم - ${selectedItem.episodesCount} حلقة`
+                                                        : selectedItem.seasonsCount
+                                                        ? `${selectedItem.seasonsCount} مواسم`
+                                                        : selectedItem.episodesCount
+                                                        ? `${selectedItem.episodesCount} حلقة`
                                                         : 'مسلسل - متعدد الحلقات'}
                                                 </span>
                                             </>
@@ -484,10 +509,24 @@ const Details = () => {
                                         <p className="text-gray-300">{selectedItem.assistantDirector || 'غير محدد'}</p>
                                     </div>
 
-                                    <div className="bg-[#2a2a2a] p-4 rounded-lg shadow-sm">
-                                        <h3 className="font-semibold text-white mb-1">🎭 التصنيف</h3>
-                                        <p className="text-gray-300">{selectedItem.genre}</p>
-                                    </div>
+                                                                         <div className="bg-[#2a2a2a] p-4 rounded-lg shadow-sm">
+                                         <h3 className="font-semibold text-white mb-1">🎭 التصنيف</h3>
+                                         <p className="text-gray-300">{selectedItem.genre}</p>
+                                     </div>
+
+                                     {selectedItem.type === 'series' && (
+                                         <div className="bg-[#2a2a2a] p-4 rounded-lg shadow-sm">
+                                             <h3 className="font-semibold text-white mb-1">📺 معلومات المسلسل</h3>
+                                             <div className="space-y-1">
+                                                 {selectedItem.seasonsCount && (
+                                                     <p className="text-gray-300">عدد المواسم: {selectedItem.seasonsCount}</p>
+                                                 )}
+                                                 {selectedItem.episodesCount && (
+                                                     <p className="text-gray-300">عدد الحلقات: {selectedItem.episodesCount}</p>
+                                                 )}
+                                             </div>
+                                         </div>
+                                     )}
 
                                     <div className="bg-[#2a2a2a] p-4 rounded-lg shadow-sm">
                                         <h3 className="font-semibold text-white mb-2 flex items-center gap-2">
@@ -609,8 +648,21 @@ const Details = () => {
                                                 </div>
                                             ) : (
                                                 comments.map(c => (
-                                                    <div key={c._id} className="p-3 bg-[#2a2a2a] rounded text-white text-right">
-                                                        {c.commentText}
+                                                    <div key={c._id} className="p-3 bg-[#2a2a2a] rounded text-white text-right relative">
+                                                        <div className="flex justify-between items-start">
+                                                            <div className="flex-1">
+                                                                {c.commentText}
+                                                            </div>
+                                                            {user?.role === 'admin' && (
+                                                                <button
+                                                                    onClick={() => deleteComment(c._id)}
+                                                                    className="mr-2 p-2 text-red-500 hover:text-red-300 hover:bg-red-900/30 rounded-lg transition-all duration-200 border border-red-500/30 hover:border-red-400/50"
+                                                                    title="حذف التعليق"
+                                                                >
+                                                                    <Trash2 size={18} />
+                                                                </button>
+                                                            )}
+                                                        </div>
                                                     </div>
                                                 ))
                                             )}
@@ -683,6 +735,13 @@ const Details = () => {
                                         <span className="text-gray-400 flex items-center gap-2">📅 السنة</span>
                                         <span className="font-semibold text-white">{selectedItem.year || 'غير محدد'}</span>
                                     </div>
+                                    
+                                    {selectedItem.type === 'series' && selectedItem.seasonsCount && (
+                                        <div className="flex justify-between items-center">
+                                            <span className="text-gray-400 flex items-center gap-2">📺 المواسم</span>
+                                            <span className="font-semibold text-white">{selectedItem.seasonsCount}</span>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
 
