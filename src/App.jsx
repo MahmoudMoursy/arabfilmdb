@@ -18,6 +18,7 @@ import Details from "./Pages/Details";
 import AdminDashboard from "./Dashboard/AdminDashboard";
 import Profile from "./Pages/Profile";
 import AddForm from "./Dashboard/AddForm";
+import Contact from "./Pages/Contact";
 
 const ProtectedRoute = ({ children, roles = ["admin"] }) => {
   const user = JSON.parse(localStorage.getItem("user"));
@@ -43,7 +44,7 @@ function App() {
       <div>
         <Routes>
           <Route path="/" index element={<Home />} />
-          
+          <Route path="/Contact" element={<Contact />} />
           <Route path="/Register" element={<Register />} />
           <Route path="/Login" element={<Login />} />
           <Route path="/Footer" element={<Footer />} />
