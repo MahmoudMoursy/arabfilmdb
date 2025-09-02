@@ -18,6 +18,8 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import { FaStar } from "react-icons/fa";
+import logo from "/src/assets/WhatsApp_Image_2025-09-01_at_19.08.17_1b74120e-removebg-preview.png";
+
 
 
 function Home() {
@@ -209,19 +211,23 @@ function Home() {
       </div>
     </div>
  <div className="max-w-6xl mx-auto mt-14 px-4 relative">
-      <h2 className="text-center text-3xl font-extrabold text-white mb-10">
-    أراء المستخدمين ⭐
-      </h2>
+    <div className="flex items-center justify-center space-x-4">
+  <h2 className="text-3xl font-extrabold text-white">
+    أراء مستخدمين 
+  </h2>
+  <img src={logo} alt="Logo" className="h-50 w-auto" />
+</div>
+
 
        <Swiper
         modules={[Navigation, Pagination]}
         spaceBetween={5}   
-        slidesPerView={2}
+        slidesPerView={1}
         navigation
         pagination={{ clickable: true }}
         breakpoints={{
           640: { slidesPerView: 1, spaceBetween: 50},
-          768: { slidesPerView: 2, spaceBetween: 50}, 
+          768: { slidesPerView: 1, spaceBetween: 50}, 
           1024: { slidesPerView: 2, spaceBetween: 50 } 
         }}
       >
