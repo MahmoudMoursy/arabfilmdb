@@ -1,4 +1,4 @@
-import logo from "/src/assets/WhatsApp Image 2025-08-03 at 23.32.06_4ba7b00e.jpg";
+import logo from "/src/assets/WhatsApp_Image_2025-09-01_at_19.08.17_1b74120e-removebg-preview.png";
 import { useNavigate } from 'react-router-dom';
 function Footer() {
     const navigate = useNavigate();
@@ -8,8 +8,8 @@ function Footer() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                     <div className="space-y-4">
                         <div className="flex items-center space-x-2 space-x-reverse">
-                            <img src={logo} alt="Logo" className="h-10 w-auto" />
-                            <span className="text-xl font-bold text-amber-300">ArabFilmDB</span>
+                            <img src={logo} alt="Logo" className="h-50 w-auto -mt-20 -mb-13" />
+                            {/* <span className="text-xl font-bold text-amber-300">ArabFilmDB</span> */}
                         </div>
                         <p className="text-muted-foreground text-sm leading-relaxed">
                             قاعدة البيانات الأكثر شمولية للأفلام والمسلسلات العربية والخليجية. اكتشف أحدث الإنتاجات، اقرأ المراجعات، وشارك آرائك مع مجتمع محبي السينما العربية.

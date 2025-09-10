@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import "/src/App.css";
-import logo from "/src/assets/WhatsApp Image 2025-08-03 at 23.32.06_4ba7b00e.jpg"
+import logo from "/src/assets/WhatsApp_Image_2025-09-01_at_19.08.17_1b74120e-removebg-preview.png"
 import MovieFilterDemo from '../Pages/MovieFilterDemo';
 import SeriesFilterDemo from '../Pages/SeriesFilterDemo';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -87,7 +87,7 @@ const Navbar = () => {
                                     <img
                                         src={logo}
                                         alt="Logo"
-                                        className="h-12 w-auto drop-shadow-lg transition-all duration-300 group-hover:drop-shadow-2xl"
+                                        className="h-32 w-auto drop-shadow-lg transition-all duration-300 group-hover:drop-shadow-2xl"
                                     />
                                 </div>
                             </div>
@@ -212,10 +212,10 @@ const Navbar = () => {
                                     <div className="relative inline-block">
                                         <button
                                             onClick={() => setOpen(!open)}
-                                            className="flex items-center gap-2 px-12 py-2 rounded-lg border border-gray-600/50 bg-[var(--color-accent)] hover:border-amber-300/50 transition-all duration-300"
+                                            className="flex items-center gap-2 md:px-12 px-2 py-2 rounded-lg border border-gray-600/50 bg-[var(--color-accent)] hover:border-amber-300/50 transition-all duration-300"
                                         >
                                             <User className="w-7 h-6 text-black" />
-                                            <span className="text-black font-bold">{user?.username}</span>
+                                            <span className="text-black font-bold ">{user?.username}</span>
                                         </button>
 
                                         {open && (
