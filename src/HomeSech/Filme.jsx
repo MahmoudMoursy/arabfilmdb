@@ -112,7 +112,7 @@ const Filme = () => {
         {films.slice(-5).map((movie, index) => {
           const movieRating = getMovieRating(movie._id);
           return (
-          <SwiperSlide key={index}>
+          <SwiperSlide key={index} style={{paddingBottom:`60px`}}>
 
             <div
               key={index}

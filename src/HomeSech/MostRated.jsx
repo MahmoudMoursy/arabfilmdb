@@ -112,7 +112,7 @@ const MostRated = () => {
       >
         {topRatedMovies.map((movie, index) => (
           <SwiperSlide
-            key={movie._id}
+            key={movie._id} style={{paddingBottom:`60px`}}
             className="group card-hover bg-card border text-3xl border-white/50 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-md hover:shadow-amber-300/100 hover:-translate-y-5 text-white w-[160px] md:w-[280px] z-10"
           >
             <div

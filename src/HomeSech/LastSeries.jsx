@@ -112,7 +112,7 @@ const LastSeries = () => {
         {series.slice(-10).map((serie, index) => {
           const seriesRating = getSeriesRating(serie._id);
           return (
-          <SwiperSlide key={index}>
+          <SwiperSlide key={index} style={{paddingBottom:`60px`}}>
 
             <div
               key={index}

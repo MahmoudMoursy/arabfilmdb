@@ -32,10 +32,11 @@ body {
   width: 12px !important;
   height: 12px !important;
   opacity: 0.6 !important;
-  margin: 0 4px !important;
+  margin: 0px 4px 0px 4px !important;
 }
 
 .swiper-pagination-bullet-active {
   background-color: #f59e0b !important;
   transform: scale(1.2);
 }
+
