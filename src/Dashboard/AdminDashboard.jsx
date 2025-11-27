@@ -35,6 +35,7 @@ import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
 const AddUserForm = () => {
+
   const { register, handleSubmit, reset } = useForm();
   const currentUser = useSelector((s) => s.user.currentUser);
 
@@ -131,6 +132,8 @@ const AddUserForm = () => {
 };
 
 const Sidebar = () => {
+        const navigate = useNavigate();
+
   return (
     <div className=" text_white w-64 p-5 space-y-8 flex flex-col" style={{backgroundColor: 'var(--color-secondary)' }}>
       <div className="flex items-center space-x-3 space-x-reverse">
@@ -145,6 +148,7 @@ const Sidebar = () => {
               الإحصائيات
             </a>  
           </li>
+         
         </ul>
       </nav>
       <div className="text-center text-gray-500 text-xs">
@@ -229,8 +233,15 @@ const AdminDashboard = () => {
       <div className="flex-1 flex flex-col overflow-y-auto">
         <main className="p-6 md:p-8">
           <div className="flex items-baseline justify-between mb-6">
-            <h1 className="text-3xl font-extrabold text-white">نظرة عامة على الإحصائيات</h1>
-            <span className="text-sm text-white">لوحة تحكم الإدارة</span>
+ <button
+            onClick={() => {
+              navigate('/AddForm');
+            }}
+            className="w-58 px-1 py-2 rounded-xl font-bold transition-all duration-300 text-white hover:shadow-lg"
+            style={{ backgroundColor: "var(--color-accent)" }}
+          >
+            أضافه
+          </button>            <span className="text-sm text-white">لوحة تحكم الإدارة</span>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">

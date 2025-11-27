@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import "../App.css";
 import { Star, Play, Share2 } from 'lucide-react';
-import { useDispatch, useSelector } from 'react-redux';
-import { fetchMovies, fetchAverageRatings } from '../redux/moviesSlice';
+import { useGetWorksQuery, useGetRatingsForWorksQuery } from '../redux/apiSlice';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination } from 'swiper/modules';
 import 'swiper/css';
@@ -15,20 +14,12 @@ import AddToFavoritesButton from '../componet/AddToFavoritesButton';
 const LatestAdditions = () => {
   const date = new Date();
   const year = date.getFullYear();
-  const { allMovies, ratings, ratingsLoading } = useSelector(state => state.movies);
-  const dispatch = useDispatch();
+  const { data: works = [], isLoading: worksLoading } = useGetWorksQuery();
 
-  useEffect(() => {
-    dispatch(fetchMovies());
-  }, [dispatch]);
-
-  // Fetch ratings when movies are loaded
-  useEffect(() => {
-    if (allMovies.length > 0) {
-      const workIds = allMovies.map(movie => movie._id);
-      dispatch(fetchAverageRatings(workIds));
-    }
-  }, [allMovies, dispatch]);
+  const workIds = useMemo(() => (works && works.length ? works.map(m => m._id) : []), [works]);
+  const { data: ratings = {}, isLoading: ratingsLoading } = useGetRatingsForWorksQuery(workIds, {
+    skip: workIds.length === 0,
+  });
 
   const [movieState, setMovieState] = useState({
     id: 1,
@@ -114,7 +105,7 @@ const LatestAdditions = () => {
       >
 
 
-        {allMovies
+        {works
           .filter(movie => movie.year === year || movie.year === year - 9)
           .slice(-10).map((movie, index) => {
             const movieRating = getMovieRating(movie._id);

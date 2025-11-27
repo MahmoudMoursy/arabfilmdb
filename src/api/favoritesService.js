@@ -1,59 +1,59 @@
 import { axiosInstance } from './axiosInstance';
 
 export const favoritesService = {
-  // Add a work to favorites
-  addToFavorites: async (workId) => {
+  // Add a work to es
+  addToes: async (workId) => {
     try {
       const response = await axiosInstance.post('/users/favorites', { workId });
-      console.log('addToFavorites response:', response.data);
+      console.log('addToes response:', response.data);
       return response.data;
     } catch (error) {
-      console.error('Error in addToFavorites:', error);
+      console.error('Error in addToes:', error);
       throw error;
     }
   },
 
-  // Remove a work from favorites
-  removeFromFavorites: async (workId) => {
+  // Remove a work from es
+  removeFromes: async (workId) => {
     try {
       const response = await axiosInstance.delete(`/users/favorites/${workId}`);
-      console.log('removeFromFavorites response:', response.data);
+      console.log('removeFromes response:', response.data);
       return response.data;
     } catch (error) {
-      console.error('Error in removeFromFavorites:', error);
+      console.error('Error in removeFromes:', error);
       throw error;
     }
   },
 
-  // Get user's favorites list
-  getFavorites: async () => {
+  // Get user's es list
+  getes: async () => {
     try {
       const response = await axiosInstance.get('/users/favorites');
-      console.log('getFavorites response:', response.data);
+      console.log('getes response:', response.data);
       return response.data;
     } catch (error) {
-      console.error('Error in getFavorites:', error);
+      console.error('Error in getes:', error);
       throw error;
     }
   },
 
-  // Check if a work is in favorites
-  checkFavoriteStatus: async (workId) => {
+  // Check if a work is in es
+  checkeStatus: async (workId) => {
     const response = await axiosInstance.get(`/users/favorites/check/${workId}`);
     return response.data;
   },
 
-  // Toggle favorite status (add if not favorited, remove if favorited)
-  toggleFavorite: async (workId, currentStatus) => {
+  // Toggle e status (add if not ed, remove if ed)
+  togglee: async (workId, currentStatus) => {
     if (currentStatus) {
-      return await favoritesService.removeFromFavorites(workId);
+      return await esService.removeFromes(workId);
     } else {
-      return await favoritesService.addToFavorites(workId);
+      return await esService.addToes(workId);
     }
   },
 
-  // Add to favorites and redirect to profile
-  addToFavoritesAndRedirect: async (workId, navigate, workData = null, toast = null) => {
+  // Add to es and redirect to profile
+  addToesAndRedirect: async (workId, navigate, workData = null, toast = null) => {
     try {
       // Check if user is logged in
       const token = localStorage.getItem('token');
@@ -74,9 +74,9 @@ export const favoritesService = {
         return false;
       }
 
-      // Check if already in favorites
-      const statusResponse = await favoritesService.checkFavoriteStatus(workId);
-      if (statusResponse.isFavorite) {
+      // Check if already in es
+      const statusResponse = await esService.checkeStatus(workId);
+      if (statusResponse.ise) {
         if (toast) {
           toast.info('هذا العمل موجود بالفعل في المفضلة', {
             position: "top-center",
@@ -93,10 +93,10 @@ export const favoritesService = {
         return true;
       }
 
-      // Add to favorites
-      const response = await favoritesService.addToFavorites(workId);
-      console.log('Added to favorites and redirecting:', response);
-      
+      // Add to es
+      const response = await esService.addToes(workId);
+      console.log('Added to es and redirecting:', response);
+
       // Show success message with toast
       if (toast) {
         toast.success('تم الإضافة إلى المفضلة بنجاح! 🎉', {
@@ -111,12 +111,12 @@ export const favoritesService = {
       } else {
         alert('تم الإضافة إلى المفضلة بنجاح!');
       }
-      
+
       // Redirect to profile with success parameter
       navigate('/profile?added=true&workId=' + workId);
       return true;
     } catch (error) {
-      console.error('Error in addToFavoritesAndRedirect:', error);
+      console.error('Error in addToesAndRedirect:', error);
       if (toast) {
         toast.error('حدث خطأ أثناء الإضافة إلى المفضلة', {
           position: "top-center",

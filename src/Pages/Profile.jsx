@@ -54,7 +54,7 @@ const ProfilePage = () => {
             
             // Load favorites
             console.log('Loading favorites...');
-            const favoritesResponse = await favoritesService.getFavorites();
+            const favoritesResponse = await favoritesService.getes();
             console.log('Favorites response:', favoritesResponse);
             
             if (favoritesResponse && favoritesResponse.favorites) {

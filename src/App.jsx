@@ -7,7 +7,7 @@ import Home from "./Pages/Home";
 import Register from "./Pages/Register";
 import Login from "./Pages/Login";
 import Footer from "./componet/Footer";
-import PrivacyPolicy from "./Pages/PrivacyPolicy";
+// import PrivacyPolicy from "./Pages/PrivacyPolicy";
 import TermsOfUse from "./Pages/TermsOfUse";
 import IntellectualPropertyRights from "./Pages/IntellectualPropertyRights";
 import Dashboard from "./Dashboard/Dashboard";
@@ -49,7 +49,7 @@ function App() {
           <Route path="/Login" element={<Login />} />
           <Route path="/Footer" element={<Footer />} />
           <Route path="/TermsOfUse" element={<TermsOfUse />} />
-          <Route path="/PrivacyPolicy" element={<PrivacyPolicy />} />
+          {/* <Route path="/PrivacyPolicy" element={<PrivacyPolicy />} /> */}
           <Route
             path="/IntellectualPropertyRights"
             element={<IntellectualPropertyRights />}

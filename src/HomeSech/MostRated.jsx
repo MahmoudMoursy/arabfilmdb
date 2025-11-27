@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Star, Play, Share2, Heart } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import { fetchMovies, fetchAverageRatings } from '../redux/moviesSlice';
+import { useGetWorksQuery, useGetRatingsForWorksQuery } from '../redux/apiSlice';
 import AddToFavoritesButton from '../componet/AddToFavoritesButton';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination } from 'swiper/modules';
@@ -11,19 +10,11 @@ import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 
 const MostRated = () => {
-  const { allMovies, ratings, ratingsLoading } = useSelector(state => state.movies);
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    dispatch(fetchMovies());
-  }, [dispatch]);
-
-  useEffect(() => {
-    if (allMovies.length > 0) {
-      const workIds = allMovies.map(movie => movie._id);
-      dispatch(fetchAverageRatings(workIds));
-    }
-  }, [allMovies, dispatch]);
+  const { data: works = [], isLoading: worksLoading } = useGetWorksQuery();
+  const workIds = useMemo(() => (works && works.length ? works.map(m => m._id) : []), [works]);
+  const { data: ratings = {}, isLoading: ratingsLoading } = useGetRatingsForWorksQuery(workIds, {
+    skip: workIds.length === 0,
+  });
 
   const [imageStates, setImageStates] = useState({});
 
@@ -31,7 +22,7 @@ const MostRated = () => {
   const handleShareClick = (e, movie) => {
     e.stopPropagation();
     const shareUrl = `${window.location.origin}/Details/${movie._id}`;
-    
+
     if (navigator.share) {
       navigator.share({
         title: movie.nameArabic,
@@ -55,9 +46,8 @@ const MostRated = () => {
         <Star
           key={i}
           size={14}
-          className={`fill-current transition-colors duration-200 ${
-            isFilled ? 'text-yellow-400' : isHalf ? 'text-yellow-400 opacity-75' : 'text-gray-400'
-          }`}
+          className={`fill-current transition-colors duration-200 ${isFilled ? 'text-yellow-400' : isHalf ? 'text-yellow-400 opacity-75' : 'text-gray-400'
+            }`}
         />
       );
     }
@@ -65,7 +55,7 @@ const MostRated = () => {
   };
 
   const getTopRatedMovies = () => {
-    const moviesWithRatings = allMovies.map(movie => {
+    const moviesWithRatings = works.map(movie => {
       const rating = ratings[movie._id];
       return {
         ...movie,
@@ -112,7 +102,7 @@ const MostRated = () => {
       >
         {topRatedMovies.map((movie, index) => (
           <SwiperSlide
-            key={movie._id} style={{paddingBottom:`60px`}}
+            key={movie._id} style={{ paddingBottom: `60px` }}
             className="group card-hover bg-card border text-3xl border-white/50 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-md hover:shadow-amber-300/100 hover:-translate-y-5 text-white w-[160px] md:w-[280px] z-10"
           >
             <div
@@ -128,9 +118,8 @@ const MostRated = () => {
                 )}
                 <img
                   alt={movie.nameArabic}
-                  className={`w-full h-full object-cover transition-all duration-300 group-hover:scale-105 ${
-                    imageStates[movie._id]?.loaded ? 'opacity-100' : 'opacity-0'
-                  }`}
+                  className={`w-full h-full object-cover transition-all duration-300 group-hover:scale-105 ${imageStates[movie._id]?.loaded ? 'opacity-100' : 'opacity-0'
+                    }`}
                   loading="lazy"
                   src={movie.posterUrl}
                   onLoad={() => setImageStates(prev => ({ ...prev, [movie._id]: { loaded: true, error: false } }))}
@@ -146,24 +135,24 @@ const MostRated = () => {
                   </span>
                 </div>
 
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex items-center gap-4">
-                  <Link to={`/Details/${movie._id}`}>
-                    <button className="w-12 h-12 flex items-center justify-center bg-white/20 hover:bg-white/30 text-white rounded-full transition-all duration-300 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2">
-                      <Play size={24} className="fill-current" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex items-center gap-4">
+                    <Link to={`/Details/${movie._id}`}>
+                      <button className="w-12 h-12 flex items-center justify-center bg-white/20 hover:bg-white/30 text-white rounded-full transition-all duration-300 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2">
+                        <Play size={24} className="fill-current" />
+                      </button>
+                    </Link>
+
+                    <AddToFavoritesButton workId={movie._id} />
+
+                    <button
+                      onClick={(e) => handleShareClick(e, movie)}
+                      className="w-12 h-12 flex items-center justify-center bg-white/20 hover:bg-white/30 text-white rounded-full transition-all duration-300 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2"
+                    >
+                      <Share2 size={24} />
                     </button>
-                  </Link>
-
-                  <AddToFavoritesButton workId={movie._id} />
-
-                  <button
-                    onClick={(e) => handleShareClick(e, movie)}
-                    className="w-12 h-12 flex items-center justify-center bg-white/20 hover:bg-white/30 text-white rounded-full transition-all duration-300 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2"
-                  >
-                    <Share2 size={24} />
-                  </button>
+                  </div>
                 </div>
-              </div>
 
                 {/* Rating display */}
                 <div className="absolute bottom-2 right-2 bg-black/80 backdrop-blur-sm rounded-lg px-2 py-1 transition-all duration-300 group-hover:bg-amber-500/90">

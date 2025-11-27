@@ -15,7 +15,7 @@ const FavoriteButton = ({ workId, initialStatus = false, onStatusChange, classNa
 
   const checkFavoriteStatus = async () => {
     try {
-      const response = await favoritesService.checkFavoriteStatus(workId);
+      const response = await favoritesService.checkeStatus(workId);
       setIsFavorite(response.isFavorite);
     } catch (error) {
       console.error('Error checking favorite status:', error);
@@ -24,26 +24,26 @@ const FavoriteButton = ({ workId, initialStatus = false, onStatusChange, classNa
 
   const handleFavoriteClick = async (e) => {
     e.stopPropagation();
-    
+
     if (isLoading) return;
-    
+
     setIsLoading(true);
     try {
       console.log('Toggling favorite for workId:', workId, 'current status:', isFavorite);
       const response = await favoritesService.toggleFavorite(workId, isFavorite);
       console.log('Toggle response:', response);
-      
+
       setIsFavorite(!isFavorite);
-      
+
       // Call the callback if provided
       if (onStatusChange) {
         onStatusChange(!isFavorite, response);
       }
-      
+
       // Show success message
       const message = isFavorite ? 'تم إزالة من المفضلة' : 'تم الإضافة إلى المفضلة';
       console.log(message);
-      
+
     } catch (error) {
       console.error('Error toggling favorite:', error);
       // Revert the state on error
@@ -57,15 +57,14 @@ const FavoriteButton = ({ workId, initialStatus = false, onStatusChange, classNa
     <button
       onClick={handleFavoriteClick}
       disabled={isLoading}
-      className={`w-12 h-12 flex items-center justify-center rounded-full transition-all duration-300 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-offset-2 ${
-        isFavorite
+      className={`w-12 h-12 flex items-center justify-center rounded-full transition-all duration-300 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-offset-2 ${isFavorite
           ? 'bg-red-500/90 hover:bg-red-500 text-white focus:ring-red-500'
           : 'bg-white/20 hover:bg-white/30 text-amber-300 focus:ring-amber-300'
-      } ${className}`}
+        } ${className}`}
     >
-      <Heart 
-        size={size} 
-        className={`${isFavorite ? 'fill-current' : ''} ${isLoading ? 'animate-pulse' : ''}`} 
+      <Heart
+        size={size}
+        className={`${isFavorite ? 'fill-current' : ''} ${isLoading ? 'animate-pulse' : ''}`}
       />
     </button>
   );
