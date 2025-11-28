@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Filter, X, ChevronDown } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchMovies } from '../redux/moviesSlice';
+import { fetchFilms } from '../redux/moviesSlice';
 import { Link } from 'react-router-dom';
 
 const MoviesList = ({ filteredMovies, loading, searchTerm, clearAllFilters }) => {
@@ -88,7 +88,7 @@ const MoviesList = ({ filteredMovies, loading, searchTerm, clearAllFilters }) =>
               className={`px-3 py-1 rounded ${currentPage === i + 1
                 ? "bg-amber-300 text-white"
                 : "bg-gray-200 text-black"
-              }`}
+                }`}
             >
               {i + 1}
             </button>
@@ -128,10 +128,10 @@ const MovieFilterSection = () => {
   const [yearDropdownOpen, setYearDropdownOpen] = useState(false);
   const [countryDropdownOpen, setCountryDropdownOpen] = useState(false);
   const dispatch = useDispatch();
-  const { films, loading, error } = useSelector(state => state.movies);
+  const { films, filmsLoading, error } = useSelector(state => state.movies);
 
   useEffect(() => {
-    dispatch(fetchMovies());
+    dispatch(fetchFilms());
   }, [dispatch]);
 
   useEffect(() => {
@@ -416,7 +416,7 @@ const MovieFilterSection = () => {
         {/* عرض قائمة الأفلام والصفحات عبر MoviesList */}
         <MoviesList
           filteredMovies={filteredMovies}
-          loading={loading}
+          loading={filmsLoading}
           searchTerm={searchTerm}
           clearAllFilters={clearAllFilters}
         />

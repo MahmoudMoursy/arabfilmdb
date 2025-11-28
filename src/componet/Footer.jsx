@@ -8,8 +8,14 @@ function Footer() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                     <div className="space-y-4">
                         <div className="flex items-center space-x-2 space-x-reverse">
-                            <img src={logo} alt="Logo" className="h-50 w-auto -mt-20 -mb-13" />
-                            {/* <span className="text-xl font-bold text-amber-300">ArabFilmDB</span> */}
+                            <img
+                                src={logo}
+                                alt="Logo"
+                                width={128}          // عرض ثابت
+                                height={128}         // ارتفاع ثابت
+                                className="w-32 h-32 object-contain drop-shadow-lg transition-shadow duration-300 group-hover:drop-shadow-2xl"
+                                loading="eager"      // مهم للـ LCP إذا الصورة هي الأولى في الصفحة
+                            />                            {/* <span className="text-xl font-bold text-amber-300">ArabFilmDB</span> */}
                         </div>
                         <p className="text-muted-foreground text-sm leading-relaxed">
                             قاعدة البيانات الأكثر شمولية للأفلام والمسلسلات العربية والخليجية. اكتشف أحدث الإنتاجات، اقرأ المراجعات، وشارك آرائك مع مجتمع محبي السينما العربية.
@@ -121,7 +127,7 @@ function Footer() {
                             <li>
                                 <a
                                     className="text-muted-foreground hover:text-primary transition-colors text-sm"
-                                  onClick={() => navigate('/Termsofuse')}
+                                    onClick={() => navigate('/Termsofuse')}
                                 >
                                     الشروط والأحكام
                                 </a>
@@ -135,7 +141,7 @@ function Footer() {
                                     سياسة الاستخدام
                                 </a>
                             </li>
-                            
+
                             <li>
                                 <a
                                     className="text-muted-foreground hover:text-primary transition-colors text-sm"

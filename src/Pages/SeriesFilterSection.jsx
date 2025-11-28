@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Filter, X, ChevronDown } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchMovies } from '../redux/moviesSlice';
+import { fetchSeries } from '../redux/moviesSlice';
 import { Link } from 'react-router-dom';
 
 
@@ -26,7 +26,7 @@ const SeriesFilterSection = () => {
   const [genreDropdownOpen, setGenreDropdownOpen] = useState(false);
   const [yearDropdownOpen, setYearDropdownOpen] = useState(false);
   const [countryDropdownOpen, setCountryDropdownOpen] = useState(false);
-  const { series, loading, error } = useSelector(state => state.movies);
+  const { series, seriesLoading, error } = useSelector(state => state.movies);
 
   const dispatch = useDispatch();
 
@@ -39,7 +39,7 @@ const SeriesFilterSection = () => {
   const getCountryName = (id) => id;
 
   useEffect(() => {
-    dispatch(fetchMovies());
+    dispatch(fetchSeries());
   }, [dispatch]);
 
 

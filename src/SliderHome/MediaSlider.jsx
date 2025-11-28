@@ -1,22 +1,61 @@
-import React, { useState, useEffect } from 'react';
-import sliderData from './slider_data';
+import React, { useState, useEffect, useMemo } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchLatestMovies, fetchLatestSeries } from '../redux/moviesSlice';
 import './MediaSlider.css';
 
 const MediaSlider = () => {
+  const dispatch = useDispatch();
+  const { latestMovies, latestSeries, latestMoviesLoading, latestSeriesLoading } = useSelector(state => state.movies);
+
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
   const [isTransitioning, setIsTransitioning] = useState(false);
 
+  // Combine latest 2 movies and 2 series
+  const sliderData = useMemo(() => {
+    const movies = latestMovies.slice(0, 2).map(movie => ({
+      id: movie._id,
+      title: movie.nameArabic,
+      description: movie.summary || 'لا يوجد وصف متاح',
+      imageUrl: movie.posterUrl,
+      type: 'movie',
+      year: movie.year,
+      duration: movie.duration || 'غير محدد',
+      rating: movie.rating || 0,
+      genre: movie.genre || 'غير محدد',
+      newRelease: true
+    }));
+
+    const series = latestSeries.slice(0, 2).map(serie => ({
+      id: serie._id,
+      title: serie.nameArabic,
+      description: serie.summary || 'لا يوجد وصف متاح',
+      imageUrl: serie.posterUrl,
+      type: 'series',
+      year: serie.year,
+      seasons: serie.seasons || 1,
+      rating: serie.rating || 0,
+      genre: serie.genre || 'غير محدد',
+      newRelease: true
+    }));
+
+    return [...movies, ...series];
+  }, [latestMovies, latestSeries]);
 
   useEffect(() => {
-    if (isAutoPlaying) {
+    dispatch(fetchLatestMovies());
+    dispatch(fetchLatestSeries());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (isAutoPlaying && sliderData.length > 0) {
       const interval = setInterval(() => {
         handleSlideChange((prev) => (prev + 1) % sliderData.length);
       }, 6000);
       return () => clearInterval(interval);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isAutoPlaying]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAutoPlaying, sliderData.length]);
 
   const handleSlideChange = (newSlideOrFunction) => {
     if (isTransitioning) return;
@@ -47,19 +86,37 @@ const MediaSlider = () => {
     }
   };
 
+  const isLoading = latestMoviesLoading || latestSeriesLoading;
+
+  if (isLoading || sliderData.length === 0) {
+    return (
+      <div className="relative w-full min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900">
+        <div className="w-16 h-16 border-4 border-amber-300/20 border-t-amber-300 rounded-full animate-spin"></div>
+      </div>
+    );
+  }
+
   const currentItem = sliderData[currentSlide];
 
   return (
     <div className="media-slider-transition-all relative w-full min-h-screen overflow-hidden bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900" style={{ fontFamily: "'Cairo', 'Amiri', 'Noto Sans Arabic', Arial, sans-serif" }}>
       {/* Background Image with Overlay */}
-      <div
-        className={`absolute inset-0 bg-cover bg-center transition-all duration-1000 ease-in-out ${isTransitioning ? 'scale-110 opacity-70' : 'scale-100 opacity-100'
-          }`}
-        style={{
-          backgroundImage: `url(${currentItem.imageUrl})`,
-          // filter: 'brightness(0.25) blur(2px) saturate(1.2)'
-        }}
-      />
+      <div className="absolute inset-0 overflow-hidden">
+        <img
+          src={currentItem.imageUrl}
+          alt=""
+          className="w-full h-full object-cover"
+          loading="eager"
+          fetchpriority="high"
+        />
+
+        {/* Animation overlay */}
+        <div
+          className={`absolute inset-0 transition-transform transition-opacity duration-700 ${isTransitioning ? 'opacity-70 scale-110' : 'opacity-100 scale-100'
+            } bg-black/20`}
+        ></div>
+      </div>
+
 
       {/* Dynamic Gradient Overlay */}
       <div className={`absolute inset-0 transition-all duration-1000 ${currentItem.type === 'movie'
@@ -108,7 +165,7 @@ const MediaSlider = () => {
                 ? 'bg-gradient-to-r from-yellow-400 to-orange-500 text-black shadow-lg'
                 : 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg'
               }`}>
-              {currentItem.type === 'movie' ? 'فيلم جديد' : 'إثارة'}
+              {currentItem.type === 'movie' ? 'فيلم جديد' : 'مسلسل جديد'}
               {currentItem.newRelease && (
                 <span className="ml-2 inline-block w-2 h-2 mx-4 bg-red-500 rounded-full animate-pulse"></span>
               )}
@@ -116,12 +173,19 @@ const MediaSlider = () => {
           </div>
 
           {/* Title with Enhanced Typography */}
-          <h1 className={`text-3xl sm:text-4xl lg:text-6xl xl:text-7xl font-black text-white mb-4 lg:mb-6 drop-shadow-2xl leading-tight transform transition-all duration-700 ${isTransitioning ? 'translate-y-4 opacity-0' : 'translate-y-0 opacity-100'
-            }`}>
-            <span className="bg-gradient-to-r from-white via-yellow-200 to-white bg-clip-text text-transparent">
-              {currentItem.title}
-            </span>
-          </h1>
+          <div className="overflow-hidden">
+            <h1
+              className="text-3xl sm:text-4xl lg:text-6xl xl:text-7xl font-black text-white mb-4 lg:mb-6 drop-shadow-2xl leading-tight"
+            >
+              <span
+                className={`bg-gradient-to-r from-white via-yellow-200 to-white bg-clip-text text-transparent transition-opacity duration-500 ${isTransitioning ? 'opacity-0' : 'opacity-100'
+                  }`}
+              >
+                {currentItem.title}
+              </span>
+            </h1>
+          </div>
+
 
           {/* Enhanced Metadata */}
           <div className={`flex flex-wrap items-center justify-center gap-4 lg:gap-6 mb-4 lg:mb-6 text-white/90 transform transition-all duration-500 delay-200 ${isTransitioning ? 'translate-y-4 opacity-0' : 'translate-y-0 opacity-100'
@@ -132,7 +196,7 @@ const MediaSlider = () => {
               </svg>
               <span className="text-sm lg:text-base font-medium mt-1">{currentItem.year}</span>
             </span>
- 
+
             <span className="flex items-center bg-black/30 px-3 py-1 rounded-full backdrop-blur-sm">
               <svg className="w-4 h-1 lg:w-5 lg:h-5  text-blue-400 mx-2" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
@@ -155,7 +219,7 @@ const MediaSlider = () => {
                   </svg>
                 ))}
               </div>
-              <span className="text-sm lg:text-base font-medium">({currentItem.rating})</span>
+              <span className="text-sm lg:text-base font-medium">({currentItem.rating.toFixed(1)})</span>
             </span>
 
             <span className="flex items-center bg-black/30 px-3 py-1 rounded-full backdrop-blur-sm">
@@ -164,7 +228,7 @@ const MediaSlider = () => {
           </div>
 
           {/* Enhanced Description */}
-          <p className={`text-lg lg:text-xl xl:text-2xl text-white/90 mb-6 lg:mb-8 max-w-3xl mx-auto leading-relaxed font-light transform transition-all duration-500 delay-300 ${isTransitioning ? 'translate-y-4 opacity-0' : 'translate-y-0 opacity-100'
+          <p className={`text-lg lg:text-xl xl:text-2xl text-white/90 mb-6 lg:mb-8 max-w-3xl mx-auto leading-relaxed font-light transform transition-all duration-500 delay-300 line-clamp-3 ${isTransitioning ? 'translate-y-4 opacity-0' : 'translate-y-0 opacity-100'
             }`}>
             {currentItem.description}
           </p>
@@ -289,4 +353,3 @@ const MediaSlider = () => {
 };
 
 export default MediaSlider;
-

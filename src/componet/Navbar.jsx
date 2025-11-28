@@ -4,7 +4,7 @@ import logo from "/src/assets/WhatsApp_Image_2025-09-01_at_19.08.17_1b74120e-rem
 import MovieFilterDemo from '../Pages/MovieFilterDemo';
 import SeriesFilterDemo from '../Pages/SeriesFilterDemo';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { User,LogOut, PlusCircle } from "lucide-react";
+import { User, LogOut, PlusCircle } from "lucide-react";
 
 
 const Navbar = () => {
@@ -87,8 +87,12 @@ const Navbar = () => {
                                     <img
                                         src={logo}
                                         alt="Logo"
-                                        className="h-32 w-auto drop-shadow-lg transition-all duration-300 group-hover:drop-shadow-2xl"
+                                        width={128}          // عرض ثابت
+                                        height={128}         // ارتفاع ثابت
+                                        className="w-32 h-32 object-contain drop-shadow-lg transition-shadow duration-300 group-hover:drop-shadow-2xl"
+                                        loading="eager"      // مهم للـ LCP إذا الصورة هي الأولى في الصفحة
                                     />
+
                                 </div>
                             </div>
 
@@ -132,8 +136,8 @@ const Navbar = () => {
                                         className="w-72 pl-12 pr-4 py-3 border border-gray-600/50 rounded-2xl focus:ring-2 focus:ring-amber-300/50 focus:border-amber-300 focus:outline-none text-right text-white placeholder-gray-400 transition-all duration-300 backdrop-blur-sm hover:border-gray-500 focus:shadow-lg focus:shadow-amber-300/20"
                                         style={{ backgroundColor: "var(--color-grayy)" }}
                                         value={search}
-                                        onChange={(e)=>setSearch(e.target.value)}
-                                        onKeyDown={(e)=>{ if(e.key==='Enter'){ e.preventDefault(); triggerSearch(); } }}
+                                        onChange={(e) => setSearch(e.target.value)}
+                                        onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); triggerSearch(); } }}
                                     />
                                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center">
                                         <button onClick={triggerSearch} className="text-gray-400 hover:text-amber-300 transition-colors duration-300">
@@ -242,7 +246,7 @@ const Navbar = () => {
                                                     onClick={logout}
                                                     className="flex items_center  gap-2 w-full text-right px-6 py-3 text-white text-sm hover:bg-red-500/20 transition-colors"
                                                 >
-                                                    <LogOut className="w-5 h-5 mx-2 text-white inline-block mr-2" /> 
+                                                    <LogOut className="w-5 h-5 mx-2 text-white inline-block mr-2" />
                                                     تسجيل خروج
                                                 </button>
                                             </div>

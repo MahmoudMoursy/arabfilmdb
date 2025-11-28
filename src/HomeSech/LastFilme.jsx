@@ -1,43 +1,38 @@
-import React, { useMemo, useState } from 'react';
-import { Eye, Calendar, Star, Play, Share2, Clock, Globe } from 'lucide-react';
-import { useGetWorksQuery, useGetRatingsForWorksQuery } from '../redux/apiSlice';
+import React, { useEffect, useState } from 'react';
+import { Star, Play, Share2 } from 'lucide-react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination } from 'swiper/modules';
+import { fetchLatestMovies, fetchAverageRatings } from '../redux/moviesSlice';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import { Link } from 'react-router-dom';
 import AddToFavoritesButton from '../componet/AddToFavoritesButton';
+import { useDispatch, useSelector } from 'react-redux';
 
 
 const LastFilme = () => {
-  const { data: works = [], isLoading: worksLoading } = useGetWorksQuery();
-  const films = useMemo(() => (works ? works.filter(item => item.type === 'film') : []), [works]);
-  const workIds = useMemo(() => (films && films.length ? films.map(film => film._id) : []), [films]);
-  const { data: ratings = {}, isLoading: ratingsLoading } = useGetRatingsForWorksQuery(workIds, {
-    skip: workIds.length === 0,
-  });
+  const { latestMovies, latestMoviesLoading, ratings, ratingsLoading } = useSelector(state => state.movies);
+  const dispatch = useDispatch();
 
-  const [movie, setMovie] = useState({
-    id: 1,
-    rating: 4.5,
-    isFavorite: false
-  });
+  useEffect(() => {
+    dispatch(fetchLatestMovies());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (latestMovies.length > 0) {
+      // Only fetch ratings for the first 10 movies that will be displayed
+      const displayedMovies = latestMovies.slice(0, 10);
+      const workIds = displayedMovies.map(movie => movie._id);
+      dispatch(fetchAverageRatings(workIds));
+    }
+  }, [latestMovies, dispatch]);
 
   const [isImageLoaded, setIsImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
 
-  const handleFavoriteClick = (e) => {
-    e.stopPropagation();
-    setMovie(prev => ({ ...prev, isFavorite: !prev.isFavorite }));
-    console.log('تم تغيير حالة المفضلة:', !movie.isFavorite);
-  };
-
   const handleShareClick = (e) => {
     e.stopPropagation();
-    console.log('تم النقر على مشاركة:', movie);
-
-
     if (navigator.share) {
       navigator.share({
         url: window.location.href
@@ -69,7 +64,6 @@ const LastFilme = () => {
     return stars;
   };
 
-  // Get rating for a specific movie
   const getMovieRating = (movieId) => {
     const rating = ratings[movieId];
     if (rating && rating.average > 0) {
@@ -86,6 +80,14 @@ const LastFilme = () => {
     };
   };
 
+  if (latestMoviesLoading) {
+    return (
+      <div className="bg-background p-8 w-full flex items-center justify-center" dir="rtl">
+        <div className="w-12 h-12 border-4 border-amber-300/20 border-t-amber-300 rounded-full animate-spin"></div>
+      </div>
+    );
+  }
+
   return (
     <div className="bg-background p-8 w-full" dir="rtl">
       <Swiper
@@ -96,21 +98,19 @@ const LastFilme = () => {
         navigation
         pagination={{ clickable: true }}
         breakpoints={{
-          320: { slidesPerView: 2, spaceBetween: 8 },   // موبايل صغير
-          480: { slidesPerView: 2, spaceBetween: 10 },  // موبايل متوسط
-          640: { slidesPerView: 3, spaceBetween: 12 },  // موبايل كبير
-          768: { slidesPerView: 3, spaceBetween: 15 },  // تابلت
-          1024: { slidesPerView: 4, spaceBetween: 18 }, // ديسكتوب صغير
-          1280: { slidesPerView: 5, spaceBetween: 20 }  // ديسكتوب كبير
+          320: { slidesPerView: 2, spaceBetween: 8 },
+          480: { slidesPerView: 2, spaceBetween: 10 },
+          640: { slidesPerView: 3, spaceBetween: 12 },
+          768: { slidesPerView: 3, spaceBetween: 15 },
+          1024: { slidesPerView: 4, spaceBetween: 18 },
+          1280: { slidesPerView: 5, spaceBetween: 20 }
         }}
       >
-        {films.slice(0, 10).map((movie, index) => {
+        {latestMovies.slice(0, 10).map((movie, index) => {
           const movieRating = getMovieRating(movie._id);
           return (
             <SwiperSlide key={index} style={{ paddingBottom: `60px` }}>
-
               <div
-                key={index}
                 className="group card-hover bg-card border border-white/50 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-md hover:shadow-amber-300/100 hover:-translate-y-2 text-white w-full max-w-[180px] sm:max-w-[200px] md:max-w-[240px] lg:max-w-[260px] xl:max-w-[280px] mx-auto z-10"
                 style={{ backgroundColor: 'var(--color-dark)' }}
               >
@@ -122,9 +122,11 @@ const LastFilme = () => {
                       </div>
                     )}
                     <img
-                      className={`w-full h-full object-cover transition-all duration-300 group-hover:scale-105 ${isImageLoaded ? 'opacity-100' : 'opacity-0'}`}
-                      loading="lazy"
+                      className={`w-full h-full object-cover transition-transform duration-300 group-hover:scale-105 ${isImageLoaded ? 'opacity-100' : 'opacity-0'}`}
                       src={movie?.posterUrl}
+                      width={300}         // أبعاد ثابتة
+                      height={450}        // أبعاد ثابتة
+                      loading="eager"     // لو هذه صورة LCP أساسية
                       onLoad={() => setIsImageLoaded(true)}
                       onError={(e) => {
                         setImageError(true);
@@ -155,7 +157,6 @@ const LastFilme = () => {
                       </div>
                     </div>
 
-                    {/* Rating display on poster */}
                     {movieRating.average > 0 && (
                       <div className="absolute bottom-2 right-2 bg-black/80 backdrop-blur-sm rounded-lg px-2 py-1 transition-all duration-300 group-hover:bg-primary/90">
                         <div className="flex items-center space-x-1 space-x-reverse">
@@ -211,4 +212,3 @@ const LastFilme = () => {
 };
 
 export default LastFilme;
-

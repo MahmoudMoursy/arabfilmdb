@@ -1,7 +1,8 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import "../App.css";
 import { Star, Play, Share2 } from 'lucide-react';
-import { useGetWorksQuery, useGetRatingsForWorksQuery } from '../redux/apiSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchLatestMovies, fetchLatestSeries, fetchAverageRatings } from '../redux/moviesSlice';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination } from 'swiper/modules';
 import 'swiper/css';
@@ -12,34 +13,31 @@ import AddToFavoritesButton from '../componet/AddToFavoritesButton';
 
 
 const LatestAdditions = () => {
-  const date = new Date();
-  const year = date.getFullYear();
-  const { data: works = [], isLoading: worksLoading } = useGetWorksQuery();
-
-  const workIds = useMemo(() => (works && works.length ? works.map(m => m._id) : []), [works]);
-  const { data: ratings = {}, isLoading: ratingsLoading } = useGetRatingsForWorksQuery(workIds, {
-    skip: workIds.length === 0,
-  });
-
-  const [movieState, setMovieState] = useState({
-    id: 1,
-    rating: 4.5,
-    isFavorite: false
-  });
+  const dispatch = useDispatch();
+  const { latestMovies, latestSeries, ratings, latestMoviesLoading, latestSeriesLoading, ratingsLoading } = useSelector(state => state.movies);
 
   const [isImageLoaded, setIsImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
 
-  const handleFavoriteClick = (e) => {
-    e.stopPropagation();
-    setMovieState(prev => ({ ...prev, isFavorite: !prev.isFavorite }));
-    console.log('تم تغيير حالة المفضلة:', !movieState.isFavorite);
-  };
+  // Combine latest movies and series
+  const allLatestWorks = useMemo(() => [...latestMovies, ...latestSeries], [latestMovies, latestSeries]);
+
+  useEffect(() => {
+    dispatch(fetchLatestMovies());
+    dispatch(fetchLatestSeries());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (allLatestWorks.length > 0) {
+      // Only fetch ratings for the first 10 works that will be displayed
+      const displayedWorks = allLatestWorks.slice(0, 10);
+      const workIds = displayedWorks.map(work => work._id);
+      dispatch(fetchAverageRatings(workIds));
+    }
+  }, [allLatestWorks, dispatch]);
 
   const handleShareClick = (e) => {
     e.stopPropagation();
-    console.log('تم النقر على مشاركة:', movieState);
-
     if (navigator.share) {
       navigator.share({
         url: window.location.href
@@ -71,7 +69,6 @@ const LatestAdditions = () => {
     return stars;
   };
 
-  // Get rating for a specific movie
   const getMovieRating = (movieId) => {
     const rating = ratings[movieId];
     if (rating && rating.average > 0) {
@@ -88,31 +85,40 @@ const LatestAdditions = () => {
     };
   };
 
+  const isLoading = latestMoviesLoading || latestSeriesLoading;
+
+  if (isLoading) {
+    return (
+      <div className="bg-background p-8 w-full flex items-center justify-center" dir="rtl">
+        <div className="w-12 h-12 border-4 border-amber-300/20 border-t-amber-300 rounded-full animate-spin"></div>
+      </div>
+    );
+  }
+
   return (
-    <div className="bg-background p-8 " dir="rtl">
+    <div className="bg-background p-8 w-full" dir="rtl">
       <Swiper
-       style={{ width: "100%", height: "100%" }}
-               modules={[Navigation, Pagination]}
-               navigation
-               pagination={{ clickable: true }}
-               spaceBetween={10}
-               slidesPerView={2}
-               breakpoints={{
-                 640: { slidesPerView: 1, spaceBetween: 5 },
-                 768: { slidesPerView: 3, spaceBetween: 10 },
-                 1024: { slidesPerView: 5, spaceBetween: 20 }
+        style={{ width: "100%", height: "100%" }}
+        modules={[Navigation, Pagination]}
+        navigation
+        pagination={{ clickable: true }}
+        spaceBetween={10}
+        slidesPerView={2}
+        breakpoints={{
+          320: { slidesPerView: 2, spaceBetween: 8 },
+          480: { slidesPerView: 2, spaceBetween: 10 },
+          640: { slidesPerView: 3, spaceBetween: 12 },
+          768: { slidesPerView: 3, spaceBetween: 15 },
+          1024: { slidesPerView: 4, spaceBetween: 18 },
+          1280: { slidesPerView: 5, spaceBetween: 20 }
         }}
       >
-
-
-        {works
-          .filter(movie => movie.year === year || movie.year === year - 9)
-          .slice(-10).map((movie, index) => {
-            const movieRating = getMovieRating(movie._id);
-            return (
-            <SwiperSlide key={index} style={{paddingBottom:`60px`}}>
+        {allLatestWorks.slice(0, 10).map((movie, index) => {
+          const movieRating = getMovieRating(movie._id);
+          return (
+            <SwiperSlide key={index} style={{ paddingBottom: `60px` }}>
               <div
-              className="group card-hover bg-card border text-3xl border-white/50 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-md hover:shadow-amber-300/100 hover:-translate-y-5 text-white w-[160px] md:w-[310px] z-10"
+                className="group card-hover bg-card border border-white/50 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-md hover:shadow-amber-300/100 hover:-translate-y-2 text-white w-full max-w-[180px] sm:max-w-[200px] md:max-w-[240px] lg:max-w-[260px] xl:max-w-[280px] mx-auto z-10"
                 style={{ backgroundColor: 'var(--color-dark)' }}
               >
                 <div className="block cursor-pointer" role="button">
@@ -122,16 +128,24 @@ const LatestAdditions = () => {
                         <div className="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
                       </div>
                     )}
-                    <img
-                      className={`w-full h-full object-cover transition-all duration-300 group-hover:scale-105 ${isImageLoaded ? 'opacity-100' : 'opacity-0'}`}
-                      loading="lazy"
-                      src={movie?.posterUrl}
-                      onLoad={() => setIsImageLoaded(true)}
-                      onError={(e) => {
-                        setImageError(true);
-                        e.target.src = 'https://via.placeholder.com/300x450/1f2937/9ca3af?text=صورة+غير+متوفرة';
-                      }}
-                    />
+                    <div className="w-full aspect-[2/3] overflow-hidden"> {/* حاوية بنسبة ثابتة */}
+                      <div className="w-full aspect-[2/3] overflow-hidden"> {/* حاوية بنسبة ثابتة لتثبيت CLS */}
+                        <img
+                          className={`w-full h-full object-cover transition-transform duration-300 group-hover:scale-105 ${isImageLoaded ? 'opacity-100' : 'opacity-0'}`}
+                          src={movie?.posterUrl}
+                          width={300}         // أبعاد ثابتة
+                          height={450}        // أبعاد ثابتة
+                          loading="eager"     // لو هذه صورة LCP أساسية
+                          onLoad={() => setIsImageLoaded(true)}
+                          onError={(e) => {
+                            setImageError(true);
+                            e.target.src = 'https://via.placeholder.com/300x450/1f2937/9ca3af?text=صورة+غير+متوفرة';
+                          }}
+                        />
+                      </div>
+
+                    </div>
+
 
                     <div className="absolute top-2 left-2 bg-red-500/90 backdrop-blur-sm rounded-lg px-2 py-1 animate-pulse">
                       <span className="text-white text-xs font-bold">جديد</span>
@@ -146,16 +160,15 @@ const LatestAdditions = () => {
 
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                       <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex items-center gap-6">
-                        <Link 
-  key={index}
-  to={`/Details/${movie._id}`}  
-  className="bg-transparent"
->
-  <button className="w-12 h-12 flex items-center justify-center bg-white/20 hover:bg-white/30 text-white rounded-full transition-all duration-300 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2">
-    <Play size={30} className="fill-current" />
-  </button>
-</Link>
-
+                        <Link
+                          key={index}
+                          to={`/Details/${movie._id}`}
+                          className="bg-transparent"
+                        >
+                          <button className="w-12 h-12 flex items-center justify-center bg-white/20 hover:bg-white/30 text-white rounded-full transition-all duration-300 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2">
+                            <Play size={30} className="fill-current" />
+                          </button>
+                        </Link>
 
                         <AddToFavoritesButton workId={movie._id} />
 
@@ -168,7 +181,6 @@ const LatestAdditions = () => {
                       </div>
                     </div>
 
-                    {/* Rating display on poster */}
                     {movieRating.average > 0 && (
                       <div className="absolute bottom-2 right-2 bg-black/80 backdrop-blur-sm rounded-lg px-2 py-1 transition-all duration-300 group-hover:bg-primary/90">
                         <div className="flex items-center space-x-1 space-x-reverse">
@@ -216,7 +228,8 @@ const LatestAdditions = () => {
                 </div>
               </div>
             </SwiperSlide>
-          )})}
+          )
+        })}
       </Swiper>
     </div>
   );

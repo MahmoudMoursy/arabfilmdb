@@ -61,7 +61,7 @@ function Home() {
       <Navbar />
       <MediaSlider />
       {(user?.role === 'admin' || user?.role === 'publisher') ? (
-      <div className="flex flex-col md:flex-row justify-between items-center px-3 py-5 space-y-4 md:space-y-0 md:space-x-6" style={{ backgroundColor: 'var(--color-primary)' }}>
+        <div className="flex flex-col md:flex-row justify-between items-center px-3 py-5 space-y-4 md:space-y-0 md:space-x-6" style={{ backgroundColor: 'var(--color-primary)' }}>
           <button
             onClick={() => {
               navigate('/AddForm');
@@ -72,18 +72,18 @@ function Home() {
             أضافه
           </button>
           {user?.role === 'admin' && (
-          <button
-            onClick={() => {
-              navigate('/AdminDashboard');
-            }}
-            className="w-58 px-1 py-2 rounded-xl font-bold transition-all duration-300 text-white hover:shadow-lg"
-            style={{ backgroundColor: "var(--color-accent)" }}
-          >
-            لوحة التحكم
-          </button>
+            <button
+              onClick={() => {
+                navigate('/AdminDashboard');
+              }}
+              className="w-58 px-1 py-2 rounded-xl font-bold transition-all duration-300 text-white hover:shadow-lg"
+              style={{ backgroundColor: "var(--color-accent)" }}
+            >
+              لوحة التحكم
+            </button>
           )}
-      </div>
-        ) : null}
+        </div>
+      ) : null}
       <div style={{ backgroundColor: 'var(--color-secondary)' }} >
         <div className=" p-7 pt-9 ">
           <h2 className="text-3xl font-bold text-white ">إصدارات جديدة</h2>
@@ -108,7 +108,7 @@ function Home() {
           <LastSeries />
         </div>
       </div>
-       <div style={{ backgroundColor: 'var(--color-primary)' }} >
+      <div style={{ backgroundColor: 'var(--color-primary)' }} >
         <div className=" p-7 pt-9 ">
           <h2 className="text-3xl font-bold text-white "> الأكثر تقييماً</h2>
         </div >
@@ -123,11 +123,11 @@ function Home() {
           <h2 className="text-3xl font-bold text-white ">الأفلام
           </h2>
           <button
-  className="flex items-center gap-3 bg-[#2b3441] px-6 py-3 rounded-full text-white"
-  onClick={() => {
-    navigate('/MovieFilterDemo');
-  }}
->
+            className="flex items-center gap-3 bg-[#2b3441] px-6 py-3 rounded-full text-white"
+            onClick={() => {
+              navigate('/MovieFilterDemo');
+            }}
+          >
 
             <div className="flex items-center gap-1">
               {[1, 2, 3].map((i) => (
@@ -151,10 +151,10 @@ function Home() {
           <h2 className="text-3xl font-bold text-white ">المسلسلات
           </h2>
           <button className="flex items-center gap-3 bg-[#2b3441] px-6 py-3 rounded-full"
-  onClick={() => {
-    navigate('/SeriesFilterDemo');
-  }}
->
+            onClick={() => {
+              navigate('/SeriesFilterDemo');
+            }}
+          >
             <div className="flex items-center gap-1">
               {[1, 2, 3].map((i) => (
                 <span
@@ -172,104 +172,109 @@ function Home() {
           <Series />
         </div>
       </div>
-       <div className="py-20 flex items-center justify-center bg-amber-400">
-      <div className="w-full max-w-md p-7 rounded-2xl shadow-2xl bg-[#1e1e1e]">
-        <h2 className="text-2xl font-bold text-white mb-5 text-center">✨ قيّم الموقع ✨</h2>
+      <div className="py-20 flex items-center justify-center bg-amber-400">
+        <div className="w-full max-w-md p-7 rounded-2xl shadow-2xl bg-[#1e1e1e]">
+          <h2 className="text-2xl font-bold text-white mb-5 text-center">✨ قيّم الموقع ✨</h2>
 
-        <div className="flex justify-center gap-3 mb-6">
-          {[1, 2, 3, 4, 5].map((v) => (
-            <Star
-              key={v}
-              size={36}
-              className={`cursor-pointer transition-transform duration-200 ${
-                (hoverRating || siteRating) >= v
+          <div className="flex justify-center gap-3 mb-6">
+            {[1, 2, 3, 4, 5].map((v) => (
+              <Star
+                key={v}
+                size={36}
+                className={`cursor-pointer transition-transform duration-200 ${(hoverRating || siteRating) >= v
                   ? "fill-yellow-500 text-yellow-500 scale-110"
                   : "text-white/40"
-              }`}
-              onMouseEnter={() => setHoverRating(v)}
-              onMouseLeave={() => setHoverRating(0)}
-              onClick={() => setSiteRating(v)}
+                  }`}
+                onMouseEnter={() => setHoverRating(v)}
+                onMouseLeave={() => setHoverRating(0)}
+                onClick={() => setSiteRating(v)}
+              />
+            ))}
+          </div>
+
+
+          <div className="flex gap-2">
+            <input
+              value={siteDescription}
+              onChange={(e) => setSiteDescription(e.target.value)}
+              placeholder="اكتب رأيك بالموقع..."
+              className="flex-1 p-3 rounded-lg bg-[#2a2a2a] text-white placeholder-gray-400 focus:outline-none"
             />
+            <button
+              onClick={handleSubmit}
+              className="px-5 py-2 rounded-lg bg-yellow-500 text-black font-semibold hover:bg-yellow-400 transition"
+            >
+              إرسال
+            </button>
+          </div>
+        </div>
+      </div>
+      <div className="max-w-6xl mx-auto mt-14 px-4 relative">
+        <div className="flex items-center justify-center space-x-4">
+          <h2 className="text-3xl font-extrabold text-white">
+            أراء مستخدمين
+          </h2>
+          <img
+            src={logo}
+            alt="Logo"
+            width={128}          // عرض ثابت
+            height={128}         // ارتفاع ثابت
+            className="w-32 h-32 object-contain drop-shadow-lg transition-shadow duration-300 group-hover:drop-shadow-2xl"
+            loading="eager"      // مهم للـ LCP إذا الصورة هي الأولى في الصفحة
+          />
+        </div>
+
+
+        <Swiper
+          modules={[Navigation, Pagination]}
+          spaceBetween={5}
+          slidesPerView={1}
+          navigation
+          pagination={{ clickable: true }}
+          breakpoints={{
+            640: { slidesPerView: 1, spaceBetween: 50 },
+            768: { slidesPerView: 1, spaceBetween: 50 },
+            1024: { slidesPerView: 2, spaceBetween: 50 }
+          }}
+        >
+          {reviews.map((review) => (
+            <SwiperSlide key={review.id}>
+              <div className="bg-[#2b3441] text-white rounded-3xl p-6 shadow-lg border border-gray-600 my-10 flex flex-col justify-between items-center hover:-translate-y-2 transition-all duration-300 min-h-[180px] space-y-4">
+                {/* تقييم النجوم */}
+                <div className="flex gap-1">
+                  {[...Array(5)].map((_, i) => (
+                    <FaStar
+                      key={i}
+                      className={`w-5 h-5 ${i < review.ratingValue ? "text-yellow-400" : "text-gray-500"
+                        }`}
+                      aria-label={`${review.ratingValue} out of 5 stars`}
+                    />
+                  ))}
+                </div>
+
+                {/* وصف التقييم */}
+                <p className="text-center text-base text-gray-200 leading-relaxed flex-1 flex items-center line-clamp-3">
+                  "{review.description}"
+                </p>
+
+                {/* اسم المستخدم */}
+                <span className="mt-1 font-bold text-lg text-yellow-300">
+                  {review.username}
+                </span>
+
+                {/* التاريخ */}
+                <span className="text-sm text-gray-400">
+                  {new Date(review.updatedAt).toLocaleDateString(undefined, {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })}
+                </span>
+              </div>
+            </SwiperSlide>
           ))}
-        </div>
-
-        
-        <div className="flex gap-2">
-          <input
-            value={siteDescription}
-            onChange={(e) => setSiteDescription(e.target.value)}
-            placeholder="اكتب رأيك بالموقع..."
-            className="flex-1 p-3 rounded-lg bg-[#2a2a2a] text-white placeholder-gray-400 focus:outline-none"
-          />
-          <button
-            onClick={handleSubmit}
-            className="px-5 py-2 rounded-lg bg-yellow-500 text-black font-semibold hover:bg-yellow-400 transition"
-          >
-            إرسال
-          </button>
-        </div>
+        </Swiper>
       </div>
-    </div>
- <div className="max-w-6xl mx-auto mt-14 px-4 relative">
-    <div className="flex items-center justify-center space-x-4">
-  <h2 className="text-3xl font-extrabold text-white">
-    أراء مستخدمين 
-  </h2>
-  <img src={logo} alt="Logo" className="h-50 w-auto" />
-</div>
-
-
-       <Swiper
-        modules={[Navigation, Pagination]}
-        spaceBetween={5}   
-        slidesPerView={1}
-        navigation
-        pagination={{ clickable: true }}
-        breakpoints={{
-          640: { slidesPerView: 1, spaceBetween: 50},
-          768: { slidesPerView: 1, spaceBetween: 50}, 
-          1024: { slidesPerView: 2, spaceBetween: 50 } 
-        }}
-      >
-        {reviews.map((review) => (
-          <SwiperSlide key={review.id}>
-            <div className="bg-[#2b3441] text-white rounded-3xl p-6 shadow-lg border border-gray-600 my-10 flex flex-col justify-between items-center hover:-translate-y-2 transition-all duration-300 min-h-[180px] space-y-4">
-      {/* تقييم النجوم */}
-      <div className="flex gap-1">
-        {[...Array(5)].map((_, i) => (
-          <FaStar
-            key={i}
-            className={`w-5 h-5 ${
-              i < review.ratingValue ? "text-yellow-400" : "text-gray-500"
-            }`}
-            aria-label={`${review.ratingValue} out of 5 stars`}
-          />
-        ))}
-      </div>
-
-      {/* وصف التقييم */}
-      <p className="text-center text-base text-gray-200 leading-relaxed flex-1 flex items-center line-clamp-3">
-        "{review.description}"
-      </p>
-
-      {/* اسم المستخدم */}
-      <span className="mt-1 font-bold text-lg text-yellow-300">
-        {review.username}
-      </span>
-      
-      {/* التاريخ */}
-      <span className="text-sm text-gray-400">
-        {new Date(review.updatedAt).toLocaleDateString(undefined, {
-          year: "numeric",
-          month: "long",
-          day: "numeric",
-        })}
-      </span>
-    </div>
-          </SwiperSlide>
-        ))}
-      </Swiper>
-    </div>
       <Footer />
     </div>
 

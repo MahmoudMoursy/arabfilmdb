@@ -9,11 +9,7 @@ import { commentService } from '../api/commentService';
 import { useParams, useNavigate } from 'react-router-dom';
 import FavoriteButton from '../componet/FavoriteButton';
 import AddToFavoritesButton from '../componet/AddToFavoritesButton';
-import { Navigation, Pagination } from 'swiper/modules';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import 'swiper/css';
-import 'swiper/css/navigation';
-import 'swiper/css/pagination';
+
 import { toast } from 'react-toastify';
 
 const Details = () => {
@@ -86,8 +82,8 @@ const Details = () => {
 
     const handleFavoriteClick = (e) => {
         e.stopPropagation();
-        setMovie(prev => ({ ...prev, isFavorite: !prev.isFavorite }));
-        console.log('تم تغيير حالة المفضلة:', !movie.isFavorite);
+        setMovieState(prev => ({ ...prev, isFavorite: !prev.isFavorite }));
+        console.log('تم تغيير حالة المفضلة:', !movieState.isFavorite);
     };
 
 
@@ -304,252 +300,246 @@ const Details = () => {
     return (
         <>
             <Navbar />
-            <div className="min-h-screen">
-                <div className="relative h-[100vh] overflow-hidden" style={{ backgroundColor: 'var(--color-dark)' }}>
-                    <div className="absolute inset-5">
+            <div className="min-h-screen bg-[#121212] text-white font-sans">
+                {/* Hero Section */}
+                <div className="relative w-full h-[85vh] lg:h-[90vh]">
+                    {/* Background Image with Parallax-like effect */}
+                    <div className="absolute inset-0 overflow-hidden">
                         <img
                             alt={selectedItem.nameArabic}
-                            className="w-full h-full object-cover blur-sm scale-100"
+                            className="w-full h-full object-cover blur-sm scale-105 opacity-60"
                             src={selectedItem.posterUrl}
                         />
-                        <div className="absolute inset-0 bg-black/70" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-[#121212] via-[#121212]/80 to-transparent" />
+                        <div className="absolute inset-0 bg-gradient-to-r from-[#121212] via-[#121212]/60 to-transparent" />
                     </div>
-                    <div className="relative container mx-auto px-4 h-full flex items-center">
-                        <div className="flex flex-col md:flex-row justify-between md:gap-20 max-w-full py-6 md:py-0">
-                            <div className="flex-shrink-0 mx-auto mt-20 md:mt-0 md:mx-0">
-                                <img
-                                    alt={selectedItem.nameArabic}
-                                    className="w-[170px] h-[280px] md:w-[360px] md:h-[500px] object-cover rounded-lg shadow-2xl"
-                                    src={selectedItem.posterUrl}
-                                />
+
+                    <div className="relative container mx-auto px-4 h-full flex items-end pb-12 lg:pb-20">
+                        <div className="flex flex-col lg:flex-row gap-8 lg:gap-16 items-end w-full">
+                            {/* Poster Card */}
+                            <div className="hidden lg:block flex-shrink-0 w-[300px] xl:w-[350px] relative group perspective-1000">
+                                <div className="relative rounded-2xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.5)] transition-transform duration-500 transform group-hover:scale-105 group-hover:rotate-y-6">
+                                    <img
+                                        alt={selectedItem.nameArabic}
+                                        className="w-full h-auto object-cover"
+                                        src={selectedItem.posterUrl}
+                                    />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                                </div>
                             </div>
-                            <div className="flex-1 text-white pt-10 md:my-0">
-                                <h1 className="text-3xl md:text-6xl font-bold mb-2">{selectedItem.nameArabic}</h1>
-                                <p className="text-lg md:text-2xl text-gray-300 mb-4">{selectedItem.nameEnglish}</p>
 
-                                {/* Rating Section */}
-                                <div className="flex items-center gap-6 mb-6">
-                                    <div className="flex items-center gap-1">
-                                        <div className="flex items-center gap-0.5">
-                                            {[1, 2, 3, 4, 5].map((star) => (
-                                                <button
-                                                    key={star}
-                                                    type="button"
-                                                    onClick={() => submitRating(star)}
-                                                    disabled={ratingLoading || userRatingLoading || hasRated}
-                                                    className={`transition-colors ${(ratingLoading || userRatingLoading || hasRated) ? 'cursor-not-allowed opacity-50' : 'cursor-pointer hover:scale-110'}`}
-                                                    title={hasRated ? `لقد قيّمت هذا العمل مسبقاً` : `قيّم العمل بـ ${star}/5 نجوم`}
-                                                >
-                                                    <Star
-                                                        size={24}
-                                                        className={`transition-colors ${hasRated && myRating >= star
-                                                            ? 'fill-yellow-400 text-yellow-400'
-                                                            : avgRating.average >= star
-                                                                ? 'fill-yellow-400/50 text-yellow-400/50'
-                                                                : 'fill-transparent text-gray-300'
-                                                            }`}
-                                                    />
-                                                </button>
-                                            ))}
-                                        </div>
-                                        <span className="text-sm text-muted-foreground mr-1">
-                                            {ratingLoading ? (
-                                                <div className="animate-pulse bg-gray-600 h-4 w-8 rounded"></div>
-                                            ) : (
-                                                <div className="flex items-center gap-2">
-                                                    <span>{`(${avgRating.average.toFixed(1)})`}</span>
-                                                    {hasRated && (
-                                                        <span className="text-xs bg-green-500 text-white px-2 py-1 rounded-full">
-                                                            قيّمت
-                                                        </span>
-                                                    )}
-                                                </div>
-                                            )}
-                                        </span>
-                                    </div>
+                            {/* Content Info */}
+                            <div className="flex-1 space-y-6 lg:mb-8">
+                                {/* Mobile Poster (Visible only on small screens) */}
+                                <div className="lg:hidden w-[160px] mx-auto mb-6 rounded-xl overflow-hidden shadow-2xl border border-white/10">
+                                    <img
+                                        alt={selectedItem.nameArabic}
+                                        className="w-full h-auto object-cover"
+                                        src={selectedItem.posterUrl}
+                                    />
                                 </div>
 
-                                {/* Movie Details */}
-                                <div className="grid grid-cols-2 gap-4 mb-6 text-sm">
-                                    <div className="flex items-center gap-2">
-                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                        </svg>
-                                        <span className='font-normal text-xl'>{selectedItem.year}</span>
-                                    </div>
-
-                                    <div className="flex items-center gap-2">
-                                        {selectedItem.type === 'film' ? (
-                                            <>
-                                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <circle cx={12} cy={12} r={10} />
-                                                    <polyline points="12 6 12 12 16 14" />
-                                                </svg>
-                                                <span className="font-normal text-xl">
-                                                    {selectedItem.duration || 'مدة غير محددة'}
-                                                </span>
-                                            </>
-                                        ) : selectedItem.type === 'series' ? (
-                                            <>
-                                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <rect x="2" y="7" width="20" height="15" rx="2" ry="2" />
-                                                    <polyline points="17 2 12 7 7 2" />
-                                                </svg>
-                                                <span className="font-normal text-xl">
-                                                    {selectedItem.seasonsCount && selectedItem.episodesCount
-                                                        ? `${selectedItem.seasonsCount} مواسم - ${selectedItem.episodesCount} حلقة`
-                                                        : selectedItem.seasonsCount
-                                                            ? `${selectedItem.seasonsCount} مواسم`
-                                                            : selectedItem.episodesCount
-                                                                ? `${selectedItem.episodesCount} حلقة`
-                                                                : 'مسلسل - متعدد الحلقات'}
-                                                </span>
-                                            </>
-                                        ) : null}
-
-                                    </div>
-
-                                    <div className="flex items-center gap-2">
-                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0" />
-                                            <circle cx={12} cy={10} r={3} />
-                                        </svg>
-                                        <span className='font-normal text-xl'>{selectedItem.country}</span>
-                                    </div>
-                                    {/* {selectedItem.type === "series" && (<div className="flex items-center gap-2">
-                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <rect x="2" y="7" width="20" height="15" rx="2" ry="2" />
-                                            <polyline points="17 2 12 7 7 2" />
-                                        </svg>
-                                        <span className="font-normal text-xl">
-                                            عدد المواسم: {selectedItem.seasonsCount || 0}
+                                {/* Title & Badges */}
+                                <div className="space-y-2 text-center lg:text-right">
+                                    <div className="flex flex-wrap justify-center lg:justify-start gap-2 mb-3">
+                                        <span className="px-3 py-1 bg-amber-400/20 text-amber-400 border border-amber-400/30 rounded-full text-xs font-bold backdrop-blur-md">
+                                            {selectedItem.type === 'movie' ? 'فيلم' : 'مسلسل'}
                                         </span>
-                                    </div>)} */}
-                                    <div className="flex items-center gap-2">
-                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path d="M17 10.5V7c0-1.1-.9-2-2-2H3C1.9 5 1 5.9 1 7v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2v-3.5l4 4v-11l-4 4z" />
-                                        </svg>
-                                        <span className="font-normal text-xl">{selectedItem.genre}</span>
+                                        {selectedItem.year && (
+                                            <span className="px-3 py-1 bg-white/10 text-white border border-white/20 rounded-full text-xs font-bold backdrop-blur-md">
+                                                {selectedItem.year}
+                                            </span>
+                                        )}
+                                        <span className="px-3 py-1 bg-white/10 text-white border border-white/20 rounded-full text-xs font-bold backdrop-blur-md flex items-center gap-1">
+                                            <Star size={12} className="fill-yellow-400 text-yellow-400" />
+                                            {avgRating.average.toFixed(1)}
+                                        </span>
                                     </div>
-                                </div>
 
-                                {/* Summary */}
-                                <p className="text-gray-300 mb-6 max-w-2xl leading-relaxed">
-                                    {selectedItem.summary}
-                                </p>
+                                    <h1 className="text-4xl lg:text-6xl xl:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white via-gray-200 to-gray-400 drop-shadow-lg leading-tight">
+                                        {selectedItem.nameArabic}
+                                    </h1>
+                                    <h2 className="text-xl lg:text-3xl text-gray-400 font-light tracking-wide">
+                                        {selectedItem.nameEnglish}
+                                    </h2>
+                                </div>
 
                                 {/* Action Buttons */}
-                                <div className="flex gap-4">
+                                <div className="flex flex-wrap justify-center lg:justify-start gap-4 pt-4">
+                                    <button className="flex items-center gap-3 px-8 py-4 bg-amber-400 hover:bg-amber-500 text-black rounded-xl font-bold text-lg transition-all transform hover:scale-105 shadow-[0_0_20px_rgba(251,191,36,0.4)]">
+                                        <Play size={24} className="fill-current" />
+                                        <span>مشاهدة الآن</span>
+                                    </button>
+
                                     <button
-                                        onClick={() => submitRating(5)}
-                                        disabled={ratingLoading || userRatingLoading || hasRated}
-                                        className={`flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-colors ${hasRated
-                                            ? 'bg-gray-500/20 text-gray-400 cursor-not-allowed'
-                                            : 'bg-white/20 text-white hover:bg-white/30'
-                                            } ${(ratingLoading || userRatingLoading || hasRated) ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                        onClick={handleFavoriteClick}
+                                        className={`flex items-center gap-3 px-6 py-4 rounded-xl font-bold text-lg transition-all border backdrop-blur-md ${movieState.isFavorite
+                                            ? 'bg-red-500/20 border-red-500/50 text-red-500 hover:bg-red-500/30'
+                                            : 'bg-white/10 border-white/20 text-white hover:bg-white/20'
+                                            }`}
                                     >
-                                        <Star size={20} />
-                                        {hasRated ? `تم التقييم مسبقاً` : `قيّم الفيلم (5)`}
+                                        <Heart size={24} className={movieState.isFavorite ? "fill-current" : ""} />
+                                        <span>{movieState.isFavorite ? 'في المفضلة' : 'إضافة للمفضلة'}</span>
                                     </button>
 
-                                    <div className="flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-colors bg-white/20 text-white hover:bg-white/30">
-                                        <FavoriteButton
-                                            workId={id}
-                                            size={20}
-                                            className="!w-auto !h-auto !bg-transparent !hover:bg-transparent"
-                                        />
-                                        <span>أضف للمفضلة</span>
-                                    </div>
-
-                                    <button onClick={handleShareClick} className="flex items-center gap-2 px-6 py-3 bg-white/20 text-white rounded-lg hover:bg-white/30 transition-colors">
-                                        <Share2 size={20} />
-                                        مشاركة
+                                    <button
+                                        onClick={handleShareClick}
+                                        className="flex items-center gap-3 px-6 py-4 bg-white/10 hover:bg-white/20 text-white border border-white/20 rounded-xl font-bold text-lg transition-all backdrop-blur-md"
+                                    >
+                                        <Share2 size={24} />
+                                        <span>مشاركة</span>
                                     </button>
+                                </div>
+
+                                {/* Story / Synopsis */}
+                                <div className="max-w-3xl pt-6 text-center lg:text-right mx-auto lg:mx-0">
+                                    <h3 className="text-lg font-bold text-amber-400 mb-2 flex items-center justify-center lg:justify-start gap-2">
+                                        <span className="w-8 h-1 bg-amber-400 rounded-full inline-block"></span>
+                                        القصة
+                                    </h3>
+                                    <p className="text-gray-300 text-lg leading-relaxed line-clamp-4 hover:line-clamp-none transition-all duration-300">
+                                        {selectedItem.description || selectedItem.summary || 'لا يوجد وصف متاح لهذا العمل حالياً.'}
+                                    </p>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                {/* Additional Details Section */}
-                <div className="px-20 py-12" style={{ backgroundColor: 'var(--color-black)' }}>
+                {/* Details Grid & Info */}
+                <div className="container mx-auto px-4 py-12 -mt-10 relative z-10">
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                        <div className="lg:col-span-2 space-y-8 text-white">
-                            {/* Movie Details Card */}
-                            <div className="bg-card shadow-lg rounded-xl p-6 transition-transform hover:scale-[1.02]" style={{ background: 'linear-gradient(to right, #1f1f1f, #2c2c2c)' }}>
-                                <h2 className="text-3xl font-bold text-white mb-6 border-b border-gray-700 pb-2">
-                                    🎬 تفاصيل الفيلم
-                                </h2>
+                        {/* Right Column: Stats & Info */}
+                        <div className="lg:col-span-1 space-y-6">
+                            <div className="bg-[#1e1e1e]/80 backdrop-blur-xl border border-white/10 rounded-2xl p-6 shadow-xl">
+                                <h3 className="text-xl font-bold text-white mb-6 border-b border-white/10 pb-4">معلومات العمل</h3>
 
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-6">
-                                    <div className="bg-[#2a2a2a] p-4 rounded-lg shadow-sm">
-                                        <h3 className="font-semibold text-white mb-1">🎥 المخرج</h3>
-                                        <p className="text-gray-300">{selectedItem.director || 'غير محدد'}</p>
+                                <div className="space-y-4">
+                                    <div className="flex justify-between items-center p-3 bg-white/5 rounded-lg hover:bg-white/10 transition-colors">
+                                        <span className="text-gray-400 flex items-center gap-2">
+                                            <Star className="w-5 h-5 text-amber-400" />
+                                            التقييم
+                                        </span>
+                                        <span className="font-bold text-white flex items-center gap-1">
+                                            {avgRating.average.toFixed(1)}
+                                            <span className="text-xs text-gray-500">({avgRating.count})</span>
+                                        </span>
                                     </div>
 
-                                    <div className="bg-[#2a2a2a] p-4 rounded-lg shadow-sm">
-                                        <h3 className="font-semibold text-white mb-1">📅 تاريخ الإصدار</h3>
-                                        <p className="text-gray-300">{selectedItem.createdAt ? new Date(selectedItem.createdAt).toLocaleDateString('ar-EG') : 'غير محدد'}</p>
+                                    <div className="flex justify-between items-center p-3 bg-white/5 rounded-lg hover:bg-white/10 transition-colors">
+                                        <span className="text-gray-400 flex items-center gap-2">
+                                            <User className="w-5 h-5 text-blue-400" />
+                                            التصنيف
+                                        </span>
+                                        <span className="font-bold text-white">{selectedItem.genre || 'غير محدد'}</span>
                                     </div>
 
-                                    <div className="bg-[#2a2a2a] p-4 rounded-lg shadow-sm">
-                                        <h3 className="font-semibold text-white mb-1">🎥 مساعد المخرج</h3>
-                                        <p className="text-gray-300">{selectedItem.assistantDirector || 'غير محدد'}</p>
+                                    <div className="flex justify-between items-center p-3 bg-white/5 rounded-lg hover:bg-white/10 transition-colors">
+                                        <span className="text-gray-400 flex items-center gap-2">
+                                            <Play className="w-5 h-5 text-green-400" />
+                                            النوع
+                                        </span>
+                                        <span className="font-bold text-white">{selectedItem.type === 'movie' ? 'فيلم' : 'مسلسل'}</span>
                                     </div>
 
-                                    <div className="bg-[#2a2a2a] p-4 rounded-lg shadow-sm">
-                                        <h3 className="font-semibold text-white mb-1">🎭 التصنيف</h3>
-                                        <p className="text-gray-300">{selectedItem.genre}</p>
-                                    </div>
-
-                                    {selectedItem.type === 'series' && (
-                                        <div className="bg-[#2a2a2a] p-4 rounded-lg shadow-sm">
-                                            <h3 className="font-semibold text-white mb-1">📺 معلومات المسلسل</h3>
-                                            <div className="space-y-1">
-                                                {selectedItem.seasonsCount && (
-                                                    <p className="text-gray-300">عدد المواسم: {selectedItem.seasonsCount}</p>
-                                                )}
-                                                {selectedItem.episodesCount && (
-                                                    <p className="text-gray-300">عدد الحلقات: {selectedItem.episodesCount}</p>
-                                                )}
-                                            </div>
+                                    {selectedItem.duration && (
+                                        <div className="flex justify-between items-center p-3 bg-white/5 rounded-lg hover:bg-white/10 transition-colors">
+                                            <span className="text-gray-400 flex items-center gap-2">
+                                                ⏱️ المدة
+                                            </span>
+                                            <span className="font-bold text-white">{selectedItem.duration}</span>
                                         </div>
                                     )}
 
-                                    <div className="bg-[#2a2a2a] p-4 rounded-lg shadow-sm">
-                                        <h3 className="font-semibold text-white mb-2 flex items-center gap-2">
-                                            🎬 الأبطال
-                                        </h3>
-                                        <div className="flex flex-col gap-2">
-                                            {selectedItem.cast && selectedItem.cast.length > 0 ? (
-                                                selectedItem.cast.map((actor, index) => (
-                                                    <div key={index} className="flex items-center gap-2 text-gray-300">
-                                                        <User size={18} className="text-white" />
-                                                        <span>{actor}</span>
-                                                    </div>
-                                                ))
-                                            ) : (
-                                                <p className="text-gray-400">لم يتم تحديد الممثلين</p>
-                                            )}
-                                        </div>
-                                    </div>
+                                    {selectedItem.type === 'series' && (
+                                        <>
+                                            <div className="flex justify-between items-center p-3 bg-white/5 rounded-lg hover:bg-white/10 transition-colors">
+                                                <span className="text-gray-400 flex items-center gap-2">📺 المواسم</span>
+                                                <span className="font-bold text-white">{selectedItem.seasonsCount || 'غير محدد'}</span>
+                                            </div>
+                                            <div className="flex justify-between items-center p-3 bg-white/5 rounded-lg hover:bg-white/10 transition-colors">
+                                                <span className="text-gray-400 flex items-center gap-2">🎬 الحلقات</span>
+                                                <span className="font-bold text-white">{selectedItem.episodesCount || 'غير محدد'}</span>
+                                            </div>
+                                        </>
+                                    )}
 
-                                    <div className="bg-[#2a2a2a] p-4 rounded-lg shadow-sm">
-                                        <h3 className="font-semibold text-white mb-1 flex items-center gap-2">
-                                            📍 مكان التصوير
-                                        </h3>
-                                        <p className="text-gray-300">{selectedItem.filmingLocation || 'غير محدد'}</p>
-                                    </div>
-                                    <div className="bg-[#2a2a2a] p-4 rounded-lg shadow-sm">
-                                        <h3 className="font-semibold text-white mb-1 flex items-center gap-2">
+                                    <div className="flex justify-between items-center p-3 bg-white/5 rounded-lg hover:bg-white/10 transition-colors">
+                                        <span className="text-gray-400 flex items-center gap-2">
                                             📅 السنة
-                                        </h3>
-                                        <p className="text-gray-300">{selectedItem.year || 'غير محدد'}</p>
+                                        </span>
+                                        <span className="font-bold text-white">{selectedItem.year || 'غير محدد'}</span>
                                     </div>
-                                    <div className="bg-[#2a2a2a] p-4 rounded-lg shadow-sm">
-                                        <h3 className="font-semibold text-white mb-1 flex items-center gap-2">
-                                            🎭 النوع                                        </h3>
-                                        <p className="text-gray-300">{selectedItem.genre || 'غير محدد'}</p>
+                                </div>
+
+                                {/* User Rating Interaction */}
+                                <div className="mt-8 pt-6 border-t border-white/10">
+                                    <h4 className="text-sm font-bold text-gray-400 mb-4 text-center">قيّم هذا العمل</h4>
+                                    <div className="flex justify-center gap-2">
+                                        {[1, 2, 3, 4, 5].map((star) => (
+                                            <button
+                                                key={star}
+                                                onClick={() => submitRating(star)}
+                                                disabled={ratingLoading || userRatingLoading || hasRated}
+                                                className={`transition-all transform hover:scale-125 ${hasRated && myRating >= star
+                                                    ? 'text-amber-400'
+                                                    : 'text-gray-600 hover:text-amber-400'
+                                                    }`}
+                                            >
+                                                <Star
+                                                    size={28}
+                                                    className={hasRated && myRating >= star ? "fill-current" : ""}
+                                                />
+                                            </button>
+                                        ))}
+                                    </div>
+                                    {hasRated && (
+                                        <p className="text-center text-green-400 text-xs mt-2 font-medium">
+                                            شكراً لتقييمك! ({myRating}/5)
+                                        </p>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Left Column: Comments & Extra Content */}
+                        <div className="lg:col-span-2 space-y-8">
+                            {/* Movie Details Extended */}
+                            <div className="bg-[#1e1e1e]/80 backdrop-blur-xl border border-white/10 rounded-2xl p-6 shadow-xl">
+                                <h3 className="text-xl font-bold text-white mb-6 border-b border-white/10 pb-4">تفاصيل إضافية</h3>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div className="bg-white/5 p-4 rounded-xl">
+                                        <h4 className="text-gray-400 text-sm mb-1">المخرج</h4>
+                                        <p className="text-white font-medium text-lg">{selectedItem.director || 'غير محدد'}</p>
+                                    </div>
+                                    <div className="bg-white/5 p-4 rounded-xl">
+                                        <h4 className="text-gray-400 text-sm mb-1">مساعد المخرج</h4>
+                                        <p className="text-white font-medium text-lg">{selectedItem.assistantDirector || 'غير محدد'}</p>
+                                    </div>
+                                    <div className="bg-white/5 p-4 rounded-xl">
+                                        <h4 className="text-gray-400 text-sm mb-1">مكان التصوير</h4>
+                                        <p className="text-white font-medium text-lg">{selectedItem.filmingLocation || 'غير محدد'}</p>
+                                    </div>
+                                    <div className="bg-white/5 p-4 rounded-xl">
+                                        <h4 className="text-gray-400 text-sm mb-1">تاريخ الإصدار</h4>
+                                        <p className="text-white font-medium text-lg">
+                                            {selectedItem.createdAt ? new Date(selectedItem.createdAt).toLocaleDateString('ar-EG') : 'غير محدد'}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div className="mt-6">
+                                    <h4 className="text-gray-400 text-sm mb-3">طاقم العمل</h4>
+                                    <div className="flex flex-wrap gap-2">
+                                        {selectedItem.cast && selectedItem.cast.length > 0 ? (
+                                            selectedItem.cast.map((actor, index) => (
+                                                <span key={index} className="px-3 py-1 bg-white/10 rounded-full text-sm text-white hover:bg-white/20 transition-colors cursor-default">
+                                                    {actor}
+                                                </span>
+                                            ))
+                                        ) : (
+                                            <p className="text-gray-500 text-sm">لم يتم تحديد الممثلين</p>
+                                        )}
                                     </div>
                                 </div>
                             </div>
@@ -752,144 +742,151 @@ const Details = () => {
                         </div>
                     </div>
                     <div className="bg-gradient-to-br from-[#1f1f1f] to-[#2c2c2c] border mt-18 border-gray-700 rounded-xl p-6 shadow-lg">
-                        <h3 className="text-4xl mx-4 font-bold text-white mb-6 flex items-center gap-2">
-                            🎞️ أفلام مشابهة
+                        <h3 className="text-3xl lg:text-4xl mx-4 font-bold text-white mb-6 flex items-center gap-2">
+                            🎞️ {selectedItem?.type === 'movie' ? 'أفلام مشابهة' : 'مسلسلات مشابهة'}
                         </h3>
 
-                        <div className="grid grid-cols-1 mt-10 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6">
                             {allMovies
                                 .filter(
                                     (movie) =>
                                         movie.genre == selectedItem?.genre &&
-                                        movie.type == selectedItem?.type
+                                        movie.type == selectedItem?.type &&
+                                        movie._id !== selectedItem?._id
                                 )
-                                .map((movie, index) => {
-                                    if (movie._id === selectedItem?._id) return null; // تخطي الفيلم الحالي
+                                .slice(0, 15) // عرض أول 15 عمل (3 صفوف × 5 أعمال)
+                                .map((movie) => {
                                     const movieRating = getMovieRating(movie._id);
 
                                     return (
-                                        <SwiperSlide key={index} style={{ paddingBottom: `60px` }}>
+                                        <div
+                                            key={movie._id}
+                                            className="group card-hover bg-card border border-white/50 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-md hover:shadow-amber-300/100 hover:-translate-y-2 text-white w-full mx-auto z-10"
+                                            style={{ backgroundColor: 'var(--color-dark)' }}
+                                        >
+                                            <div className="block cursor-pointer" role="button">
+                                                <div className="relative aspect-[2/3] overflow-hidden">
+                                                    <img
+                                                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                                                        loading="lazy"
+                                                        src={movie?.posterUrl}
+                                                        width={300}
+                                                        height={450}
+                                                        alt={movie?.nameArabic}
+                                                        onError={(e) => {
+                                                            e.target.src = 'https://via.placeholder.com/300x450/1f2937/9ca3af?text=صورة+غير+متوفرة';
+                                                        }}
+                                                    />
 
-                                            <div
-                                                key={index}
-                                                className="group card-hover bg-card border text-3xl border-white/50 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-md hover:shadow-amber-300/100 hover:-translate-y-5 text-white w-[160px] md:w-[310px] z-10"
-                                                style={{ backgroundColor: 'var(--color-dark)' }}
-                                            >
-                                                <div className="block cursor-pointer" role="button">
-                                                    <div className="relative aspect-[2/3] overflow-hidden">
-                                                        {!isImageLoaded && !imageError && (
-                                                            <div className="absolute inset-0 bg-muted animate-pulse flex items-center justify-center">
-                                                                <div className="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
-                                                            </div>
-                                                        )}
-                                                        <img
-                                                            className={`w-full h-full object-cover transition-all duration-300 group-hover:scale-105 ${isImageLoaded ? 'opacity-100' : 'opacity-0'}`}
-                                                            loading="lazy"
-                                                            src={movie?.posterUrl}
-                                                            onLoad={() => setIsImageLoaded(true)}
-                                                            onError={(e) => {
-                                                                setImageError(true);
-                                                                e.target.src = 'https://via.placeholder.com/300x450/1f2937/9ca3af?text=صورة+غير+متوفرة';
-                                                            }}
-                                                        />
-
-                                                        <div className="absolute top-2 right-2 bg-amber-300 backdrop-blur-sm rounded-lg px-2 text-black font-extrabold py-1 transition-all duration-300 group-hover:bg-amber-400">
-                                                            <span className="text-primary-foreground text-xs font-medium">
-                                                                {movie?.genre}
-                                                            </span>
-                                                        </div>
-
-                                                        <div className="absolute top-2 right-18 bg-amber-400 backdrop-blur-sm rounded-lg px-2 text-black font-extrabold py-1 transition-all duration-300 group-hover:bg-amber-400">
-                                                            <span className="text-primary-foreground text-xs font-medium">
-                                                                {movie?.type}
-                                                            </span>
-                                                        </div>
-
-                                                        {/* Overlay buttons */}
-                                                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                                            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex items-center gap-6">
-                                                                <Link to={`/Details/${movie._id}`} className="bg-transparent">
-                                                                    <button className="w-12 h-12 flex items-center justify-center bg-white/20 hover:bg-white/30 text-white rounded-full transition-all duration-300 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2">
-                                                                        <Play size={30} className="fill-current" />
-                                                                    </button>
-                                                                </Link>
-
-                                                                <button
-                                                                    onClick={handleFavoriteClick}
-                                                                    className={`w-12 h-12 flex items-center justify-center rounded-full transition-all duration-300 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-offset-2 ${movieState.isFavorite
-                                                                            ? "bg-red-500/90 hover:bg-red-500 text-white focus:ring-red-500"
-                                                                            : "bg-white/20 hover:bg-white/30 text-amber-300 focus:ring-amber-300"
-                                                                        }`}
-                                                                >
-                                                                    <Heart
-                                                                        size={30}
-                                                                        className={movieState.isFavorite ? "fill-current" : ""}
-                                                                    />
-                                                                </button>
-
-                                                                <button
-                                                                    onClick={handleShareClick}
-                                                                    className="w-12 h-12 flex items-center justify-center bg-white/20 hover:bg-white/30 text-blue-700 rounded-full transition-all duration-300 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2"
-                                                                >
-                                                                    <Share2 size={30} />
-                                                                </button>
-                                                            </div>
-                                                        </div>
-
-                                                        {/* Rating display */}
-                                                        {movieRating.average > 0 && (
-                                                            <div className="absolute bottom-2 right-2 bg-black/80 backdrop-blur-sm rounded-lg px-2 py-1 transition-all duration-300 group-hover:bg-primary/90">
-                                                                <div className="flex items-center space-x-1 space-x-reverse">
-                                                                    <Star
-                                                                        size={12}
-                                                                        className="lucide lucide-star fill-current text-yellow-400 group-hover:text-primary-foreground transition-colors duration-300"
-                                                                        aria-hidden="true"
-                                                                    />
-                                                                    <span className="text-white text-xs font-medium group-hover:text-primary-foreground transition-colors duration-300">
-                                                                        {movieRating.average.toFixed(1)}
-                                                                    </span>
-                                                                </div>
-                                                            </div>
-                                                        )}
+                                                    <div className="absolute top-2 right-2 bg-amber-300 backdrop-blur-sm rounded-lg px-2 text-black font-extrabold py-1 transition-all duration-300 group-hover:bg-amber-400">
+                                                        <span className="text-primary-foreground text-xs font-medium">
+                                                            {movie?.genre}
+                                                        </span>
                                                     </div>
 
-                                                    <div className="p-4 space-y-3">
-                                                        <div>
-                                                            <h3 className="font-bold text-foreground text-2xl line-clamp-2 group-hover:text-primary transition-colors duration-300">
-                                                                {movie?.nameArabic}
-                                                            </h3>
-                                                            <p className="text-muted-foreground text-sm mt-1 ltr transition-colors duration-300 group-hover:text-muted-foreground/80">
-                                                                {movie?.nameEnglish}
-                                                            </p>
+                                                    {movie?.type && (
+                                                        <div className="absolute top-2 left-2 bg-blue-500 backdrop-blur-sm rounded-lg px-2 text-white font-extrabold py-1 transition-all duration-300 group-hover:bg-blue-600">
+                                                            <span className="text-xs font-medium">
+                                                                {movie?.type === 'movie' ? 'فيلم' : 'مسلسل'}
+                                                            </span>
                                                         </div>
-                                                        <div className="flex items-center justify-between">
-                                                            <div className="flex items-center text-amber-300 space-x-1 space-x-reverse">
-                                                                {ratingsLoading ? (
-                                                                    <div className="animate-pulse bg-gray-600 h-4 w-16 rounded"></div>
-                                                                ) : movieRating.average > 0 ? (
-                                                                    <>
-                                                                        {renderStars(movieRating.average)}
-                                                                        <span className="text text-xs mr-2 text-white transition-colors duration-300">
-                                                                            ({movieRating.displayText})
-                                                                        </span>
-                                                                    </>
-                                                                ) : (
-                                                                    <span className="text text-xs mr-2 text-gray-400 transition-colors duration-300">
-                                                                        {movieRating.displayText}
-                                                                    </span>
-                                                                )}
+                                                    )}
+
+                                                    {/* Overlay buttons */}
+                                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                                        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex items-center gap-2 sm:gap-3 md:gap-4">
+                                                            <Link to={`/Details/${movie._id}`} className="bg-transparent">
+                                                                <button className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 flex items-center justify-center bg-white/20 hover:bg-white/30 text-white rounded-full transition-all duration-300 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2">
+                                                                    <Play size={20} className="fill-current sm:w-[24px] sm:h-[24px] md:w-[30px] md:h-[30px]" />
+                                                                </button>
+                                                            </Link>
+
+                                                            <AddToFavoritesButton workId={movie._id} />
+
+                                                            <button
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    const shareUrl = `${window.location.origin}/Details/${movie._id}`;
+                                                                    if (navigator.share) {
+                                                                        navigator.share({ title: movie.nameArabic, url: shareUrl });
+                                                                    } else {
+                                                                        navigator.clipboard.writeText(shareUrl);
+                                                                        toast.success('تم نسخ الرابط!');
+                                                                    }
+                                                                }}
+                                                                className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 flex items-center justify-center bg-white/20 hover:bg-white/30 text-blue-700 rounded-full transition-all duration-300 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2"
+                                                            >
+                                                                <Share2 size={20} className="sm:w-[24px] sm:h-[24px] md:w-[30px] md:h-[30px]" />
+                                                            </button>
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Rating display */}
+                                                    {movieRating.average > 0 && (
+                                                        <div className="absolute bottom-2 right-2 bg-black/80 backdrop-blur-sm rounded-lg px-2 py-1 transition-all duration-300 group-hover:bg-primary/90">
+                                                            <div className="flex items-center space-x-1 space-x-reverse">
+                                                                <Star
+                                                                    size={12}
+                                                                    className="lucide lucide-star fill-current text-yellow-400 group-hover:text-primary-foreground transition-colors duration-300"
+                                                                    aria-hidden="true"
+                                                                />
+                                                                <span className="text-white text-xs font-medium group-hover:text-primary-foreground transition-colors duration-300">
+                                                                    {movieRating.average.toFixed(1)}
+                                                                </span>
                                                             </div>
+                                                        </div>
+                                                    )}
+                                                </div>
+
+                                                <div className="p-2 sm:p-3 md:p-4 space-y-1 sm:space-y-2">
+                                                    <div>
+                                                        <h3 className="font-bold text-foreground text-sm sm:text-base md:text-lg line-clamp-2 group-hover:text-primary transition-colors duration-300">
+                                                            {movie?.nameArabic}
+                                                        </h3>
+                                                        <p className="text-muted-foreground text-xs sm:text-sm mt-1 ltr transition-colors duration-300 group-hover:text-muted-foreground/80 line-clamp-1">
+                                                            {movie?.nameEnglish}
+                                                        </p>
+                                                    </div>
+                                                    <div className="flex items-center justify-between">
+                                                        <div className="flex items-center text-amber-300 space-x-1 space-x-reverse">
+                                                            {ratingsLoading ? (
+                                                                <div className="animate-pulse bg-gray-600 h-3 w-12 rounded"></div>
+                                                            ) : movieRating.average > 0 ? (
+                                                                <>
+                                                                    {renderStars(movieRating.average)}
+                                                                    <span className="text-xs mr-1 text-white transition-colors duration-300">
+                                                                        ({movieRating.average.toFixed(1)})
+                                                                    </span>
+                                                                </>
+                                                            ) : (
+                                                                <span className="text-xs mr-1 text-gray-400 transition-colors duration-300">
+                                                                    لا توجد تقييمات
+                                                                </span>
+                                                            )}
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                        </SwiperSlide>);
+                                        </div>
+                                    );
                                 })}
                         </div>
 
+                        {/* عرض رسالة إذا لم توجد أعمال مشابهة */}
+                        {allMovies.filter(
+                            (movie) =>
+                                movie.genre == selectedItem?.genre &&
+                                movie.type == selectedItem?.type &&
+                                movie._id !== selectedItem?._id
+                        ).length === 0 && (
+                                <div className="text-center py-12">
+                                    <p className="text-gray-400 text-lg">لا توجد أعمال مشابهة حالياً</p>
+                                </div>
+                            )}
                     </div>
                 </div>
             </div>
+
             <Footer />
         </>
     );
