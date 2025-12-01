@@ -7,7 +7,6 @@ import Home from "./Pages/Home";
 import Register from "./Pages/Register";
 import Login from "./Pages/Login";
 import Footer from "./componet/Footer";
-// import PrivacyPolicy from "./Pages/PrivacyPolicy";
 import TermsOfUse from "./Pages/TermsOfUse";
 import IntellectualPropertyRights from "./Pages/IntellectualPropertyRights";
 import Dashboard from "./Dashboard/Dashboard";
@@ -19,6 +18,8 @@ import AdminDashboard from "./Dashboard/AdminDashboard";
 import Profile from "./Pages/Profile";
 import AddForm from "./Dashboard/AddForm";
 import Contact from "./Pages/Contact";
+import PrivacyPolicy from "./Pages/PrivacyPolicy";
+import AboutAs from "./Pages/AboutAs";
 
 const ProtectedRoute = ({ children, roles = ["admin"] }) => {
   const user = JSON.parse(localStorage.getItem("user"));
@@ -29,15 +30,7 @@ const ProtectedRoute = ({ children, roles = ["admin"] }) => {
 };
 
 function App() {
-  //   // const { user } = useSelector(state => state.user);
-  //   // const dispatch = useDispatch();
-  //   useEffect(() => {
-  //   const storedUser = localStorage.getItem("user");
-  //   if (storedUser) {
-  //     dispatch(setUser(JSON.parse(storedUser)));
-  //   }
-  // }, []);
-  // console.log(user);
+
 
   return (
     <>
@@ -49,7 +42,8 @@ function App() {
           <Route path="/Login" element={<Login />} />
           <Route path="/Footer" element={<Footer />} />
           <Route path="/TermsOfUse" element={<TermsOfUse />} />
-          {/* <Route path="/PrivacyPolicy" element={<PrivacyPolicy />} /> */}
+          <Route path="/PrivacyPolicy" element={<PrivacyPolicy />} />
+          <Route path="/AboutAs" element={<AboutAs />} />
           <Route
             path="/IntellectualPropertyRights"
             element={<IntellectualPropertyRights />}
@@ -112,7 +106,7 @@ function App() {
 
         </Routes>
       </div>
-      
+
       {/* Toast Container for notifications */}
       <ToastContainer
         position="top-center"
@@ -139,17 +133,3 @@ function App() {
 
 export default App;
 
-// useEffect(() => {
-//     const handleKeyPress = (event) => {
-//       // You can add keyboard navigation here if needed
-//       // For now, the MediaSlider handles its own navigation
-//       if (event.key === 'ArrowRight') {
-//         // Navigate to the next slide
-//       } else if (event.key === 'ArrowLeft') {
-//         // Navigate to the previous slide
-//       }
-//     };
-
-//     window.addEventListener('keydown', handleKeyPress);
-//     return () => window.removeEventListener('keydown', handleKeyPress);
-//   }, []);

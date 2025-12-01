@@ -9,7 +9,7 @@ export default function FilmForm() {
   const { id } = useParams(); // يجيب id من الرابط لو في وضع التعديل
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  
+
   useEffect(() => {
     // If already logged in on site with proper role, skip this mini-login
     try {
@@ -19,13 +19,13 @@ export default function FilmForm() {
         setIsVerified(true);
         return;
       }
-    } catch (_) {}
+    } catch (_) { }
     const verified = sessionStorage.getItem("dashboardVerified");
-     if (verified === "true") {
-     setIsVerified(true);
-     }
+    if (verified === "true") {
+      setIsVerified(true);
+    }
   }, []);
-  
+
   const API_URL = "https://arabfilmsserver.onrender.com/api/users/signin";
 
   const handleSubmitt = async (e) => {
@@ -60,9 +60,9 @@ export default function FilmForm() {
       alert(error.message || "الإيميل أو كلمة المرور غير صحيحة");
     }
   };
-  
+
   const [formData, setFormData] = useState({
-    type: 'فيلم', 
+    type: 'فيلم',
     arabicName: '',
     englishName: '',
     year: '',
@@ -74,10 +74,10 @@ export default function FilmForm() {
     location: '',
     summary: '',
     posterUrl: '',
-    seasons: '', 
-    episodes: '' 
+    seasons: '',
+    episodes: ''
   });
-  
+
   useEffect(() => {
     if (id && id !== 'undefined') {
       setLoading(true);
@@ -113,7 +113,7 @@ export default function FilmForm() {
         .finally(() => setLoading(false));
     }
   }, [id, navigate]);
-  
+
   const handleChange = (e, index = null) => {
     const { name, value } = e.target;
     if (name === 'actors' && index !== null) {
@@ -141,16 +141,16 @@ export default function FilmForm() {
 
     // تنظيف البيانات قبل الإرسال
     const cleanedData = {
-      type: formData.type,
-      arabicName: formData.arabicName.trim(),
-      englishName: formData.englishName.trim(),
+      type: formData.type === 'فيلم' ? 'film' : 'series',
+      nameArabic: formData.arabicName.trim(),
+      nameEnglish: formData.englishName.trim(),
       year: parseInt(formData.year) || 2000,
       director: formData.director.trim(),
       assistantDirector: formData.assistantDirector.trim(),
       genre: formData.genre.trim(),
       cast: formData.actors.filter(actor => actor.trim() !== ''),
       country: formData.country.trim(),
-      location: formData.location.trim(),
+      filmingLocation: formData.location.trim(),
       summary: formData.summary.trim(),
       posterUrl: formData.posterUrl.trim()
     };
@@ -167,7 +167,7 @@ export default function FilmForm() {
         alert('تم تعديل العمل بنجاح');
         navigate('/dashboard');
       } else {
-        await workService.createWork(cleanedData, true);
+        await workService.createWork(cleanedData, false);
         alert('تم إضافة العمل بنجاح');
         // Reset form only for new work
         setFormData({
@@ -189,16 +189,16 @@ export default function FilmForm() {
       }
     } catch (error) {
       console.error('Error submitting form:', error);
-      const errorMessage = error.response?.data?.message || 
-                          error.response?.data?.errors?.[0]?.msg || 
-                          error.message ||
-                          'حدث خطأ أثناء حفظ العمل';
+      const errorMessage = error.response?.data?.message ||
+        error.response?.data?.errors?.[0]?.msg ||
+        error.message ||
+        'حدث خطأ أثناء حفظ العمل';
       alert(errorMessage);
     }
   };
-  
+
   if (loading) return <p className="text-white">جاري التحميل...</p>;
-  
+
   if (!isVerified) {
     return (
       <div className="min-h-screen bg-black text-white">
@@ -235,7 +235,7 @@ export default function FilmForm() {
       </div>
     );
   }
-  
+
   // Dashboard: hide Navbar and Footer
   return (
     <div className="bg-black py-20 min-h-screen">
@@ -431,7 +431,13 @@ export default function FilmForm() {
             onChange={handleChange}
             required
             className="w-full p-2 rounded bg-gray-700"
+            placeholder="https://example.com/image.jpg"
           />
+          <p className="text-xs text-yellow-400 mt-1">
+            ⚠️ يرجى استخدام رابط صورة مباشر (ينتهي بـ .jpg أو .png أو .webp).
+            يمكنك رفع الصورة على <a href="https://imgbb.com/" target="_blank" className="underline">ImgBB</a> أو
+            <a href="https://imgur.com/" target="_blank" className="underline ml-1">Imgur</a>
+          </p>
         </div>
 
         {formData.type === 'مسلسل' && (

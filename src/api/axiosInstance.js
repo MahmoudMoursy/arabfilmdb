@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const axiosInstance = axios.create({
-  baseURL: 'https://arabfilmsserver.onrender.com/api',
+  baseURL: 'https://api.arabfilmdb.com/api',
   headers: {
     'Content-Type': 'application/json',
   },

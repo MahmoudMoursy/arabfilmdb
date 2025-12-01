@@ -45,7 +45,7 @@ const SeriesFilterSection = () => {
 
   useEffect(() => {
     let filtered = [...series];
-    console.log(filtered);
+
 
     if (searchTerm) {
       filtered = filtered.filter(item =>

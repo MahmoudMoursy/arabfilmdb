@@ -209,7 +209,7 @@ function Home() {
           </div>
         </div>
       </div>
-      <div className="max-w-6xl mx-auto mt-14 px-4 relative">
+      <div className="max-w-6xl mx-auto my-14 px-4 relative">
         <div className="flex items-center justify-center space-x-4">
           <h2 className="text-3xl font-extrabold text-white">
             أراء مستخدمين
@@ -227,43 +227,51 @@ function Home() {
 
         <Swiper
           modules={[Navigation, Pagination]}
-          spaceBetween={5}
+          spaceBetween={30}
           slidesPerView={1}
           navigation
           pagination={{ clickable: true }}
           breakpoints={{
-            640: { slidesPerView: 1, spaceBetween: 50 },
-            768: { slidesPerView: 1, spaceBetween: 50 },
-            1024: { slidesPerView: 2, spaceBetween: 50 }
+            640: { slidesPerView: 1, spaceBetween: 30 },
+            768: { slidesPerView: 1, spaceBetween: 35 },
+            1024: { slidesPerView: 2, spaceBetween: 40 }
           }}
         >
           {reviews.map((review) => (
             <SwiperSlide key={review.id}>
-              <div className="bg-[#2b3441] text-white rounded-3xl p-6 shadow-lg border border-gray-600 my-10 flex flex-col justify-between items-center hover:-translate-y-2 transition-all duration-300 min-h-[180px] space-y-4">
-                {/* تقييم النجوم */}
-                <div className="flex gap-1">
+              <div className="relative bg-gradient-to-br from-[#202933] to-[#1a1f27] rounded-3xl p-8 shadow-xl border border-white/10 my-10
+                      transition-all duration-500 hover:-translate-y-3 hover:shadow-[0_20px_40px_rgba(0,0,0,0.4)]
+                      backdrop-blur-xl overflow-hidden min-h-[270px] flex flex-col items-center">
+
+                {/* تأثير اضاءة خفيفة */}
+                <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_top,rgba(255,200,80,0.3),transparent_70%)]"></div>
+
+                {/* نجوم – أكبر ولامعة */}
+                <div className="flex gap-1 z-10">
                   {[...Array(5)].map((_, i) => (
                     <FaStar
                       key={i}
-                      className={`w-5 h-5 ${i < review.ratingValue ? "text-yellow-400" : "text-gray-500"
+                      className={`w-7 h-7 ${i < review.ratingValue ? "text-yellow-400 drop-shadow" : "text-gray-600"
                         }`}
-                      aria-label={`${review.ratingValue} out of 5 stars`}
                     />
                   ))}
                 </div>
 
-                {/* وصف التقييم */}
-                <p className="text-center text-base text-gray-200 leading-relaxed flex-1 flex items-center line-clamp-3">
+                {/* الوصف */}
+                <p className="z-10 text-center text-lg text-gray-200 leading-relaxed mt-5 mb-6 line-clamp-4 opacity-95 px-2">
                   "{review.description}"
                 </p>
 
-                {/* اسم المستخدم */}
-                <span className="mt-1 font-bold text-lg text-yellow-300">
+                {/* فاصل ديكوري */}
+                <div className="w-20 h-[2px] bg-gradient-to-r from-yellow-400 to-amber-500 rounded-full my-2"></div>
+
+                {/* اسم المستخدم – أبعد + أوضح */}
+                <span className="z-10 mt-3 font-bold text-xl text-amber-300 tracking-wide drop-shadow">
                   {review.username}
                 </span>
 
-                {/* التاريخ */}
-                <span className="text-sm text-gray-400">
+                {/* التاريخ أسفل وابعد عنه */}
+                <span className="z-10 mt-3 text-sm text-gray-400">
                   {new Date(review.updatedAt).toLocaleDateString(undefined, {
                     year: "numeric",
                     month: "long",
@@ -274,11 +282,13 @@ function Home() {
             </SwiperSlide>
           ))}
         </Swiper>
+
       </div>
       <Footer />
     </div>
 
   );
+
 }
 
 export default Home;

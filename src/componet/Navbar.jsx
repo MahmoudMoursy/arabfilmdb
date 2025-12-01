@@ -1,19 +1,65 @@
-import React, { useState, useEffect } from 'react';
-import "/src/App.css";
-import logo from "/src/assets/WhatsApp_Image_2025-09-01_at_19.08.17_1b74120e-removebg-preview.png"
-import MovieFilterDemo from '../Pages/MovieFilterDemo';
-import SeriesFilterDemo from '../Pages/SeriesFilterDemo';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { User, LogOut, PlusCircle } from "lucide-react";
-
+import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
+import { User, LogOut, PlusCircle, Play } from 'lucide-react';
+import { useSelector, useDispatch } from 'react-redux';
+import { fetchMovies, setSelectedItem } from '../redux/moviesSlice';
+import logo from '../assets/WhatsApp_Image_2025-09-01_at_19.08.17_1b74120e-removebg-preview.png';
 
 const Navbar = () => {
-    const [open, setOpen] = useState(false);
     const navigate = useNavigate();
     const location = useLocation();
+    const dispatch = useDispatch();
+    const searchRef = useRef(null);
+
+    const [open, setOpen] = useState(false);
     const user = JSON.parse(localStorage.getItem('user'));
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [search, setSearch] = useState('');
+    const [scrolled, setScrolled] = useState(false);
+    const [showSearchResults, setShowSearchResults] = useState(false);
+    const [searchResults, setSearchResults] = useState([]);
+
+    // Get all works from Redux
+    const { allMovies } = useSelector(state => state.movies);
+    // console.log(user.data);
+
+    useEffect(() => {
+        dispatch(fetchMovies());
+    }, [dispatch]);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            setScrolled(window.scrollY > 20);
+        };
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
+
+    // Search functionality
+    useEffect(() => {
+        if (search.trim().length > 0) {
+            const filtered = allMovies.filter(item =>
+                item.nameArabic?.toLowerCase().includes(search.toLowerCase()) ||
+                item.nameEnglish?.toLowerCase().includes(search.toLowerCase())
+            ).slice(0, 5); // Show only top 5 results
+            setSearchResults(filtered);
+            setShowSearchResults(true);
+        } else {
+            setSearchResults([]);
+            setShowSearchResults(false);
+        }
+    }, [search, allMovies]);
+
+    // Close search results when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (searchRef.current && !searchRef.current.contains(event.target)) {
+                setShowSearchResults(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
 
     const toggleMobileMenu = () => {
         setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -23,18 +69,14 @@ const Navbar = () => {
         setIsMobileMenuOpen(false);
     };
 
-    const getSearchTarget = () => {
-        const path = location.pathname || '';
-        if (path.toLowerCase().includes('/seriesfilterdemo')) return '/SeriesFilterDemo';
-        if (path.toLowerCase().includes('/moviefilterdemo')) return '/MovieFilterDemo';
-        return '/MovieFilterDemo';
-    };
-
-    const triggerSearch = () => {
-        const q = (search || '').trim();
-        const target = getSearchTarget();
-        const searchStr = q.length ? `?q=${encodeURIComponent(q)}` : '';
-        navigate(`${target}${searchStr}`);
+    const handleSearchItemClick = (itemId) => {
+        const item = searchResults.find(i => i._id === itemId);
+        if (item) {
+            dispatch(setSelectedItem(item));
+        }
+        setShowSearchResults(false);
+        setSearch('');
+        navigate(`/Details/${itemId}`);
     };
 
     useEffect(() => {
@@ -43,7 +85,7 @@ const Navbar = () => {
                 closeMobileMenu();
             }
         };
-
+        console.log(user.profileImage);
         if (isMobileMenuOpen) {
             document.addEventListener('click', handleClickOutside);
         }
@@ -71,308 +113,356 @@ const Navbar = () => {
     }, []);
 
     return (
-        <>
-            <div dir="rtl">
-                <nav
-                    className="shadow-2xl border-b border-white/20 backdrop-blur-sm relative z-50"
-                    style={{ backgroundColor: "var(--color-dark)" }}
-                >
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent"></div>
+        <div dir="rtl" className="relative w-full z-50">
+            <nav
+                className={`fixed top-0 w-full z-50 transition-all duration-500 border-b border-white/5 ${scrolled
+                    ? 'bg-[#0f1014]/95 backdrop-blur-xl shadow-2xl'
+                    : 'bg-transparent backdrop-blur-sm'
+                    }`}
+                style={{ height: '120px' }}
+            >
+                {/* Ambient Glow */}
+                <div className="absolute inset-0 bg-gradient-to-r from-amber-500/5 via-purple-500/5 to-blue-500/5 pointer-events-none"></div>
 
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-                        <div className="flex justify-between items-center h-20">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative h-full">
+                    <div className="flex justify-between items-center h-full">
 
-                            <div className="flex items-center group">
-                                <div className="flex-shrink-0 transform transition-all duration-300 group-hover:scale-105">
-                                    <img
-                                        src={logo}
-                                        alt="Logo"
-                                        width={128}          // عرض ثابت
-                                        height={128}         // ارتفاع ثابت
-                                        className="w-32 h-32 object-contain drop-shadow-lg transition-shadow duration-300 group-hover:drop-shadow-2xl"
-                                        loading="eager"      // مهم للـ LCP إذا الصورة هي الأولى في الصفحة
-                                    />
-
-                                </div>
+                        {/* Logo Section */}
+                        <div className="flex-shrink-0 flex items-center gap-2 cursor-pointer group" onClick={() => navigate('/')}>
+                            <div className="relative">
+                                <div className="absolute -inset-2 bg-amber-500/20 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                                <img
+                                    src={logo}
+                                    alt="Logo"
+                                    style={{ width: "100px", height: "100px" }}
+                                    className="object-contain relative z-10 transform transition-transform duration-500 group-hover:scale-110 drop-shadow-2xl"
+                                />
                             </div>
+                        </div>
 
-                            <div className="hidden lg:flex items-center justify-center flex-1 mx-12">
-                                <ul className="flex flex-row-reverse gap-12" dir="rtl">
-                                    <li className="relative group">
-                                        <a
-                                            onClick={() => navigate('/MovieFilterDemo')}
-                                            className="relative text-white hover:text-amber-300 text-lg font-bold transition-all duration-300 py-2 px-4 rounded-xl hover:bg-white/10 backdrop-blur-sm"
-                                        >
-                                            الافلام
-                                            <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-amber-300 to-yellow-500 transition-all duration-300 group-hover:w-full"></span>
-                                        </a>
-                                    </li>
-                                    <li className="relative group">
-                                        <a
-                                            onClick={() => navigate('/SeriesFilterDemo')}
-                                            className="relative text-white hover:text-amber-300 text-lg font-bold transition-all duration-300 py-2 px-4 rounded-xl hover:bg-white/10 backdrop-blur-sm"
-                                        >
-                                            المسلسلات
-                                            <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-amber-300 to-yellow-500 transition-all duration-300 group-hover:w-full"></span>
-                                        </a>
-                                    </li>
-                                    <li className="relative group">
-                                        <a
-                                            href="/"
-                                            className="relative text-white hover:text-amber-300 text-lg font-bold transition-all duration-300 py-2 px-4 rounded-xl hover:bg-white/10 backdrop-blur-sm"
-                                        >
-                                            الرئيسية
-                                            <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-amber-300 to-yellow-500 transition-all duration-300 group-hover:w-full"></span>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
-
-                            <div className="hidden md:flex items-center ml-8">
-                                <div className="relative group">
-                                    <input
-                                        type="text"
-                                        placeholder="ابحث في الموقع..."
-                                        className="w-72 pl-12 pr-4 py-3 border border-gray-600/50 rounded-2xl focus:ring-2 focus:ring-amber-300/50 focus:border-amber-300 focus:outline-none text-right text-white placeholder-gray-400 transition-all duration-300 backdrop-blur-sm hover:border-gray-500 focus:shadow-lg focus:shadow-amber-300/20"
-                                        style={{ backgroundColor: "var(--color-grayy)" }}
-                                        value={search}
-                                        onChange={(e) => setSearch(e.target.value)}
-                                        onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); triggerSearch(); } }}
-                                    />
-                                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center">
-                                        <button onClick={triggerSearch} className="text-gray-400 hover:text-amber-300 transition-colors duration-300">
-                                            <svg
-                                                className="w-5 h-5"
-                                                fill="none"
-                                                stroke="currentColor"
-                                                viewBox="0 0 24 24"
-                                                strokeWidth={2}
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                            >
-                                                <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                                            </svg>
-                                        </button>
-                                    </div>
-                                    <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-amber-300/10 to-yellow-500/10 opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
-                                </div>
-                            </div>
-
-                            {(!user) ? (<div className="flex items-center space-x-reverse space-x-4">
-                                <button
-                                    onClick={() => navigate('/Login')}
-                                    className="group flex items-center text-white mx-2 px-6 py-3 rounded-xl text-base font-semibold transition-all duration-300 hover:text-amber-300 hover:bg-white/10 backdrop-blur-sm border border-transparent hover:border-white/20 hover:shadow-lg
-                            sm:px-5 sm:py-2.5 sm:text-sm
-                               max-sm:px-4 max-sm:py-2 max-sm:text-xs"
-                                >
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        width="20"
-                                        height="20"
-                                        viewBox="0 0 24 24"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        strokeWidth="2"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        className="w-5 h-5 ml-2 transition-transform duration-300 group-hover:translate-x-1"
-                                    >
-                                        <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
-                                        <polyline points="10 17 15 12 10 7" />
-                                        <line x1="15" y1="12" x2="3" y2="12" />
-                                    </svg>
-                                    تسجيل الدخول
-                                </button>
-
-
-                                <button
-                                    onClick={() => navigate('/Register')}
-                                    className="group relative overflow-hidden border border-gray-600/50 hover:border-amber-300/50 mx-2 px-6 py-3 rounded-xl text-base font-bold transition-all duration-300 hover:shadow-lg hover:shadow-amber-300/20 hover:-translate-y-0.5
-                                                      sm:px-5 sm:py-2.5 sm:text-sm
-                                         max-sm:px-4 max-sm:py-2 max-sm:text-xs"
-                                    style={{ backgroundColor: "var(--color-accent)" }}
-                                >
-                                    <span className="relative z-10 text-white group-hover:text-white transition-colors duration-300">
-                                        إنشاء حساب
-                                    </span>
-
-                                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
-                                </button>
-
-                            </div>) : (
-                                <div className="relative inline-flex items-center gap-4 text-left">
-                                    {/* <div className="flex items-center gap-3">
-                                        {( user?.role === 'publisher') && (
-                                            <button
-                                                onClick={() => navigate('/dashboard')}
-                                                className="flex items-center gap-2 px-4 py-2 rounded-lg font-bold text-black hover:opacity-90 shadow"
-                                                style={{ backgroundColor: "var(--color-accent)" }}
-                                            >
-                                                <PlusCircle className="w-5 h-5" />
-                                                لوحة التحكم
-                                            </button>
-                                        )}
-                                    </div> */}
-                                    <div className="relative inline-block">
+                        {/* Desktop Navigation */}
+                        <div className="hidden lg:flex items-center justify-center flex-1 mx-8">
+                            <ul className="flex items-center gap-8">
+                                {[
+                                    { name: 'الرئيسية', path: '/' },
+                                    { name: 'الافلام', path: '/MovieFilterDemo' },
+                                    { name: 'المسلسلات', path: '/SeriesFilterDemo' }
+                                ].map((item) => (
+                                    <li key={item.name}>
                                         <button
-                                            onClick={() => setOpen(!open)}
-                                            className="flex items-center gap-2 md:px-12 px-2 py-2 rounded-lg border border-gray-600/50 bg-[var(--color-accent)] hover:border-amber-300/50 transition-all duration-300"
+                                            onClick={() => navigate(item.path)}
+                                            className={`relative px-4 py-2 text-base font-bold transition-all duration-300 group ${location.pathname === item.path ? 'text-amber-400' : 'text-gray-300 hover:text-white'
+                                                }`}
                                         >
-                                            <User className="w-7 h-6 text-black" />
-                                            <span className="text-black font-bold ">{user?.username}</span>
+                                            <span className="relative z-10">{item.name}</span>
+                                            <span className={`absolute bottom-0 left-0 h-0.5 bg-gradient-to-r from-amber-400 to-orange-500 transition-all duration-300 ${location.pathname === item.path ? 'w-full' : 'w-0 group-hover:w-full'
+                                                }`}></span>
+                                            <span className="absolute inset-0 bg-white/5 rounded-lg scale-0 group-hover:scale-100 transition-transform duration-300 -z-10"></span>
                                         </button>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
 
-                                        {open && (
-                                            <div className="absolute right-0 mt-2 w-48 rounded-lg shadow-lg bg-[var(--color-secondary)] border border-gray-600/50 overflow-hidden z-20">
+                        {/* Search Bar with Dropdown */}
+                        <div className="hidden md:flex items-center flex-1 max-w-md mx-4" ref={searchRef}>
+                            <div className="relative w-full group">
+                                <input
+                                    type="text"
+                                    placeholder="ابحث عن فيلم أو مسلسل..."
+                                    className="w-full bg-white/5 border border-white/10 rounded-full py-2.5 pr-12 pl-4 text-sm text-white placeholder-gray-400 focus:outline-none focus:border-amber-500/50 focus:bg-white/10 focus:ring-1 focus:ring-amber-500/20 transition-all duration-300"
+                                    value={search}
+                                    onChange={(e) => setSearch(e.target.value)}
+                                    onFocus={() => search.trim().length > 0 && setShowSearchResults(true)}
+                                />
+                                <button
+                                    className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 text-gray-400 hover:text-amber-400 transition-colors duration-300"
+                                >
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                    </svg>
+                                </button>
+
+                                {/* Search Results Dropdown */}
+                                {showSearchResults && searchResults.length > 0 && (
+                                    <div className="absolute top-full left-0 right-0 mt-2 bg-[#1a1c23] border border-white/10 rounded-2xl shadow-2xl overflow-hidden z-50 max-h-96 overflow-y-auto">
+                                        {searchResults.map((item) => (
+                                            <div
+                                                key={item._id}
+                                                onClick={() => handleSearchItemClick(item._id)}
+                                                className="flex items-center gap-3 p-3 hover:bg-white/5 cursor-pointer transition-all duration-200 border-b border-white/5 last:border-b-0"
+                                            >
+                                                <img
+                                                    src={item.posterUrl}
+                                                    alt={item.nameArabic}
+                                                    className="w-12 h-16 object-cover rounded-lg"
+                                                    onError={(e) => {
+                                                        e.target.src = 'https://via.placeholder.com/48x64/1f2937/9ca3af?text=No+Image';
+                                                    }}
+                                                />
+                                                <div className="flex-1">
+                                                    <h4 className="text-white font-semibold text-sm line-clamp-1">{item.nameArabic}</h4>
+                                                    <p className="text-gray-400 text-xs line-clamp-1">{item.nameEnglish}</p>
+                                                    <div className="flex items-center gap-2 mt-1">
+                                                        <span className="text-xs px-2 py-0.5 bg-amber-500/20 text-amber-400 rounded-full">
+                                                            {item.type === 'movie' ? 'فيلم' : 'مسلسل'}
+                                                        </span>
+                                                        <span className="text-xs text-gray-500">{item.year}</span>
+                                                    </div>
+                                                </div>
+                                                <Play size={16} className="text-amber-400" />
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+
+                                {/* No Results Message */}
+                                {showSearchResults && search.trim().length > 0 && searchResults.length === 0 && (
+                                    <div className="absolute top-full left-0 right-0 mt-2 bg-[#1a1c23] border border-white/10 rounded-2xl shadow-2xl p-4 z-50">
+                                        <p className="text-gray-400 text-sm text-center">لا توجد نتائج للبحث عن "{search}"</p>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* User Actions */}
+                        <div className="hidden md:flex items-center gap-4">
+                            {!user ? (
+                                <>
+                                    <button
+                                        onClick={() => navigate('/Login')}
+                                        className="text-white hover:text-amber-400 font-medium text-sm transition-colors duration-300"
+                                    >
+                                        تسجيل الدخول
+                                    </button>
+                                    <button
+                                        onClick={() => navigate('/Register')}
+                                        className="relative group overflow-hidden px-6 py-2.5 rounded-full bg-gradient-to-r from-amber-500 to-orange-600 text-white text-sm font-bold shadow-lg shadow-amber-500/20 hover:shadow-amber-500/40 transition-all duration-300 hover:-translate-y-0.5"
+                                    >
+                                        <span className="relative z-10">إنشاء حساب</span>
+                                        <div className="absolute inset-0 bg-white/20 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+                                    </button>
+                                </>
+                            ) : (
+                                <div className="relative">
+                                    <button
+                                        onClick={() => setOpen(!open)}
+                                        className="flex items-center gap-3 px-4 py-2 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 hover:border-amber-500/30 transition-all duration-300 group"
+                                    >
+                                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white font-bold shadow-lg">
+                                            {user.username.charAt(0).toUpperCase()}
+                                        </div>
+                                        <span className="text-sm font-medium text-white group-hover:text-amber-400 transition-colors">
+                                            {user.username}
+                                        </span>
+                                        <User className="w-4 h-4 text-gray-400 group-hover:text-amber-400 transition-colors" />
+                                    </button>
+
+                                    {/* Dropdown Menu */}
+                                    {open && (
+                                        <div className="absolute left-0 mt-4 w-56 rounded-2xl bg-[#1a1c23] border border-white/10 shadow-2xl overflow-hidden animate-in fade-in slide-in-from-top-5 duration-200 z-50">
+                                            <div className="p-2 space-y-1">
                                                 <button
                                                     onClick={() => navigate("/profile")}
-                                                    className="w-full text-right px-6 py-3 text-white text-sm hover:bg-amber-500/20 transition-colors"
+                                                    className="w-full flex items-center gap-3 px-4 py-3 text-sm text-gray-300 hover:text-white hover:bg-white/5 rounded-xl transition-all duration-200"
                                                 >
-                                                    <User className="w-5 h-5 mx-2 text-white inline-block mr-2" />
+                                                    <User className="w-4 h-4" />
                                                     الملف الشخصي
                                                 </button>
 
                                                 {(user?.role === 'admin' || user?.role === 'publisher') && (
                                                     <button
                                                         onClick={() => navigate("/dashboard")}
-                                                        className="w-full text-right px-6 py-3 text-white text-sm hover:bg-amber-500/20 transition-colors"
+                                                        className="w-full flex items-center gap-3 px-4 py-3 text-sm text-gray-300 hover:text-white hover:bg-white/5 rounded-xl transition-all duration-200"
                                                     >
-                                                        <PlusCircle className="w-5 h-5 mx-2 text-white inline-block mr-2" />
+                                                        <PlusCircle className="w-4 h-4" />
                                                         لوحة التحكم
                                                     </button>
                                                 )}
 
+                                                <div className="h-px bg-white/10 my-1"></div>
+
                                                 <button
                                                     onClick={logout}
-                                                    className="flex items_center  gap-2 w-full text-right px-6 py-3 text-white text-sm hover:bg-red-500/20 transition-colors"
+                                                    className="w-full flex items-center gap-3 px-4 py-3 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-xl transition-all duration-200"
                                                 >
-                                                    <LogOut className="w-5 h-5 mx-2 text-white inline-block mr-2" />
+                                                    <LogOut className="w-4 h-4" />
                                                     تسجيل خروج
                                                 </button>
                                             </div>
-                                        )}
-                                    </div>
+                                        </div>
+                                    )}
                                 </div>
                             )}
+                        </div>
 
-                            <div className="lg:hidden">
-                                <button
-                                    onClick={toggleMobileMenu}
-                                    className="mobile-menu-button relative p-3 text-white hover:text-amber-300 focus:outline-none focus:text-amber-300 transition-all duration-300 rounded-xl hover:bg-white/10 backdrop-blur-sm"
-                                >
-                                    <svg
-                                        className="w-6 h-6 transition-transform duration-300"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                        strokeWidth={2}
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        style={{ transform: isMobileMenuOpen ? 'rotate(90deg)' : 'rotate(0deg)' }}
-                                    >
-                                        {isMobileMenuOpen ? (
-                                            <path d="M6 18L18 6M6 6l12 12" />
-                                        ) : (
-                                            <path d="M4 6h16M4 12h16M4 18h16" />
-                                        )}
+                        {/* Mobile Menu Button */}
+                        <div className="lg:hidden flex items-center gap-4 relative z-50">
+                            <button
+                                onClick={toggleMobileMenu}
+                                className="mobile-menu-button p-2 text-gray-300 hover:text-white hover:bg-white/10 rounded-xl transition-all duration-300 cursor-pointer"
+                                aria-label="Toggle menu"
+                            >
+                                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    {isMobileMenuOpen ? (
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                    ) : (
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                                    )}
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Mobile Menu Overlay */}
+                <div
+                    className={`lg:hidden fixed inset-0 top-[120px] z-30 bg-black/60 backdrop-blur-md transition-opacity duration-300 ${isMobileMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+                        }`}
+                    onClick={closeMobileMenu}
+                ></div>
+
+                {/* Mobile Menu Content */}
+                <div
+                    className={`mobile-menu lg:hidden fixed top-[120px] left-0 w-full h-[calc(100vh-120px)] bg-[#13151a] border-t border-white/10 shadow-2xl transition-all duration-300 z-40 overflow-y-auto ${isMobileMenuOpen ? 'translate-y-0 opacity-100 pointer-events-auto' : '-translate-y-2 opacity-0 pointer-events-none'
+                        }`}
+                >
+                    <div className="flex flex-col p-6 min-h-full">
+
+                        {/* Mobile Search */}
+                        <div className="mb-8">
+                            <div className="relative">
+                                <input
+                                    type="text"
+                                    placeholder="ابحث..."
+                                    className="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-white placeholder-gray-500 focus:outline-none focus:border-amber-500/50"
+                                    value={search}
+                                    onChange={(e) => setSearch(e.target.value)}
+                                />
+                                <button className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                                     </svg>
                                 </button>
                             </div>
-                        </div>
-                    </div>
 
-                    <div
-                        className={`mobile-menu lg:hidden border-t border-white/10 backdrop-blur-md transition-all duration-300 ${isMobileMenuOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0 overflow-hidden'
-                            }`}
-                        style={{ backgroundColor: "var(--color-dark)" }}
-                    >
-                        <div className="px-6 pt-4 pb-6 space-y-3">
-                            {/* Mobile Navigation Links */}
-                            <a
-                                href="/"
-                                className="block px-4 py-3 text-white hover:text-amber-300 hover:bg-white/10 rounded-xl font-semibold transition-all duration-300 border border-transparent hover:border-white/20"
-                                onClick={closeMobileMenu}
-                            >
-                                الرئيسية
-                            </a>
-                            <a
-                                href="/MovieFilterDemo"
-                                className="block px-4 py-3 text-white hover:text-amber-300 hover:bg-white/10 rounded-xl font-semibold transition-all duration-300 border border-transparent hover:border-white/20"
-                                onClick={closeMobileMenu}
-                            >
-                                الافلام
-                            </a>
-                            <a
-                                href="/SeriesFilterDemo"
-                                className="block px-4 py-3 text-white hover:text-amber-300 hover:bg-white/10 rounded-xl font-semibold transition-all duration-300 border border-transparent hover:border-white/20"
-                                onClick={closeMobileMenu}
-                            >
-                                المسلسلات
-                            </a>
+                            {/* Mobile Search Results */}
+                            {search.trim().length > 0 && searchResults.length > 0 && (
+                                <div className="mt-2 bg-[#1a1c23] border border-white/10 rounded-xl overflow-hidden max-h-64 overflow-y-auto">
+                                    {searchResults.map((item) => (
+                                        <div
+                                            key={item._id}
+                                            onClick={() => { handleSearchItemClick(item._id); closeMobileMenu(); }}
+                                            className="flex items-center gap-3 p-3 hover:bg-white/5 cursor-pointer transition-all duration-200 border-b border-white/5 last:border-b-0"
+                                        >
+                                            <img
+                                                src={item.posterUrl}
+                                                alt={item.nameArabic}
+                                                className="w-10 h-14 object-cover rounded-lg"
+                                                onError={(e) => {
+                                                    e.target.src = 'https://via.placeholder.com/40x56/1f2937/9ca3af?text=No+Image';
+                                                }}
+                                            />
+                                            <div className="flex-1">
+                                                <h4 className="text-white font-semibold text-sm line-clamp-1">{item.nameArabic}</h4>
+                                                <p className="text-gray-400 text-xs line-clamp-1">{item.nameEnglish}</p>
+                                                <span className="text-xs px-2 py-0.5 bg-amber-500/20 text-amber-400 rounded-full inline-block mt-1">
+                                                    {item.type === 'movie' ? 'فيلم' : 'مسلسل'}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="space-y-2 flex-1">
+                            {[
+                                { name: 'الرئيسية', path: '/' },
+                                { name: 'الافلام', path: '/MovieFilterDemo' },
+                                { name: 'المسلسلات', path: '/SeriesFilterDemo' }
+                            ].map((item) => (
+                                <button
+                                    key={item.name}
+                                    onClick={() => { navigate(item.path); closeMobileMenu(); }}
+                                    className={`w-full flex items-center justify-between p-4 rounded-xl transition-all duration-300 ${location.pathname === item.path
+                                        ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
+                                        : 'text-gray-300 hover:bg-white/5 hover:text-white'
+                                        }`}
+                                >
+                                    <span className="font-bold">{item.name}</span>
+                                    <svg className="w-5 h-5 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                                    </svg>
+                                </button>
+                            ))}
 
                             {(user?.role === 'admin' || user?.role === 'publisher') && (
                                 <button
                                     onClick={() => { navigate('/dashboard'); closeMobileMenu(); }}
-                                    className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-bold text-black transition-all duration-300"
-                                    style={{ backgroundColor: "var(--color-accent)" }}
+                                    className="w-full flex items-center justify-between p-4 rounded-xl text-gray-300 hover:bg-white/5 hover:text-white transition-all duration-300"
                                 >
-                                    <PlusCircle className="w-5 h-5" />
-                                    إضافة عمل
+                                    <span className="flex items-center gap-3 font-bold">
+                                        <PlusCircle className="w-5 h-5" />
+                                        لوحة التحكم
+                                    </span>
                                 </button>
                             )}
-                            {user?.role === 'admin' && (
-                                <button
-                                    onClick={() => { navigate('/AdminDashboard'); closeMobileMenu(); }}
-                                    className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-bold text-black transition-all duration-300"
-                                    style={{ backgroundColor: "var(--color-accent)" }}
-                                >
-                                    لوحة التحكم
-                                </button>
-                            )}
+                            <button
+                                onClick={() => { navigate('/Profile'); closeMobileMenu(); }}
+                                className="w-full flex items-center justify-between p-4 rounded-xl text-gray-300 hover:bg-white/5 hover:text-white transition-all duration-300"
+                            >
+                                <span className="flex items-center gap-3 font-bold">
+                                    <User className="w-5 h-5" />
+                                    الملف الشخصي
+                                </span>
+                            </button>
+                        </div>
 
-                            {!user && <div className="pt-4 space-y-3">
-                                <button
-                                    onClick={() => {
-                                        navigate('/Login');
-                                        closeMobileMenu();
-                                    }}
-                                    className="w-full flex items-center justify-center text-white px-4 py-3 rounded-xl font-semibold transition-all duration-300 hover:text-amber-300 hover:bg-white/10 border border-transparent hover:border-white/20"
-                                >
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        width="20"
-                                        height="20"
-                                        viewBox="0 0 24 24"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        strokeWidth="2"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        className="w-5 h-5 ml-2"
+                        {/* Mobile User Actions */}
+                        <div className="mt-8 pt-8 border-t border-white/10">
+                            {!user ? (
+                                <div className="grid grid-cols-2 gap-4">
+                                    <button
+                                        onClick={() => { navigate('/Login'); closeMobileMenu(); }}
+                                        className="w-full py-3 rounded-xl bg-white/5 text-white font-bold hover:bg-white/10 transition-colors"
                                     >
-                                        <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
-                                        <polyline points="10 17 15 12 10 7" />
-                                        <line x1="15" y1="12" x2="3" y2="12" />
-                                    </svg>
-                                    تسجيل الدخول
-                                </button>
-
-                                <button
-                                    onClick={() => {
-                                        navigate('/Register');
-                                        closeMobileMenu();
-                                    }}
-                                    className="w-full px-1 py-2 rounded-xl font-bold transition-all duration-300 text-white hover:shadow-lg"
-                                    style={{ backgroundColor: "var(--color-accent)" }}
-                                >
-                                    إنشاء حساب
-                                </button>
-                            </div>}
+                                        تسجيل الدخول
+                                    </button>
+                                    <button
+                                        onClick={() => { navigate('/Register'); closeMobileMenu(); }}
+                                        className="w-full py-3 rounded-xl bg-amber-500 text-black font-bold hover:bg-amber-400 transition-colors"
+                                    >
+                                        إنشاء حساب
+                                    </button>
+                                </div>
+                            ) : (
+                                <div className="space-y-3">
+                                    <div className="flex items-center gap-3 p-4 rounded-xl bg-white/5">
+                                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white font-bold">
+                                            {user.username.charAt(0).toUpperCase()}
+                                        </div>
+                                        <div>
+                                            <p className="text-white font-bold">{user.username}</p>
+                                            <p className="text-xs text-gray-400">{user.email}</p>
+                                        </div>
+                                    </div>
+                                    <button
+                                        onClick={logout}
+                                        className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-red-500/10 text-red-400 font-bold hover:bg-red-500/20 transition-colors"
+                                    >
+                                        <LogOut className="w-5 h-5" />
+                                        تسجيل خروج
+                                    </button>
+                                </div>
+                            )}
                         </div>
                     </div>
-                </nav>
-            </div>
-        </>
+                </div>
+            </nav>
+            {/* Spacer to prevent content overlap since navbar is fixed */}
+            <div className="h-32 lg:h-36"></div>
+        </div>
     );
 };
 

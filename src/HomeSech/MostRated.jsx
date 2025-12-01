@@ -134,16 +134,13 @@ const MostRated = () => {
                       </div>
                     )}
                     <img
-                      className={`w-full h-full object-cover transition-transform duration-300 group-hover:scale-105 ${isImageLoaded ? 'opacity-100' : 'opacity-0'}`}
+                      className={`w-full h-full object-cover transition-transform duration-300 group-hover:scale-105 ${imageState.loaded ? 'opacity-100' : 'opacity-0'}`}
                       src={movie?.posterUrl}
                       width={300}         // أبعاد ثابتة
                       height={450}        // أبعاد ثابتة
                       loading="eager"     // لو هذه صورة LCP أساسية
-                      onLoad={() => setIsImageLoaded(true)}
-                      onError={(e) => {
-                        setImageError(true);
-                        e.target.src = 'https://via.placeholder.com/300x450/1f2937/9ca3af?text=صورة+غير+متوفرة';
-                      }}
+                      onLoad={() => handleImageLoad(movie._id)}
+                      onError={(e) => handleImageError(movie._id, e)}
                     />
 
                     <div className="absolute top-2 right-2 bg-amber-300 backdrop-blur-sm rounded-lg px-2 text-black font-extrabold py-1 transition-all duration-300 group-hover:bg-amber-400">

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import SeriesFilterSection from './SeriesFilterSection';
 import Navbar from '../componet/Navbar';
 import Footer from '../componet/Footer';
+import { useLocation } from 'react-router-dom';
 
 
 const useSeriesFilters = () => {
@@ -36,47 +37,10 @@ const useSeriesFilters = () => {
         updateFilter,
         clearAllFilters,
         getActiveFiltersCount,
-        rawSearch: filters.search
+        rawSearch: filters.search,
+        setFilters
     };
 };
-
-
-//     const [filteredSeries, setFilteredSeries] = useState(series);
-//     const [isLoading, setIsLoading] = useState(false);
-//     useEffect(() => {
-//         setIsLoading(true);
-//         const timer = setTimeout(() => {
-//             let filtered = [...series];
-//             if (filters.search) {
-//                 const searchTerm = filters.search.toLowerCase();
-//                 filtered = filtered.filter(item =>
-//                     item.title.toLowerCase().includes(searchTerm) ||
-//                     item.englishTitle.toLowerCase().includes(searchTerm) ||
-//                     item.description.toLowerCase().includes(searchTerm)
-//                 );
-//             }
-//             if (filters.genre) {
-//                 filtered = filtered.filter(item => item.genre === filters.genre);
-//             }
-//             if (filters.year) {
-//                 filtered = filtered.filter(item => item.year === filters.year);
-//             }
-//             if (filters.country) {
-//                 filtered = filtered.filter(item => item.country === filters.country);
-//             }
-//             filtered.sort((a, b) => {
-//                 if (b.rating !== a.rating) {
-//                     return b.rating - a.rating;
-//                 }
-//                 return parseInt(b.year) - parseInt(a.year);
-//             });
-//             setFilteredSeries(filtered);
-//             setIsLoading(false);
-//         }, 150);
-//         return () => clearTimeout(timer);
-//     }, [series, filters]);
-//     return { filteredSeries, isLoading };
-// };
 
 const EnhancedSeriesFilterSection = () => {
     const {
@@ -84,9 +48,20 @@ const EnhancedSeriesFilterSection = () => {
         updateFilter,
         clearAllFilters,
         getActiveFiltersCount,
-        rawSearch
+        rawSearch,
+        setFilters
     } = useSeriesFilters();
-  
+
+    const location = useLocation();
+
+    useEffect(() => {
+        const params = new URLSearchParams(location.search);
+        const q = params.get('q') || '';
+        if (q) {
+            setFilters(prev => ({ ...prev, search: q }));
+        }
+    }, [location.search, setFilters]);
+
     return (
         <div className="min-h-screen bg-black">
             <Navbar />

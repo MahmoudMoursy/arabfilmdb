@@ -1,73 +1,118 @@
 import Footer from "../componet/Footer";
 import Navbar from "../componet/Navbar";
-import logo from "../assets/WhatsApp Image 2025-08-03 at 23.32.06_4ba7b00e.jpg";
+import logo from "../assets/WhatsApp_Image_2025-09-01_at_19.08.17_1b74120e-removebg-preview.png";
 function PrivacyPolicy() {
     return (
         <>
-            <div style={{ backgroundColor: 'black' }}>
+
+            <div className="bg-gradient-to-b from-black via-gray-900 to-black min-h-screen ">
                 <Navbar />
-                <div className="justify-center items-center flex flex-col  my-15">
-                    <img src={logo} alt="Logo" width={100} className="items-center" />
+
+                {/* شعار الموقع */}
+                <div className="flex flex-col justify-center items-center my-10">
+                    <img src={logo} alt="Logo" width={120} className="mb-6 animate-bounce" />
                 </div>
+
+                {/* بطاقة سياسة الخصوصية */}
                 <div
-                    style={{
-                        fontFamily: 'Cairo, sans-serif',
-                        color: 'white',
-                        backgroundColor: '#1a1a1a',
-                    }}
-                    className="max-w-7xl mx-auto p-10 space-y-10 text-lg mb-15 card rounded-4xl shadow-2xl"
+                    className="max-w-5xl mx-auto p-12 space-y-12 bg-gray-900 rounded-2xl shadow-xl mb-10"
+                    style={{ fontFamily: 'Cairo, sans-serif', color: '#f5f5f5' }}
                 >
+                    <h1 className="text-5xl font-bold text-amber-400 drop-shadow-lg text-center">
+                        سياسة الخصوصية - ArabFilmDB
+                    </h1>
 
-                    <h1 className=" text-amber-500 text-5xl font-bold"> سياسة الخصوصية - ArabFilmDB</h1>
+                    {/* Section 1 */}
+                    <div className="space-y-4">
+                        <h2 className="text-3xl font-semibold text-amber-500 tracking-wide hover:text-amber-400 transition-all duration-300">
+                            1. البيانات التي نقوم بجمعها
+                        </h2>
+                        <p className="text-gray-300 text-lg leading-relaxed first-letter:text-3xl first-letter:font-bold">
+                            قد نقوم بجمع معلومات مثل الاسم، البريد الإلكتروني، عنوان IP، نوع الجهاز، وسجل التصفح داخل الموقع.
+                        </p>
+                    </div>
 
-                    <h2 className="text-amber-500 text-4xl font-bold">1. البيانات التي نقوم بجمعها</h2>
-                    <p className="text-white text-2xl leading-loose">
-                        قد نقوم بجمع معلومات مثل الاسم، البريد الإلكتروني، عنوان IP، نوع الجهاز، وسجل التصفح داخل الموقع.
-                    </p>
+                    {/* Section 2 */}
+                    <div className="space-y-4">
+                        <h2 className="text-3xl font-semibold text-amber-500 tracking-wide hover:text-amber-400 transition-all duration-300">
+                            2. كيفية استخدام البيانات
+                        </h2>
+                        <p className="text-gray-300 text-lg leading-relaxed first-letter:text-3xl first-letter:font-bold">
+                            نستخدم بياناتك لتحسين خدماتنا، تخصيص تجربة المستخدم، إرسال إشعارات، وتحليل أداء الموقع.
+                        </p>
+                    </div>
 
-                    <h2 className="text-amber-500 text-4xl font-bold">2. كيفية استخدام البيانات </h2>
-                    <p className="text-white text-2xl leading-loose">
-                        نستخدم بياناتك لتحسين خدماتنا، تخصيص تجربة المستخدم، إرسال إشعارات، وتحليل أداء الموقع.
-                    </p>
+                    {/* Section 3 */}
+                    <div className="space-y-4">
+                        <h2 className="text-3xl font-semibold text-amber-500 tracking-wide hover:text-amber-400 transition-all duration-300">
+                            3. مشاركة البيانات
+                        </h2>
+                        <p className="text-gray-300 text-lg leading-relaxed first-letter:text-3xl first-letter:font-bold">
+                            لا نقوم ببيع أو مشاركة بيانات المستخدم مع أي جهة خارجية إلا إذا تطلب الأمر قانونيًا، أو لحماية حقوقنا.
+                        </p>
+                    </div>
 
-                    <h2 className="text-amber-500 text-4xl font-bold">3. مشاركة البيانات </h2>
-                    <p className="text-white text-2xl leading-loose">
-                        لا نقوم ببيع أو مشاركة بيانات المستخدم مع أي جهة خارجية إلا إذا تطلب الأمر قانونيًا، أو لحماية حقوقنا.
-                    </p>
+                    {/* Section 4 */}
+                    <div className="space-y-4">
+                        <h2 className="text-3xl font-semibold text-amber-500 tracking-wide hover:text-amber-400 transition-all duration-300">
+                            4. الحماية الأمنية
+                        </h2>
+                        <p className="text-gray-300 text-lg leading-relaxed first-letter:text-3xl first-letter:font-bold">
+                            نستخدم إجراءات أمان تقنية وإدارية لحماية بيانات المستخدم من الوصول غير المصرح به أو التعديل أو الحذف.
+                        </p>
+                    </div>
 
-                    <h2 className="text-amber-500 text-4xl font-bold">4.  الحماية الأمنية </h2>
-                    <p className="text-white text-2xl leading-loose">
-                        نستخدم إجراءات أمان تقنية وإدارية لحماية بيانات المستخدم من الوصول غير المصرح به أو التعديل أو الحذف.
-                    </p>
+                    {/* Section 5 */}
+                    <div className="space-y-4">
+                        <h2 className="text-3xl font-semibold text-amber-500 tracking-wide hover:text-amber-400 transition-all duration-300">
+                            5. الكوكيز
+                        </h2>
+                        <p className="text-gray-300 text-lg leading-relaxed first-letter:text-3xl first-letter:font-bold">
+                            نستخدم ملفات تعريف الارتباط لتحليل سلوك الزوار وتحسين الأداء. يحق لك رفض الكوكيز من إعدادات المتصفح.
+                        </p>
+                    </div>
 
-                    <h2 className="text-amber-500 text-4xl font-bold">5. الكوكيز </h2>
-                    <p className="text-white text-2xl leading-loose">
-                        نستخدم ملفات تعريف الارتباط لتحليل سلوك الزوار وتحسين الأداء. يحق لك رفض الكوكيز من إعدادات المتصفح.
-                    </p>
+                    {/* Section 6 */}
+                    <div className="space-y-4">
+                        <h2 className="text-3xl font-semibold text-amber-500 tracking-wide hover:text-amber-400 transition-all duration-300">
+                            6. حقوق المستخدم
+                        </h2>
+                        <p className="text-gray-300 text-lg leading-relaxed first-letter:text-3xl first-letter:font-bold">
+                            لك الحق في طلب الاطلاع على بياناتك أو تعديلها أو حذفها في أي وقت عبر التواصل معنا.
+                        </p>
+                    </div>
 
-                    <h2 className="text-amber-500 text-4xl font-bold">6. حقوق المستخدم</h2>
-                    <p className="text-white text-2xl leading-loose">
-                        لك الحق في طلب الاطلاع على بياناتك أو تعديلها أو حذفها في أي وقت عبر التواصل معنا.
-                    </p>
+                    {/* Section 7 */}
+                    <div className="space-y-4">
+                        <h2 className="text-3xl font-semibold text-amber-500 tracking-wide hover:text-amber-400 transition-all duration-300">
+                            7. مدة الاحتفاظ بالبيانات
+                        </h2>
+                        <p className="text-gray-300 text-lg leading-relaxed first-letter:text-3xl first-letter:font-bold">
+                            نحتفظ بالبيانات طالما أن حسابك نشط أو حسب ما تقتضيه القوانين.
+                        </p>
+                    </div>
 
-                    <h2 className="text-amber-500 text-4xl font-bold">7. مدة الاحتفاظ بالبيانات</h2>
-                    <p className="text-white text-2xl leading-loose">
-                        نحتفظ بالبيانات طالما أن حسابك نشط أو حسب ما تقتضيه القوانين.
-                    </p>
+                    {/* Section 8 */}
+                    <div className="space-y-4">
+                        <h2 className="text-3xl font-semibold text-amber-500 tracking-wide hover:text-amber-400 transition-all duration-300">
+                            8. التحديثات
+                        </h2>
+                        <p className="text-gray-300 text-lg leading-relaxed first-letter:text-3xl first-letter:font-bold">
+                            قد نقوم بتعديل سياسة الخصوصية، وسيتم إعلامك بأي تغييرات من خلال هذه الصفحة.
+                        </p>
+                    </div>
 
-                    <h2 className="text-amber-500 text-4xl font-bold">8. التحديثات  </h2>
-                    <p className="text-white text-2xl leading-loose">
-                        قد نقوم بتعديل سياسة الخصوصية، وسيتم إعلامك بأي تغييرات من خلال هذه الصفحة.
-                    </p>
-                    <h2 className="text-amber-500 text-4xl font-bold">9. تواصل معنا  </h2>
-                    <p className="text-white text-2xl leading-loose">
-                        لأي استفسارات أو طلبات تتعلق ببياناتك، راسلنا على: contact@arabfilmdb.com
-                    </p>
-
-
-
-
+                    {/* Section 9 */}
+                    <div className="space-y-4">
+                        <h2 className="text-3xl font-semibold text-amber-500 tracking-wide hover:text-amber-400 transition-all duration-300">
+                            9. تواصل معنا
+                        </h2>
+                        <p className="text-gray-300 text-lg leading-relaxed first-letter:text-3xl first-letter:font-bold">
+                            لأي استفسارات أو طلبات تتعلق ببياناتك، راسلنا على: <span className="text-amber-400 font-semibold">contact@arabfilmdb.com</span>
+                        </p>
+                    </div>
                 </div>
+
                 <Footer />
             </div>
         </>

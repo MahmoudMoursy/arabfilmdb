@@ -91,6 +91,7 @@ const moviesSlice = createSlice({
     latestSeries: [],
     selectedItem: null,
     loading: false,
+    allMoviesLoading: false, // New loading state for fetching all movies
     filmsLoading: false,
     seriesLoading: false,
     latestMoviesLoading: false,
@@ -99,21 +100,25 @@ const moviesSlice = createSlice({
     ratings: {},
     ratingsLoading: false,
   },
-  reducers: {},
+  reducers: {
+    setSelectedItem: (state, action) => {
+      state.selectedItem = action.payload;
+    }
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchMovies.pending, (state) => {
-        state.loading = true;
+        state.allMoviesLoading = true;
         state.error = null;
       })
       .addCase(fetchMovies.fulfilled, (state, action) => {
-        state.loading = false;
+        state.allMoviesLoading = false;
         state.allMovies = action.payload;
         state.films = action.payload.filter(item => item.type === 'film');
         state.series = action.payload.filter(item => item.type === 'series');
       })
       .addCase(fetchMovies.rejected, (state, action) => {
-        state.loading = false;
+        state.allMoviesLoading = false;
         state.error = action.error.message;
       })
 
@@ -191,10 +196,13 @@ const moviesSlice = createSlice({
         console.error('Error fetching ratings:', action.error.message);
       })
       // case user id
-      .addCase(fetchItemById.pending, (state) => {
+      .addCase(fetchItemById.pending, (state, action) => {
         state.loading = true;
         state.error = null;
-        state.selectedItem = null;
+        // Only clear selectedItem if we are fetching a different item
+        if (state.selectedItem?._id !== action.meta.arg) {
+          state.selectedItem = null;
+        }
       })
       .addCase(fetchItemById.fulfilled, (state, action) => {
         state.loading = false;
@@ -207,5 +215,7 @@ const moviesSlice = createSlice({
       })
   },
 });
+
+export const { setSelectedItem } = moviesSlice.actions;
 
 export default moviesSlice.reducer;
