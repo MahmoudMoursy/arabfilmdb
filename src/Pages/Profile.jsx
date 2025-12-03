@@ -73,13 +73,15 @@ const ProfilePage = () => {
 
     // Listen for navigation events to refresh data
     useEffect(() => {
+        // When the window regains focus we should NOT automatically re-fetch
+        // large data from the API. Only update the local `user` state from
+        // localStorage so UI reflects any user changes (login/logout).
         const handleFocus = () => {
-            // Refresh data when user returns to the page
-            loadUserData();
-            // Refresh user data from local storage in case it changed
-            const storedUser = JSON.parse(localStorage.getItem('user'));
-            if (storedUser) {
-                setUserState(storedUser);
+            try {
+                const storedUser = JSON.parse(localStorage.getItem('user'));
+                if (storedUser) setUserState(storedUser);
+            } catch (e) {
+                // ignore invalid JSON
             }
         };
 

@@ -12,7 +12,28 @@ const Navbar = () => {
     const searchRef = useRef(null);
 
     const [open, setOpen] = useState(false);
-    const user = JSON.parse(localStorage.getItem('user'));
+    // Safely read user from localStorage and compute avatar/initials
+    const storedUserRaw = localStorage.getItem('user');
+    let user = null;
+    try {
+        user = storedUserRaw ? JSON.parse(storedUserRaw) : null;
+    } catch (e) {
+        user = null;
+    }
+
+    // avatarSrc: ensure it's a string URL. support either a string or an object with .url
+    let avatarSrc = null;
+    if (user) {
+        if (typeof user.profileImage === 'string' && user.profileImage.trim() !== '') {
+            avatarSrc = user.profileImage;
+        } else if (user.profileImage && typeof user.profileImage.url === 'string' && user.profileImage.url.trim() !== '') {
+            avatarSrc = user.profileImage.url;
+        } else {
+            avatarSrc = null;
+        }
+    }
+    const displayName = user?.username || user?.name || (user?.email ? user.email.split('@')[0] : 'User');
+    const initials = (displayName || 'U').replace(/\s+/g, '').slice(0, 2).toUpperCase();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [search, setSearch] = useState('');
     const [scrolled, setScrolled] = useState(false);
@@ -248,11 +269,19 @@ const Navbar = () => {
                                         onClick={() => setOpen(!open)}
                                         className="flex items-center gap-3 px-4 py-2 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 hover:border-amber-500/30 transition-all duration-300 group"
                                     >
-                                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white font-bold shadow-lg">
-                                            {user.username.charAt(0).toUpperCase()}
-                                        </div>
+                                        {avatarSrc ? (
+                                            <img
+                                                src={avatarSrc}
+                                                alt="Profile"
+                                                className="w-8 h-8 rounded-full object-cover shadow-lg"
+                                            />
+                                        ) : (
+                                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white font-bold shadow-lg text-xs">
+                                                {initials}
+                                            </div>
+                                        )}
                                         <span className="text-sm font-medium text-white group-hover:text-amber-400 transition-colors">
-                                            {user.username}
+                                            {displayName}
                                         </span>
                                         <User className="w-4 h-4 text-gray-400 group-hover:text-amber-400 transition-colors" />
                                     </button>
@@ -438,12 +467,20 @@ const Navbar = () => {
                             ) : (
                                 <div className="space-y-3">
                                     <div className="flex items-center gap-3 p-4 rounded-xl bg-white/5">
-                                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white font-bold">
-                                            {user.username.charAt(0).toUpperCase()}
-                                        </div>
+                                        {avatarSrc ? (
+                                            <img
+                                                src={avatarSrc}
+                                                alt="Profile"
+                                                className="w-10 h-10 rounded-full object-cover"
+                                            />
+                                        ) : (
+                                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white font-bold text-sm">
+                                                {initials}
+                                            </div>
+                                        )}
                                         <div>
-                                            <p className="text-white font-bold">{user.username}</p>
-                                            <p className="text-xs text-gray-400">{user.email}</p>
+                                            <p className="text-white font-bold">{displayName}</p>
+                                            <p className="text-xs text-gray-400">{user?.email}</p>
                                         </div>
                                     </div>
                                     <button
