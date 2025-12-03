@@ -18,6 +18,34 @@ const ProfilePage = () => {
         name: 'أحمد محمد',
         email: 'ahmed@example.com',
     });
+    // دالة ترجع رابط صورة البروفايل بشكل صحيح
+    const getProfileImageUrl = () => {
+        if (!user || !user.profileImage) {
+            return "https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg";
+        }
+
+        let url = "";
+
+        // لو profileImage object
+        if (typeof user.profileImage === "object" && user.profileImage.url) {
+            url = user.profileImage.url;
+        } else if (typeof user.profileImage === "string") {
+            url = user.profileImage;
+        }
+
+        if (!url) {
+            return "https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg";
+        }
+
+        // لو الرابط يبدأ بـ http نستخدمه كما هو
+        if (url.startsWith("http")) {
+            return url;
+        }
+
+        // لو رابط نسبي من السيرفر
+        const baseUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
+        return `${baseUrl}${url.startsWith("/") ? url : `/${url}`}`;
+    };
 
     const [favorites, setFavorites] = useState([]);
     const [ratings, setRatings] = useState([]);
@@ -138,13 +166,12 @@ const ProfilePage = () => {
     };
 
     const handleImageClick = () => {
-        console.log('🖱️ Profile image clicked!');
-        console.log('File input ref:', fileInputRef.current);
+        console.log('🖱️ Image clicked!');
         if (fileInputRef.current) {
+            console.log('📎 Opening file picker...');
             fileInputRef.current.click();
-            console.log('✅ File input clicked');
         } else {
-            console.error('❌ File input ref is null!');
+            console.error('❌ fileInputRef is null!');
         }
     };
 
@@ -296,11 +323,14 @@ const ProfilePage = () => {
             <div className="flex flex-col items-center py-6" style={{ backgroundColor: 'var(--color-secondary)' }}>
                 <div className="relative group cursor-pointer" onClick={handleImageClick}>
                     <img
-                        src={user.profileImage || "https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg?semt=ais_hybrid&w=740&q=80"}
+                        src={getProfileImageUrl()}
                         alt="User Avatar"
                         className="rounded-full w-32 h-32 mb-4 border-4 object-cover"
                         style={{ borderColor: 'var(--color-accent)' }}
                     />
+
+
+
                     <div className="absolute inset-0 bg-black bg-opacity-50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 mb-4">
                         <Camera className="w-8 h-8 text-white" />
                     </div>

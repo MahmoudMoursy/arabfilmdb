@@ -689,24 +689,22 @@ const Details = () => {
                                                     // الحصول على اسم المستخدم من مصادر مختلفة
                                                     const commentUsername = c.user?.username || c.userId?.username || user?.username || 'مستخدم';
                                                     const isCurrentUser = c.user?.username === user?.username || c.userId?.username === user?.username;
-                                                    
+
                                                     return (
                                                         <div key={c._id} className="p-4 bg-[#2a2a2a] rounded-lg text-white text-right relative border border-gray-700 hover:border-amber-400/50 transition-all duration-200">
                                                             <div className="flex justify-between items-start gap-3">
                                                                 <div className="flex-1">
                                                                     {/* اسم المستخدم */}
                                                                     <div className="flex items-center gap-2 mb-2">
-                                                                        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-black font-bold text-sm ${
-                                                                            isCurrentUser 
-                                                                                ? 'bg-gradient-to-br from-green-400 to-green-600' 
-                                                                                : 'bg-gradient-to-br from-amber-400 to-amber-600'
-                                                                        }`}>
+                                                                        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-black font-bold text-sm ${isCurrentUser
+                                                                            ? 'bg-gradient-to-br from-green-400 to-green-600'
+                                                                            : 'bg-gradient-to-br from-amber-400 to-amber-600'
+                                                                            }`}>
                                                                             {commentUsername.charAt(0).toUpperCase()}
                                                                         </div>
                                                                         <div>
-                                                                            <p className={`font-bold text-sm ${
-                                                                                isCurrentUser ? 'text-green-400' : 'text-amber-400'
-                                                                            }`}>
+                                                                            <p className={`font-bold text-sm ${isCurrentUser ? 'text-green-400' : 'text-amber-400'
+                                                                                }`}>
                                                                                 {commentUsername}
                                                                                 {isCurrentUser && <span className="text-xs mr-1">(أنت)</span>}
                                                                             </p>
@@ -742,220 +740,85 @@ const Details = () => {
                                                     );
                                                 })
                                             )}
+
                                         </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Statistics Sidebar */}
-                        <div className="space-y-6">
-                            <div className="bg-gradient-to-br from-[#1f1f1f] to-[#2c2c2c] border border-gray-700 rounded-xl p-6 shadow-lg">
-                                <h3 className="text-xl font-bold text-white mb-6 border-b border-gray-600 pb-2">
-                                    📊 إحصائيات سريعة
-                                </h3>
-                                <div className="space-y-4">
-                                    <div className="flex justify-between items-center">
-                                        <span className="text-gray-400 flex items-center gap-2">⭐ التقييم</span>
-                                        {ratingLoading ? (
-                                            <div className="animate-pulse bg-gray-600 h-4 w-16 rounded"></div>
-                                        ) : (
-                                            <div className="flex items-center gap-2">
-                                                <span className="font-semibold text-yellow-400">
-                                                    {avgRating.average.toFixed(1)} / 5
-                                                </span>
-                                                {hasRated && (
-                                                    <span className="text-xs bg-green-500 text-white px-2 py-1 rounded-full">
-                                                        قيّمت
-                                                    </span>
-                                                )}
-                                            </div>
-                                        )}
-                                    </div>
-                                    {/* <div className="flex justify-between items-center">
-                                        <span className="text-gray-400 flex items-center gap-2">
-                                            <Heart className="w-5 h-5" />
-                                            المفضلة</span>
-                                        <span className="font-semibold text-white">
-                                            {selectedItem.Favorite}
-                                        </span>
-                                    </div> */}
-                                    <div className="flex justify-between items-center">
-                                        <span className="text-gray-400 flex items-center gap-2">📝 عدد التقييمات</span>
-                                        {ratingLoading ? (
-                                            <div className="animate-pulse bg-gray-600 h-4 w-8 rounded"></div>
-                                        ) : (
-                                            <span className="font-semibold text-white">{avgRating.count}</span>
-                                        )}
-                                    </div>
-
-                                    {hasRated && (
-                                        <div className="flex justify-between items-center">
-                                            <span className="text-gray-400 flex items-center gap-2">⭐ تقييمك</span>
-                                            <span className="font-semibold text-yellow-400">{myRating} / 5</span>
-                                        </div>
-                                    )}
-                                    <div className="flex justify-between items-center">
-                                        <span className="text-gray-400 flex items-center gap-2">💬 عدد التعليقات</span>
-                                        {commentLoading ? (
-                                            <div className="animate-pulse bg-gray-600 h-4 w-8 rounded"></div>
-                                        ) : (
-                                            <span className="font-semibold text-white">{comments.length}</span>
-                                        )}
-                                    </div>
-                                    {/* <div className="flex justify-between items-center">
-                                        <span className="text-gray-400 flex items-center gap-2">🎭 النوع</span>
-                                        <span className="font-semibold text-white">{selectedItem.genre || 'غير محدد'}</span>
-                                    </div>
-                                    <div className="flex justify-between items-center">
-                                        <span className="text-gray-400 flex items-center gap-2">📅 السنة</span>
-                                        <span className="font-semibold text-white">{selectedItem.year || 'غير محدد'}</span>
-                                    </div> */}
-
-                                    {selectedItem.type === 'series' && selectedItem.seasonsCount && (
-                                        <div className="flex justify-between items-center">
-                                            <span className="text-gray-400 flex items-center gap-2">📺 المواسم</span>
-                                            <span className="font-semibold text-white">{selectedItem.seasonsCount}</span>
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
-                    <div className="bg-gradient-to-br from-[#1f1f1f] to-[#2c2c2c] border mt-18 border-gray-700 rounded-xl p-6 shadow-lg">
-                        <h3 className="text-3xl lg:text-4xl mx-4 font-bold text-white mb-6 flex items-center gap-2">
-                            🎞️ {selectedItem?.type === 'movie' ? 'أفلام مشابهة' : 'مسلسلات مشابهة'}
-                        </h3>
-
-                        {allMoviesLoading && allMovies.length === 0 ? (
-                            <div className="text-center py-12">
-                                <div className="w-12 h-12 border-4 border-amber-300 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-                                <p className="text-gray-400">جاري تحميل الأعمال المشابهة...</p>
-                            </div>
-                        ) : (
-                            <>
-                                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6">
-                                    {similarMovies.map((movie) => {
-                                        const movieRating = getMovieRating(movie._id);
-
-                                        return (
-                                            <div
-                                                key={movie._id}
-                                                className="group card-hover bg-card border border-white/50 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-md hover:shadow-amber-300/100 hover:-translate-y-2 text-white w-full mx-auto z-10"
-                                                style={{ backgroundColor: 'var(--color-dark)' }}
-                                            >
-                                                <div className="block cursor-pointer" role="button">
-                                                    <div className="relative aspect-[2/3] overflow-hidden">
-                                                        <img
-                                                            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                                                            loading="lazy"
-                                                            src={movie?.posterUrl}
-                                                            width={300}
-                                                            height={450}
-                                                            alt={movie?.nameArabic}
-                                                            onError={(e) => {
-                                                                e.target.src = 'https://via.placeholder.com/300x450/1f2937/9ca3af?text=صورة+غير+متوفرة';
-                                                            }}
-                                                        />
-
-                                                        <div className="absolute top-2 right-2 bg-amber-300 backdrop-blur-sm rounded-lg px-2 text-black font-extrabold py-1 transition-all duration-300 group-hover:bg-amber-400">
-                                                            <span className="text-primary-foreground text-xs font-medium">
-                                                                {movie?.genre}
-                                                            </span>
+                                        <div className="text-right mt-6 space-y-3">
+                                            {commentLoading ? (
+                                                <div className="animate-pulse space-y-3">
+                                                    {Array(3).fill("⭐").map((star, i) => (
+                                                        <div key={i} className="p-3 bg-[#2a2a2a] rounded flex items-center gap-2">
+                                                            <span className="text-yellow-400 text-lg">{star}</span>
+                                                            <div className="animate-pulse bg-gray-600 h-4 w-full rounded"></div>
                                                         </div>
+                                                    ))}
+                                                </div>
+                                            ) : comments.length === 0 ? (
+                                                <div className="text-center py-8">
+                                                    <p className="text-gray-400">لا توجد تعليقات بعد. كن أول من يعلق!</p>
+                                                </div>
+                                            ) : (
+                                                comments.map(c => {
+                                                    const commentUsername = c.user?.username || c.userId?.username || user?.username || 'مستخدم';
+                                                    const isCurrentUser = c.user?.username === user?.username || c.userId?.username === user?.username;
 
-                                                        {movie?.type && (
-                                                            <div className="absolute top-2 left-2 bg-blue-500 backdrop-blur-sm rounded-lg px-2 text-white font-extrabold py-1 transition-all duration-300 group-hover:bg-blue-600">
-                                                                <span className="text-xs font-medium">
-                                                                    {movie?.type === 'movie' ? 'فيلم' : 'مسلسل'}
-                                                                </span>
-                                                            </div>
-                                                        )}
-
-                                                        {/* Overlay buttons */}
-                                                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                                            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex items-center gap-2 sm:gap-4 md:gap-6">
-                                                                <Link to={`/Details/${movie._id}`}>
-                                                                    <button className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center bg-white/20 hover:bg-white/30 text-white rounded-full transition-all duration-300 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2">
-                                                                        <Play size={24} className="fill-current sm:w-[30px] sm:h-[30px]" />
-                                                                    </button>
-                                                                </Link>
-
-                                                                <AddToFavoritesButton workId={movie._id} />
-
-                                                                <button
-                                                                    onClick={(e) => handleShareClick(e, movie)}
-                                                                    className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center bg-white/20 hover:bg-white/30 text-blue-700 rounded-full transition-all duration-300 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2"
-                                                                >
-                                                                    <Share2 size={24} className="sm:w-[30px] sm:h-[30px]" />
-                                                                </button>
-                                                            </div>                 </div>
-
-                                                        {/* Rating display */}
-                                                        {movieRating.average > 0 && (
-                                                            <div className="absolute bottom-2 right-2 bg-black/80 backdrop-blur-sm rounded-lg px-2 py-1 transition-all duration-300 group-hover:bg-primary/90">
-                                                                <div className="flex items-center space-x-1 space-x-reverse">
-                                                                    <Star
-                                                                        size={12}
-                                                                        className="lucide lucide-star fill-current text-yellow-400 group-hover:text-primary-foreground transition-colors duration-300"
-                                                                        aria-hidden="true"
-                                                                    />
-                                                                    <span className="text-white text-xs font-medium group-hover:text-primary-foreground transition-colors duration-300">
-                                                                        {movieRating.average.toFixed(1)}
-                                                                    </span>
+                                                    return (
+                                                        <div key={c._id} className="p-4 bg-[#2a2a2a] rounded-lg text-white text-right relative border border-gray-700 hover:border-amber-400/50 transition-all duration-200">
+                                                            <div className="flex justify-between items-start gap-3">
+                                                                <div className="flex-1">
+                                                                    <div className="flex items-center gap-2 mb-2">
+                                                                        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-black font-bold text-sm ${isCurrentUser
+                                                                            ? 'bg-gradient-to-br from-green-400 to-green-600'
+                                                                            : 'bg-gradient-to-br from-amber-400 to-amber-600'
+                                                                            }`}>
+                                                                            {commentUsername.charAt(0).toUpperCase()}
+                                                                        </div>
+                                                                        <div>
+                                                                            <p className={`font-bold text-sm ${isCurrentUser ? 'text-green-400' : 'text-amber-400'
+                                                                                }`}>
+                                                                                {commentUsername}
+                                                                                {isCurrentUser && <span className="text-xs mr-1">(أنت)</span>}
+                                                                            </p>
+                                                                            {c.createdAt && (
+                                                                                <p className="text-xs text-gray-500">
+                                                                                    {new Date(c.createdAt).toLocaleDateString('ar-EG', {
+                                                                                        year: 'numeric',
+                                                                                        month: 'short',
+                                                                                        day: 'numeric',
+                                                                                        hour: '2-digit',
+                                                                                        minute: '2-digit'
+                                                                                    })}
+                                                                                </p>
+                                                                            )}
+                                                                        </div>
+                                                                    </div>
+                                                                    <p className="text-gray-200 leading-relaxed pr-10">
+                                                                        {c.commentText}
+                                                                    </p>
                                                                 </div>
-                                                            </div>
-                                                        )}
-                                                    </div>
-
-                                                    <div className="p-2 sm:p-3 md:p-4 space-y-1 sm:space-y-2">
-                                                        <div>
-                                                            <h3 className="font-bold text-foreground text-sm sm:text-base md:text-lg line-clamp-2 group-hover:text-primary transition-colors duration-300">
-                                                                {movie?.nameArabic}
-                                                            </h3>
-                                                            <p className="text-muted-foreground text-xs sm:text-sm mt-1 ltr transition-colors duration-300 group-hover:text-muted-foreground/80 line-clamp-1">
-                                                                {movie?.nameEnglish}
-                                                            </p>
-                                                        </div>
-                                                        <div className="flex items-center justify-between">
-                                                            <div className="flex items-center text-amber-300 space-x-1 space-x-reverse">
-                                                                {ratingsLoading ? (
-                                                                    <div className="animate-pulse bg-gray-600 h-3 w-12 rounded"></div>
-                                                                ) : movieRating.average > 0 ? (
-                                                                    <>
-                                                                        {renderStars(movieRating.average)}
-                                                                        <span className="text-xs mr-1 text-white transition-colors duration-300">
-                                                                            ({movieRating.average.toFixed(1)})
-                                                                        </span>
-                                                                    </>
-                                                                ) : (
-                                                                    <span className="text-xs mr-1 text-gray-400 transition-colors duration-300">
-                                                                        لا توجد تقييمات
-                                                                    </span>
+                                                                {user?.role === 'admin' && (
+                                                                    <button
+                                                                        onClick={() => deleteComment(c._id)}
+                                                                        className="p-2 text-red-500 hover:text-red-300 hover:bg-red-900/30 rounded-lg transition-all duration-200 border border-red-500/30 hover:border-red-400/50"
+                                                                        title="حذف التعليق"
+                                                                    >
+                                                                        <Trash2 size={18} />
+                                                                    </button>
                                                                 )}
                                                             </div>
                                                         </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        );
-                                    })}
-                                </div>
-
-                                {/* عرض رسالة إذا لم توجد أعمال مشابهة */}
-                                {similarMovies.length === 0 && (
-                                    <div className="text-center py-12">
-                                        <p className="text-gray-400 text-lg">لا توجد أعمال مشابهة حالياً</p>
+                                                    );
+                                                })
+                                            )}
+                                        </div>
                                     </div>
-                                )}
-                            </>
-                        )}
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <Footer />
+                <Footer />
+            </div>
         </div>
     );
 };

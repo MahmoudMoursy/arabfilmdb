@@ -85,7 +85,6 @@ const Navbar = () => {
                 closeMobileMenu();
             }
         };
-        console.log(user.profileImage);
         if (isMobileMenuOpen) {
             document.addEventListener('click', handleClickOutside);
         }

@@ -8,6 +8,7 @@ import { axiosInstance } from "../api/axiosInstance";
 import { da } from "zod/locales";
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+
 function Register() {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
@@ -19,6 +20,21 @@ function Register() {
         email: z.string().email("عنوان البريد الإلكتروني غير صالح"),
         password: z.string().min(10, "كلمة المرور يجب أن تكون أكثر من 10 أحرف").max(20, 'كلمة المرور يجب أن تكون أقل من 20 حرف'),
         confirmPassword: z.string().min(10, "كلمة المرور يجب أن تكون أكثر من 10 أحرف").max(20, 'كلمة المرور يجب أن تكون أقل من 20 حرف'),
+        profileImage: z
+            .any()
+            .optional()
+            .refine(
+                (file) => !file || file?.length === 0 || file?.length === 1,
+                "يجب اختيار صورة واحدة فقط"
+            )
+            .refine(
+                (file) => !file || file?.length === 0 || ["image/jpeg", "image/png", "image/webp"].includes(file?.[0]?.type),
+                "الأنواع المسموح بها: JPG, PNG, WEBP"
+            )
+            .refine(
+                (file) => !file || file?.length === 0 || file?.[0]?.size <= 2 * 1024 * 1024,
+                "حجم الصورة يجب ألا يزيد عن 2MB"
+            )
     }).refine((data) => data.password === data.confirmPassword, {
         message: "كلمتا المرور غير متطابقتين",
         path: ["confirmPassword"],
@@ -30,26 +46,44 @@ function Register() {
 
     const onSubmit = async (data) => {
         console.log("Form data:", data);
+        console.log("Profile image data:", data.profileImage);
         setLoading(true);
-        toast.success("تم التسجيل بنجاح!");
-        reset();
+        setSignupError(""); // امسح أي خطأ سابق
+
         try {
-            const response = await axiosInstance.post('/users/signup', {
-                username: data.name,
-                email: data.email,
-                password: data.password,
+            const formData = new FormData();
+            formData.append('username', data.name);
+            formData.append('email', data.email);
+            formData.append('password', data.password);
+
+            if (data.profileImage && data.profileImage.length > 0) {
+                console.log("Profile image found:", data.profileImage[0]);
+                formData.append('profileImage', data.profileImage[0]);
+            } else {
+                console.log("No profile image selected - continuing without image");
+            }
+
+            const response = await axiosInstance.post('/users/signup', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
             });
 
             console.log('Registration success:', response.data);
+            toast.success("تم التسجيل بنجاح!");
+            reset();
 
             if (response.data?.message === "User registered successfully") {
+                // Save user data to localStorage if available
+                if (response.data.user) {
+                    localStorage.setItem('user', JSON.stringify(response.data.user));
+                }
                 navigate("/");
             } else {
                 setSignupError(response.data?.message || "حدث خطأ أثناء التسجيل");
             }
         } catch (errors) {
             console.error('Registration error:', errors.response?.data || errors.message);
-
             if (errors.response?.data?.message === "Email already in use") {
                 setSignupError("البريد الإلكتروني مستخدم بالفعل");
             } else {
@@ -59,6 +93,7 @@ function Register() {
             setLoading(false);
         }
     };
+
 
     return (
         <div className="min-h-screen  text-foreground">
@@ -85,9 +120,9 @@ function Register() {
                         </svg>
                         <h2 className="mt-4 text-4xl font-bold text-white">إنشاء حساب جديد</h2>
                         <p className="mt-2 text-md text-white">
-                            أو <p className="font-medium text-yellow-500 hover:text-yellow-600 transition-colors" onClick={() => navigate("/Login")}>
+                            أو <span className="font-medium text-yellow-500 hover:text-yellow-600 transition-colors cursor-pointer" onClick={() => navigate("/Login")}>
                                 تسجيل الدخول إلى حسابك
-                            </p>
+                            </span>
                         </p>
 
                     </div>
@@ -238,19 +273,52 @@ function Register() {
                                 </div>
                             </div>
                             {errors.confirmPassword && <p className="text-red-500 text-sm mt-5">{errors.confirmPassword.message}</p>}
+                            <label htmlFor="profileImage" className="block text-lg font-medium text-foreground mb-2 text-white">
+                                صورة الملف الشخصي <span className="text-gray-400 text-sm">(اختياري)</span>
+                            </label>
+                            <div className="relative">
+                                <input
+                                    type="file"
+                                    {...register("profileImage")}
+                                    id="profileImage"
+                                    accept="image/jpeg,image/png,image/webp"
+                                    className="w-full px-4 py-3 pr-12 bg-input border border-none  rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-300 text-white"
+                                    dir="rtl"
+                                    style={{ backgroundColor: '#262626' }}
+                                />
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="20"
+                                    height="20"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    className="lucide lucide-image absolute right-4 top-1/2 transform -translate-y-1/2 text-white"
+                                    aria-hidden="true"
+                                >
+                                    <rect width="18" height="18" x="3" y="3" rx="2" ry="2"></rect>
+                                    <circle cx="9" cy="9" r="2"></circle>
+                                    <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"></path>
+                                </svg>
+                            </div>
+                            <p className="text-gray-400 text-xs mt-1">يمكنك إضافة صورة الملف الشخصي لاحقاً من صفحة البروفايل</p>
+                            {errors.profileImage && <p className="text-red-500 text-sm mt-5">{errors.profileImage.message}</p>}
                             <div className="flex items-center">
                                 <input id="terms" required onInvalid={(e) => e.target.setCustomValidity("يجب الموافقة على الشروط والأحكام أولاً")}
                                     onInput={(e) => e.target.setCustomValidity("")} className="h-4 w-4 text-primary focus:ring-primary border-border rounded" type="checkbox" name="terms"></input>
                                 <label htmlFor="terms" className="mr-2 block text-lg text-white">أوافق على <a href="#" className="text-amber-300 hover:text-primary/80 transition-colors">الشروط والأحكام</a> و <a href="#" className="text-amber-300 hover:text-primary/80 transition-colors">سياسة الخصوصية</a></label>
                             </div>
-                            {signupError && <p>{signupError}</p>}
+                            {signupError && <p className="text-red-500 text-sm mt-2 p-3 bg-red-100 rounded-lg border border-red-300">{signupError}</p>}
                             <button type="submit" disabled={loading} className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-md font-bold rounded-lg text-white  hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed transition-colors" style={{ backgroundColor: 'var(--color-accent)' }}>
-                                {loading ? "جاري التسجيل..." : " تسجيل الدخول"}
+                                {loading ? "جاري التسجيل..." : "إنشاء حساب"}
                             </button>
                         </div>
                         <ToastContainer
-                                  position="top-center"
-                                />
+                            position="top-center"
+                        />
                     </form>
                     <div className="text-center"><a className="text-md text-gray-400 hover:text-white transition-colors" href="/" data-discover="true">العودة إلى الصفحة الرئيسية</a></div>
                 </div>
