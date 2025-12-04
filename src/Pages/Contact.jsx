@@ -11,6 +11,7 @@ import {
 import "../App.css";
 import Footer from "../componet/Footer";
 import Navbar from "../componet/Navbar";
+import { contactService } from "../api/contactService";
 
 function Contact() {
   const [formData, setFormData] = useState({
@@ -59,22 +60,33 @@ function Contact() {
     return newErrors;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const newErrors = validateForm();
 
     if (Object.keys(newErrors).length === 0) {
-      setIsSubmitted(true);
-      console.log("Form submitted:", formData);
-      setTimeout(() => {
-        setIsSubmitted(false);
-        setFormData({
-          username: "",
-          email: "",
-          phone: "",
-          message: "",
+      try {
+        await contactService.sendContactForm({
+          name: formData.username,
+          email: formData.email,
+          phone: formData.phone,
+          message: formData.message,
         });
-      }, 3000);
+
+        setIsSubmitted(true);
+        setTimeout(() => {
+          setIsSubmitted(false);
+          setFormData({
+            username: "",
+            email: "",
+            phone: "",
+            message: "",
+          });
+        }, 3000);
+      } catch (error) {
+        console.error("Error submitting form:", error);
+        // Optionally handle server errors here, e.g., setErrors based on response
+      }
     } else {
       setErrors(newErrors);
     }

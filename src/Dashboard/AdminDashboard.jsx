@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import '../App.css'
-import { FiFilm, FiTv, FiUsers, FiBarChart2, FiSearch } from 'react-icons/fi';
+import { FiFilm, FiTv, FiUsers, FiBarChart2, FiSearch, FiMessageCircle } from 'react-icons/fi';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useForm } from 'react-hook-form';
@@ -107,15 +107,15 @@ const StatsCard = ({ title, value, icon }) => {
       style={{ background: 'linear-gradient(135deg, rgba(31,41,55,0.95) 0%, rgba(31,41,55,0.7) 100%)' }}
     >
       {/* Background glow effect */}
-      <div 
+      <div
         className="absolute -top-10 -right-10 w-32 h-32 rounded-full opacity-20 blur-2xl"
         style={{ backgroundColor: "var(--color-accent)" }}
       />
-      
+
       <div className="flex items-center justify-between relative z-10">
         <div
           className="p-3 rounded-full shadow-lg transition-transform duration-300 hover:scale-110"
-          style={{ 
+          style={{
             backgroundColor: "var(--color-accent)",
             boxShadow: '0 4px 14px rgba(245, 158, 11, 0.4)'
           }}
@@ -133,8 +133,76 @@ const StatsCard = ({ title, value, icon }) => {
   );
 };
 
+const MessageModal = ({ message, onClose }) => {
+  if (!message) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+      <div
+        className="w-full max-w-lg rounded-xl shadow-2xl border border-white/10 overflow-hidden"
+        style={{ background: 'linear-gradient(135deg, rgba(31,41,55,0.98) 0%, rgba(17, 24, 39, 0.98) 100%)' }}
+      >
+        <div className="p-6 border-b border-white/10 flex justify-between items-center">
+          <h3 className="text-xl font-bold text-white">تفاصيل الرسالة</h3>
+          <button onClick={onClose} className="text-gray-400 hover:text-white transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        <div className="p-6 space-y-4">
+          <div>
+            <label className="block text-sm text-gray-400 mb-1">الاسم</label>
+            <p className="text-white font-medium text-lg">{message.name}</p>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm text-gray-400 mb-1">البريد الإلكتروني</label>
+              <p className="text-white">{message.email}</p>
+            </div>
+            <div>
+              <label className="block text-sm text-gray-400 mb-1">رقم الهاتف</label>
+              <p className="text-white">{message.phone || 'غير متوفر'}</p>
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm text-gray-400 mb-1">تاريخ الإرسال</label>
+            <p className="text-white text-sm">
+              {new Date(message.createdAt).toLocaleDateString('ar-EG', {
+                year: 'numeric', month: 'long', day: 'numeric',
+                hour: '2-digit', minute: '2-digit'
+              })}
+            </p>
+          </div>
+
+          <div className="pt-2">
+            <label className="block text-sm text-gray-400 mb-2">الرسالة</label>
+            <div className="bg-black/30 p-4 rounded-lg border border-white/5 text-gray-200 leading-relaxed whitespace-pre-wrap">
+              {message.message}
+            </div>
+          </div>
+        </div>
+
+        <div className="p-4 border-t border-white/10 flex justify-end">
+          <button
+            onClick={onClose}
+            className="px-6 py-2 rounded-lg font-medium text-black transition-colors hover:opacity-90"
+            style={{ backgroundColor: 'var(--color-accent)' }}
+          >
+            إغلاق
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 import { axiosInstance } from '../api/axiosInstance';
 import { workService } from '../api/workService';
+import { contactService } from '../api/contactService';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
@@ -167,7 +235,7 @@ const AddUserForm = () => {
 
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          
+
           <div className="space-y-2">
             <label className="block text-gray-300">اسم المستخدم</label>
             <input
@@ -220,13 +288,13 @@ const AddUserForm = () => {
         </div>
 
         <div className="mt-6 flex justify-end">
-        <button
-          type="submit"
+          <button
+            type="submit"
             className="text-black font-bold py-3 px-6 rounded-lg hover:opacity-90 transition-all duration-300"
-          style={{ backgroundColor: "var(--color-accent)" }}
-        >
-          إضافة المستخدم
-        </button>
+            style={{ backgroundColor: "var(--color-accent)" }}
+          >
+            إضافة المستخدم
+          </button>
         </div>
 
         <ToastContainer position="top-center" />
@@ -239,7 +307,7 @@ const Sidebar = ({ counts, usersCount, activeSection, setActiveSection }) => {
   const navigate = useNavigate();
 
   return (
-    <div 
+    <div
       className="w-72 min-h-screen p-6 flex flex-col shadow-2xl"
       style={{
         background: 'linear-gradient(180deg, rgba(31, 41, 55, 0.98) 0%, rgba(17, 24, 39, 0.98) 100%)',
@@ -248,7 +316,7 @@ const Sidebar = ({ counts, usersCount, activeSection, setActiveSection }) => {
       }}
     >
       {/* Header Section */}
-      <div 
+      <div
         className="flex items-center gap-3 p-4 mb-8 rounded-xl transition-all duration-300 hover:transform hover:-translate-y-1"
         style={{
           background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, rgba(217, 119, 6, 0.1) 100%)',
@@ -256,12 +324,12 @@ const Sidebar = ({ counts, usersCount, activeSection, setActiveSection }) => {
           boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)'
         }}
       >
-        <FiBarChart2 
-          size={32} 
-          style={{ 
+        <FiBarChart2
+          size={32}
+          style={{
             color: 'var(--color-accent)',
             filter: 'drop-shadow(0 0 8px rgba(245, 158, 11, 0.5))'
-          }} 
+          }}
         />
         <h1 className="text-2xl font-extrabold text-white" style={{ textShadow: '0 2px 4px rgba(0, 0, 0, 0.3)' }}>
           لوحة التحكم
@@ -277,23 +345,22 @@ const Sidebar = ({ counts, usersCount, activeSection, setActiveSection }) => {
           </p>
           <ul className="space-y-1">
             <li>
-              <a 
+              <a
                 href="#stats"
                 onClick={(e) => { e.preventDefault(); setActiveSection('stats'); }}
-                className={`flex items-center gap-3 p-3 rounded-lg font-medium transition-all duration-300 relative overflow-hidden ${
-                  activeSection === 'stats' 
-                    ? 'text-white font-bold shadow-lg' 
-                    : 'text-gray-300 hover:text-white hover:transform hover:translate-x-1'
-                }`}
+                className={`flex items-center gap-3 p-3 rounded-lg font-medium transition-all duration-300 relative overflow-hidden ${activeSection === 'stats'
+                  ? 'text-white font-bold shadow-lg'
+                  : 'text-gray-300 hover:text-white hover:transform hover:translate-x-1'
+                  }`}
                 style={{
-                  background: activeSection === 'stats' 
+                  background: activeSection === 'stats'
                     ? 'linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(217, 119, 6, 0.15) 100%)'
                     : 'transparent',
                   borderLeft: activeSection === 'stats' ? '3px solid var(--color-accent)' : 'none'
                 }}
               >
-                <FiBarChart2 
-                  size={20} 
+                <FiBarChart2
+                  size={20}
                   style={{ color: activeSection === 'stats' ? 'var(--color-accent)' : 'inherit' }}
                 />
                 <span>نظرة عامة</span>
@@ -309,46 +376,44 @@ const Sidebar = ({ counts, usersCount, activeSection, setActiveSection }) => {
           </p>
           <ul className="space-y-1">
             <li>
-              <a 
+              <a
                 href="#movies"
                 onClick={(e) => { e.preventDefault(); setActiveSection('movies'); }}
-                className={`flex items-center gap-3 p-3 rounded-lg font-medium transition-all duration-300 relative overflow-hidden ${
-                  activeSection === 'movies' 
-                    ? 'text-white font-bold shadow-lg' 
-                    : 'text-gray-300 hover:text-white hover:transform hover:translate-x-1'
-                }`}
+                className={`flex items-center gap-3 p-3 rounded-lg font-medium transition-all duration-300 relative overflow-hidden ${activeSection === 'movies'
+                  ? 'text-white font-bold shadow-lg'
+                  : 'text-gray-300 hover:text-white hover:transform hover:translate-x-1'
+                  }`}
                 style={{
-                  background: activeSection === 'movies' 
+                  background: activeSection === 'movies'
                     ? 'linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(217, 119, 6, 0.15) 100%)'
                     : 'transparent',
                   borderLeft: activeSection === 'movies' ? '3px solid var(--color-accent)' : 'none'
                 }}
               >
-                <FiFilm 
-                  size={20} 
+                <FiFilm
+                  size={20}
                   style={{ color: activeSection === 'movies' ? 'var(--color-accent)' : 'inherit' }}
                 />
                 <span>الأفلام</span>
               </a>
             </li>
             <li>
-              <a 
+              <a
                 href="#series"
                 onClick={(e) => { e.preventDefault(); setActiveSection('series'); }}
-                className={`flex items-center gap-3 p-3 rounded-lg font-medium transition-all duration-300 relative overflow-hidden ${
-                  activeSection === 'series' 
-                    ? 'text-white font-bold shadow-lg' 
-                    : 'text-gray-300 hover:text-white hover:transform hover:translate-x-1'
-                }`}
+                className={`flex items-center gap-3 p-3 rounded-lg font-medium transition-all duration-300 relative overflow-hidden ${activeSection === 'series'
+                  ? 'text-white font-bold shadow-lg'
+                  : 'text-gray-300 hover:text-white hover:transform hover:translate-x-1'
+                  }`}
                 style={{
-                  background: activeSection === 'series' 
+                  background: activeSection === 'series'
                     ? 'linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(217, 119, 6, 0.15) 100%)'
                     : 'transparent',
                   borderLeft: activeSection === 'series' ? '3px solid var(--color-accent)' : 'none'
                 }}
               >
-                <FiTv 
-                  size={20} 
+                <FiTv
+                  size={20}
                   style={{ color: activeSection === 'series' ? 'var(--color-accent)' : 'inherit' }}
                 />
                 <span>المسلسلات</span>
@@ -364,23 +429,22 @@ const Sidebar = ({ counts, usersCount, activeSection, setActiveSection }) => {
           </p>
           <ul className="space-y-1">
             <li>
-              <a 
+              <a
                 href="#users"
                 onClick={(e) => { e.preventDefault(); setActiveSection('users'); }}
-                className={`flex items-center gap-3 p-3 rounded-lg font-medium transition-all duration-300 relative overflow-hidden ${
-                  activeSection === 'users' 
-                    ? 'text-white font-bold shadow-lg' 
-                    : 'text-gray-300 hover:text-white hover:transform hover:translate-x-1'
-                }`}
+                className={`flex items-center gap-3 p-3 rounded-lg font-medium transition-all duration-300 relative overflow-hidden ${activeSection === 'users'
+                  ? 'text-white font-bold shadow-lg'
+                  : 'text-gray-300 hover:text-white hover:transform hover:translate-x-1'
+                  }`}
                 style={{
-                  background: activeSection === 'users' 
+                  background: activeSection === 'users'
                     ? 'linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(217, 119, 6, 0.15) 100%)'
                     : 'transparent',
                   borderLeft: activeSection === 'users' ? '3px solid var(--color-accent)' : 'none'
                 }}
               >
-                <FiUsers 
-                  size={20} 
+                <FiUsers
+                  size={20}
                   style={{ color: activeSection === 'users' ? 'var(--color-accent)' : 'inherit' }}
                 />
                 <span>إدارة المستخدمين</span>
@@ -396,26 +460,56 @@ const Sidebar = ({ counts, usersCount, activeSection, setActiveSection }) => {
           </p>
           <ul className="space-y-1">
             <li>
-              <a 
+              <a
                 href="#search"
                 onClick={(e) => { e.preventDefault(); setActiveSection('search'); }}
-                className={`flex items-center gap-3 p-3 rounded-lg font-medium transition-all duration-300 relative overflow-hidden ${
-                  activeSection === 'search' 
-                    ? 'text-white font-bold shadow-lg' 
-                    : 'text-gray-300 hover:text-white hover:transform hover:translate-x-1'
-                }`}
+                className={`flex items-center gap-3 p-3 rounded-lg font-medium transition-all duration-300 relative overflow-hidden ${activeSection === 'search'
+                  ? 'text-white font-bold shadow-lg'
+                  : 'text-gray-300 hover:text-white hover:transform hover:translate-x-1'
+                  }`}
                 style={{
-                  background: activeSection === 'search' 
+                  background: activeSection === 'search'
                     ? 'linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(217, 119, 6, 0.15) 100%)'
                     : 'transparent',
                   borderLeft: activeSection === 'search' ? '3px solid var(--color-accent)' : 'none'
                 }}
               >
-                <FiSearch 
-                  size={20} 
+                <FiSearch
+                  size={20}
                   style={{ color: activeSection === 'search' ? 'var(--color-accent)' : 'inherit' }}
                 />
                 <span>البحث المتقدم</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        {/* القسم الرابع: الرسائل */}
+        <div className="space-y-2">
+          <p className="text-xs font-semibold uppercase tracking-wider text-gray-400 px-3 mb-3">
+            الرسائل
+          </p>
+          <ul className="space-y-1">
+            <li>
+              <a
+                href="#messages"
+                onClick={(e) => { e.preventDefault(); setActiveSection('messages'); }}
+                className={`flex items-center gap-3 p-3 rounded-lg font-medium transition-all duration-300 relative overflow-hidden ${activeSection === 'messages'
+                  ? 'text-white font-bold shadow-lg'
+                  : 'text-gray-300 hover:text-white hover:transform hover:translate-x-1'
+                  }`}
+                style={{
+                  background: activeSection === 'messages'
+                    ? 'linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(217, 119, 6, 0.15) 100%)'
+                    : 'transparent',
+                  borderLeft: activeSection === 'messages' ? '3px solid var(--color-accent)' : 'none'
+                }}
+              >
+                <FiMessageCircle
+                  size={20}
+                  style={{ color: activeSection === 'messages' ? 'var(--color-accent)' : 'inherit' }}
+                />
+                <span>الرسائل</span>
               </a>
             </li>
           </ul>
@@ -424,7 +518,7 @@ const Sidebar = ({ counts, usersCount, activeSection, setActiveSection }) => {
 
       {/* Mini Stats Cards */}
       <div className="mt-auto pt-6 space-y-3" style={{ borderTop: '1px solid rgba(255, 255, 255, 0.1)' }}>
-        <div 
+        <div
           className="p-3 rounded-lg transition-all duration-300 hover:transform hover:-translate-y-1"
           style={{
             background: 'rgba(255, 255, 255, 0.05)',
@@ -440,7 +534,7 @@ const Sidebar = ({ counts, usersCount, activeSection, setActiveSection }) => {
           </p>
         </div>
 
-        <div 
+        <div
           className="p-3 rounded-lg transition-all duration-300 hover:transform hover:-translate-y-1"
           style={{
             background: 'rgba(255, 255, 255, 0.05)',
@@ -478,6 +572,9 @@ const AdminDashboard = () => {
   const [users, setUsers] = useState([]);
   const [usersLoading, setUsersLoading] = useState(false);
   const [activeSection, setActiveSection] = useState('stats'); // القسم النشط
+  const [messages, setMessages] = useState([]);
+  const [messagesLoading, setMessagesLoading] = useState(false);
+  const [selectedMessage, setSelectedMessage] = useState(null);
 
   const fetchWorks = () => {
     setLoading(true);
@@ -490,7 +587,7 @@ const AdminDashboard = () => {
         const total = data.length;
         setCounts({ films, series, total });
       })
-      .catch(() => {})
+      .catch(() => { })
       .finally(() => setLoading(false));
   };
 
@@ -498,13 +595,36 @@ const AdminDashboard = () => {
     setUsersLoading(true);
     axiosInstance.get('/users')
       .then(res => setUsers(res.data || []))
-      .catch(() => {})
+      .catch(() => { })
       .finally(() => setUsersLoading(false));
+  };
+
+  const fetchMessages = () => {
+    setMessagesLoading(true);
+    contactService.getAllMessages()
+      .then(data => {
+        if (Array.isArray(data)) {
+          setMessages(data);
+        } else if (data && Array.isArray(data.data)) {
+          setMessages(data.data);
+        } else if (data && Array.isArray(data.contacts)) {
+          setMessages(data.contacts);
+        } else {
+          console.error("Unexpected messages format:", data);
+          setMessages([]);
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+        toast.error('فشل تحميل الرسائل');
+      })
+      .finally(() => setMessagesLoading(false));
   };
 
   useEffect(() => {
     fetchWorks();
     fetchUsers();
+    fetchMessages();
   }, []);
 
   const filtered = useMemo(() => {
@@ -537,12 +657,33 @@ const AdminDashboard = () => {
     });
   };
 
+  const handleOpenMessage = (message) => {
+    setSelectedMessage(message);
+    if (!message.isRead) {
+      contactService.markAsRead(message._id)
+        .then(() => {
+          setMessages(prev => prev.map(m => m._id === message._id ? { ...m, isRead: true } : m));
+        })
+        .catch(() => console.error('Failed to mark as read'));
+    }
+  };
+
+  const handleDeleteMessage = (id) => {
+    if (!confirm('هل أنت متأكد من حذف هذه الرسالة؟')) return;
+    contactService.deleteMessage(id)
+      .then(() => {
+        setMessages(prev => prev.filter(m => m._id !== id));
+        toast.success('تم حذف الرسالة');
+      })
+      .catch(() => toast.error('حدث خطأ'));
+  };
+
   return (
-    
-    <div className="flex h-screen " dir="rtl" style={{backgroundColor: 'var(--color-dark)' }}>
-      <Sidebar 
-        counts={counts} 
-        usersCount={users.length} 
+
+    <div className="flex h-screen " dir="rtl" style={{ backgroundColor: 'var(--color-dark)' }}>
+      <Sidebar
+        counts={counts}
+        usersCount={users.length}
         activeSection={activeSection}
         setActiveSection={setActiveSection}
       />
@@ -558,14 +699,14 @@ const AdminDashboard = () => {
             >
               أضافه
             </button>
-              <button
+            <button
               onClick={() => {
                 navigate('/');
               }}
               className="w-58 px-1 py-2 rounded-xl font-bold transition-all duration-300 text-white hover:shadow-lg"
               style={{ backgroundColor: "var(--color-accent)" }}
             >
-              الرئيسية  
+              الرئيسية
             </button>          </div>
 
           {/* قسم الإحصائيات */}
@@ -579,7 +720,7 @@ const AdminDashboard = () => {
               </div>
 
               {/* المؤشرات الدائرية */}
-              <div 
+              <div
                 className="p-8 rounded-xl shadow-lg mb-8 border border-white/10"
                 style={{ background: 'linear-gradient(135deg, rgba(31,41,55,0.95) 0%, rgba(31,41,55,0.7) 100%)' }}
               >
@@ -607,32 +748,32 @@ const AdminDashboard = () => {
               </div>
 
               {/* الرسم البياني الشريطي */}
-              <div 
+              <div
                 className="p-8 rounded-xl shadow-lg border border-white/10"
                 style={{ background: 'linear-gradient(135deg, rgba(31,41,55,0.95) 0%, rgba(31,41,55,0.7) 100%)' }}
               >
                 <h3 className="text-2xl font-bold text-white mb-6">مقارنة الإحصائيات</h3>
                 <BarChart
                   data={[
-                    { 
-                      label: 'الأفلام', 
-                      value: counts.films, 
-                      color: 'linear-gradient(90deg, #f59e0b 0%, #d97706 100%)' 
+                    {
+                      label: 'الأفلام',
+                      value: counts.films,
+                      color: 'linear-gradient(90deg, #f59e0b 0%, #d97706 100%)'
                     },
-                    { 
-                      label: 'المسلسلات', 
-                      value: counts.series, 
-                      color: 'linear-gradient(90deg, #3b82f6 0%, #2563eb 100%)' 
+                    {
+                      label: 'المسلسلات',
+                      value: counts.series,
+                      color: 'linear-gradient(90deg, #3b82f6 0%, #2563eb 100%)'
                     },
-                    { 
-                      label: 'إجمالي الأعمال', 
-                      value: counts.total, 
-                      color: 'linear-gradient(90deg, #8b5cf6 0%, #7c3aed 100%)' 
+                    {
+                      label: 'إجمالي الأعمال',
+                      value: counts.total,
+                      color: 'linear-gradient(90deg, #8b5cf6 0%, #7c3aed 100%)'
                     },
-                    { 
-                      label: 'المستخدمون', 
-                      value: users.length, 
-                      color: 'linear-gradient(90deg, #10b981 0%, #059669 100%)' 
+                    {
+                      label: 'المستخدمون',
+                      value: users.length,
+                      color: 'linear-gradient(90deg, #10b981 0%, #059669 100%)'
                     }
                   ]}
                   maxValue={Math.max(counts.total, users.length)}
@@ -650,7 +791,7 @@ const AdminDashboard = () => {
                   <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                   <input
                     value={q}
-                    onChange={(e)=>setQ(e.target.value)}
+                    onChange={(e) => setQ(e.target.value)}
                     placeholder="ابحث بالعنوان أو السنة..."
                     className="w-full pl-10 pr-3 py-2 rounded-lg text-white border border-gray-600 focus:outline-none focus:border-amber-300"
                     style={{ backgroundColor: 'var(--color-grayy)' }}
@@ -683,13 +824,13 @@ const AdminDashboard = () => {
                           <td className="px-4 py-3 text-gray-300">{w.year}</td>
                           <td className="px-4 py-3">
                             <div className="flex gap-2">
-                              <button 
+                              <button
                                 onClick={() => navigate(`/dashboard/edit/${w._id}`)}
                                 className="px-3 py-1 bg-blue-600 hover:bg-blue-700 rounded text-white text-sm"
                               >
                                 تعديل
                               </button>
-                              <button 
+                              <button
                                 onClick={() => {
                                   if (confirm('هل أنت متأكد من حذف هذا العمل؟')) {
                                     workService.deleteWork(w._id)
@@ -727,7 +868,7 @@ const AdminDashboard = () => {
                   <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                   <input
                     value={q}
-                    onChange={(e)=>setQ(e.target.value)}
+                    onChange={(e) => setQ(e.target.value)}
                     placeholder="ابحث بالعنوان أو السنة..."
                     className="w-full pl-10 pr-3 py-2 rounded-lg text-white border border-gray-600 focus:outline-none focus:border-amber-300"
                     style={{ backgroundColor: 'var(--color-grayy)' }}
@@ -760,13 +901,13 @@ const AdminDashboard = () => {
                           <td className="px-4 py-3 text-gray-300">{w.year}</td>
                           <td className="px-4 py-3">
                             <div className="flex gap-2">
-                              <button 
+                              <button
                                 onClick={() => navigate(`/dashboard/edit/${w._id}`)}
                                 className="px-3 py-1 bg-blue-600 hover:bg-blue-700 rounded text-white text-sm"
                               >
                                 تعديل
                               </button>
-                              <button 
+                              <button
                                 onClick={() => {
                                   if (confirm('هل أنت متأكد من حذف هذا العمل؟')) {
                                     workService.deleteWork(w._id)
@@ -825,14 +966,14 @@ const AdminDashboard = () => {
                             <td className="px-4 py-3 text-white">{u.username}</td>
                             <td className="px-4 py-3 text-gray-300">{u.email}</td>
                             <td className="px-4 py-3 text-gray-300">
-                              <select value={u.role} onChange={(e)=>updateUserRole(u._id, e.target.value)} className="bg-black/20 text-white px-2 py-1 rounded border border-gray-600">
+                              <select value={u.role} onChange={(e) => updateUserRole(u._id, e.target.value)} className="bg-black/20 text-white px-2 py-1 rounded border border-gray-600">
                                 <option value="admin">admin</option>
                                 <option value="publisher">publisher</option>
                                 <option value="user">user</option>
                               </select>
                             </td>
                             <td className="px-4 py-3">
-                              <button onClick={()=>deleteUser(u._id)} className="px-3 py-1 rounded text-white bg-red-600 hover:bg-red-700">حذف</button>
+                              <button onClick={() => deleteUser(u._id)} className="px-3 py-1 rounded text-white bg-red-600 hover:bg-red-700">حذف</button>
                             </td>
                           </tr>
                         ))}
@@ -855,7 +996,7 @@ const AdminDashboard = () => {
                   <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                   <input
                     value={q}
-                    onChange={(e)=>setQ(e.target.value)}
+                    onChange={(e) => setQ(e.target.value)}
                     placeholder="ابحث بالعنوان أو النوع أو السنة..."
                     className="w-full pl-10 pr-3 py-2 rounded-lg text-white border border-gray-600 focus:outline-none focus:border-amber-300"
                     style={{ backgroundColor: 'var(--color-grayy)' }}
@@ -894,13 +1035,13 @@ const AdminDashboard = () => {
                           </td>
                           <td className="px-4 py-3">
                             <div className="flex gap-2">
-                              <button 
+                              <button
                                 onClick={() => navigate(`/dashboard/edit/${w._id}`)}
                                 className="px-3 py-1 bg-blue-600 hover:bg-blue-700 rounded text-white text-sm"
                               >
                                 تعديل
                               </button>
-                              <button 
+                              <button
                                 onClick={() => {
                                   if (confirm('هل أنت متأكد من حذف هذا العمل؟')) {
                                     workService.deleteWork(w._id)
@@ -928,8 +1069,69 @@ const AdminDashboard = () => {
               </div>
             </div>
           )}
+          {/* قسم الرسائل */}
+          {activeSection === 'messages' && (
+            <div className="mt-10">
+              <h2 className="text-2xl font-bold text-white mb-4">الرسائل</h2>
+              <div className="rounded-xl border border-gray-700 overflow-hidden" style={{ backgroundColor: 'var(--color-secondary)' }}>
+                <div className="max-h-[420px] overflow-y-auto">
+                  <table className="w-full text-right">
+                    <thead className="bg-black/30 text-white sticky top-0 z-10">
+                      <tr>
+                        <th className="px-4 py-3">الاسم</th>
+                        <th className="px-4 py-3">البريد</th>
+                        <th className="px-4 py-3">الحالة</th>
+                        <th className="px-4 py-3">تحكم</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {messagesLoading && (
+                        <tr><td colSpan="5" className="px-4 py-6 text-center text-white">جاري التحميل...</td></tr>
+                      )}
+                      {!messagesLoading && messages.length === 0 && (
+                        <tr><td colSpan="5" className="px-4 py-6 text-center text-white">لا توجد رسائل</td></tr>
+                      )}
+                      {!messagesLoading && messages.map((m, idx) => (
+                        <tr key={m._id} className={"border-t border-gray-700 " + (idx % 2 === 0 ? 'bg-black/5' : '') + (m.isRead ? '' : ' bg-amber-500/10')}>
+                          <td className="px-4 py-3 text-white font-medium">{m.name}</td>
+                          <td className="px-4 py-3 text-gray-300">{m.email}</td>
+                          <td className="px-4 py-3">
+                            {m.isRead ? (
+                              <span className="px-2 py-1 rounded-full text-xs bg-green-500/20 text-green-400 border border-green-500/30">مقروءة</span>
+                            ) : (
+                              <span className="px-2 py-1 rounded-full text-xs bg-amber-500/20 text-amber-400 border border-amber-500/30">جديدة</span>
+                            )}
+                          </td>
+                          <td className="px-4 py-3">
+                            <div className="flex gap-2">
+                              <button
+                                onClick={() => handleOpenMessage(m)}
+                                className="px-3 py-1 bg-blue-600 hover:bg-blue-700 rounded text-white text-sm"
+                              >
+                                فتح
+                              </button>
+                              <button
+                                onClick={() => handleDeleteMessage(m._id)}
+                                className="px-3 py-1 bg-red-600 hover:bg-red-700 rounded text-white text-sm"
+                              >
+                                حذف
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          )}
         </main>
       </div>
+      <MessageModal
+        message={selectedMessage}
+        onClose={() => setSelectedMessage(null)}
+      />
     </div>
   );
 };
