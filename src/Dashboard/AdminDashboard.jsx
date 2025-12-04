@@ -368,7 +368,36 @@ const Sidebar = ({ counts, usersCount, activeSection, setActiveSection }) => {
             </li>
           </ul>
         </div>
-
+        {/* القسم الرابع: الرسائل */}
+        <div className="space-y-2">
+          <p className="text-xs font-semibold uppercase tracking-wider text-gray-400 px-3 mb-3">
+            الرسائل
+          </p>
+          <ul className="space-y-1">
+            <li>
+              <a
+                href="#messages"
+                onClick={(e) => { e.preventDefault(); setActiveSection('messages'); }}
+                className={`flex items-center gap-3 p-3 rounded-lg font-medium transition-all duration-300 relative overflow-hidden ${activeSection === 'messages'
+                  ? 'text-white font-bold shadow-lg'
+                  : 'text-gray-300 hover:text-white hover:transform hover:translate-x-1'
+                  }`}
+                style={{
+                  background: activeSection === 'messages'
+                    ? 'linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(217, 119, 6, 0.15) 100%)'
+                    : 'transparent',
+                  borderLeft: activeSection === 'messages' ? '3px solid var(--color-accent)' : 'none'
+                }}
+              >
+                <FiMessageCircle
+                  size={20}
+                  style={{ color: activeSection === 'messages' ? 'var(--color-accent)' : 'inherit' }}
+                />
+                <span>الرسائل</span>
+              </a>
+            </li>
+          </ul>
+        </div>
         {/* القسم الثاني: إدارة المحتوى */}
         <div className="space-y-2">
           <p className="text-xs font-semibold uppercase tracking-wider text-gray-400 px-3 mb-3">
@@ -484,36 +513,7 @@ const Sidebar = ({ counts, usersCount, activeSection, setActiveSection }) => {
           </ul>
         </div>
 
-        {/* القسم الرابع: الرسائل */}
-        <div className="space-y-2">
-          <p className="text-xs font-semibold uppercase tracking-wider text-gray-400 px-3 mb-3">
-            الرسائل
-          </p>
-          <ul className="space-y-1">
-            <li>
-              <a
-                href="#messages"
-                onClick={(e) => { e.preventDefault(); setActiveSection('messages'); }}
-                className={`flex items-center gap-3 p-3 rounded-lg font-medium transition-all duration-300 relative overflow-hidden ${activeSection === 'messages'
-                  ? 'text-white font-bold shadow-lg'
-                  : 'text-gray-300 hover:text-white hover:transform hover:translate-x-1'
-                  }`}
-                style={{
-                  background: activeSection === 'messages'
-                    ? 'linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(217, 119, 6, 0.15) 100%)'
-                    : 'transparent',
-                  borderLeft: activeSection === 'messages' ? '3px solid var(--color-accent)' : 'none'
-                }}
-              >
-                <FiMessageCircle
-                  size={20}
-                  style={{ color: activeSection === 'messages' ? 'var(--color-accent)' : 'inherit' }}
-                />
-                <span>الرسائل</span>
-              </a>
-            </li>
-          </ul>
-        </div>
+
       </nav>
 
       {/* Mini Stats Cards */}
