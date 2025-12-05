@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import '../App.css'
-import { FiFilm, FiTv, FiUsers, FiBarChart2, FiSearch, FiMessageCircle } from 'react-icons/fi';
+import { FiFilm, FiTv, FiUsers, FiBarChart2, FiSearch, FiMessageCircle, FiImage } from 'react-icons/fi';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useForm } from 'react-hook-form';
@@ -203,6 +203,7 @@ const MessageModal = ({ message, onClose }) => {
 import { axiosInstance } from '../api/axiosInstance';
 import { workService } from '../api/workService';
 import { contactService } from '../api/contactService';
+import advertisementsService from '../api/advertisementsService';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
@@ -317,7 +318,7 @@ const Sidebar = ({ counts, usersCount, activeSection, setActiveSection }) => {
     >
       {/* Header Section */}
       <div
-        className="flex items-center gap-3 p-4 mb-8 rounded-xl transition-all duration-300 hover:transform hover:-translate-y-1"
+        className="flex items-center gap-3 p-4 mb-2 rounded-xl transition-all duration-300 hover:transform hover:-translate-y-1 "
         style={{
           background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, rgba(217, 119, 6, 0.1) 100%)',
           border: '1px solid rgba(245, 158, 11, 0.2)',
@@ -510,6 +511,28 @@ const Sidebar = ({ counts, usersCount, activeSection, setActiveSection }) => {
                 <span>البحث المتقدم</span>
               </a>
             </li>
+            <li>
+              <a
+                href="#advertisements"
+                onClick={(e) => { e.preventDefault(); setActiveSection('advertisements'); }}
+                className={`flex items-center gap-3 p-3 rounded-lg font-medium transition-all duration-300 relative overflow-hidden ${activeSection === 'advertisements'
+                  ? 'text-white font-bold shadow-lg'
+                  : 'text-gray-300 hover:text-white hover:transform hover:translate-x-1'
+                  }`}
+                style={{
+                  background: activeSection === 'advertisements'
+                    ? 'linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(217, 119, 6, 0.15) 100%)'
+                    : 'transparent',
+                  borderLeft: activeSection === 'advertisements' ? '3px solid var(--color-accent)' : 'none'
+                }}
+              >
+                <FiImage
+                  size={20}
+                  style={{ color: activeSection === 'advertisements' ? 'var(--color-accent)' : 'inherit' }}
+                />
+                <span>الإعلانات</span>
+              </a>
+            </li>
           </ul>
         </div>
 
@@ -551,12 +574,12 @@ const Sidebar = ({ counts, usersCount, activeSection, setActiveSection }) => {
         </div>
       </div>
 
-      {/* Footer */}
-      <div className="pt-4 text-center" style={{ borderTop: '1px solid rgba(255, 255, 255, 0.1)' }}>
+
+      {/* <footer className="pt-4 text-center" style={{ borderTop: '1px solid rgba(255, 255, 255, 0.1)', backgroundColor: 'black' }}>
         <p className="text-xs text-gray-500">
           &copy; 2025 <span style={{ color: 'var(--color-accent)' }}>Arab Film DB</span>
         </p>
-      </div>
+      </footer> */}
     </div>
   );
 };
@@ -575,6 +598,10 @@ const AdminDashboard = () => {
   const [messages, setMessages] = useState([]);
   const [messagesLoading, setMessagesLoading] = useState(false);
   const [selectedMessage, setSelectedMessage] = useState(null);
+  const [advertisements, setAdvertisements] = useState([]);
+  const [advertisementsLoading, setAdvertisementsLoading] = useState(false);
+  const [showAdForm, setShowAdForm] = useState(false);
+  const [editingAd, setEditingAd] = useState(null);
 
   const fetchWorks = () => {
     setLoading(true);
@@ -621,10 +648,35 @@ const AdminDashboard = () => {
       .finally(() => setMessagesLoading(false));
   };
 
+  const fetchAdvertisements = () => {
+    setAdvertisementsLoading(true);
+    advertisementsService.getAllAdvertisements()
+      .then(data => {
+        // Handle different response formats
+        if (Array.isArray(data)) {
+          setAdvertisements(data);
+        } else if (data && Array.isArray(data.data)) {
+          setAdvertisements(data.data);
+        } else if (data && Array.isArray(data.advertisements)) {
+          setAdvertisements(data.advertisements);
+        } else {
+          console.error("Unexpected advertisements format:", data);
+          setAdvertisements([]);
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+        setAdvertisements([]);
+        toast.error('فشل تحميل الإعلانات');
+      })
+      .finally(() => setAdvertisementsLoading(false));
+  };
+
   useEffect(() => {
     fetchWorks();
     fetchUsers();
     fetchMessages();
+    fetchAdvertisements();
   }, []);
 
   const filtered = useMemo(() => {
@@ -676,6 +728,52 @@ const AdminDashboard = () => {
         toast.success('تم حذف الرسالة');
       })
       .catch(() => toast.error('حدث خطأ'));
+  };
+
+  // Advertisement management functions
+  const handleDeleteAdvertisement = (id) => {
+    if (!confirm('هل أنت متأكد من حذف هذا الإعلان؟')) return;
+    advertisementsService.deleteAdvertisement(id)
+      .then(() => {
+        fetchAdvertisements();
+        toast.success('تم حذف الإعلان بنجاح');
+      })
+      .catch(() => toast.error('حدث خطأ أثناء حذف الإعلان'));
+  };
+
+  const handleToggleAdvertisement = (id) => {
+    advertisementsService.toggleAdvertisement(id)
+      .then(() => {
+        fetchAdvertisements();
+        toast.success('تم تحديث حالة الإعلان');
+      })
+      .catch(() => toast.error('حدث خطأ أثناء تحديث الإعلان'));
+  };
+
+  const handleAdFormSubmit = async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const mediaFile = formData.get('media');
+    const hasNewFile = mediaFile && mediaFile.size > 0;
+
+    try {
+      if (editingAd) {
+        if (!hasNewFile) {
+          formData.delete('media');
+        }
+        await advertisementsService.updateAdvertisement(editingAd._id || editingAd.id, formData);
+        toast.success('تم تحديث الإعلان بنجاح');
+      } else {
+        await advertisementsService.createAdvertisement(formData);
+        toast.success('تم إضافة الإعلان بنجاح');
+      }
+      setShowAdForm(false);
+      setEditingAd(null);
+      fetchAdvertisements();
+    } catch (err) {
+      console.error(err);
+      toast.error(editingAd ? 'فشل تحديث الإعلان' : 'فشل إضافة الإعلان');
+    }
   };
 
   return (
@@ -1126,13 +1224,280 @@ const AdminDashboard = () => {
               </div>
             </div>
           )}
-        </main>
-      </div>
+
+          {/* قسم الإعلانات */}
+          {activeSection === 'advertisements' && (
+            <div className="mt-10">
+              <div
+                className="p-6 md:p-8 rounded-xl shadow-lg border border-white/10"
+                style={{ background: 'linear-gradient(135deg, rgba(31,41,55,0.95) 0%, rgba(31,41,55,0.7) 100%)' }}
+              >
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-2xl font-bold text-white flex items-center gap-2">
+                    <FiImage size={28} style={{ color: 'var(--color-accent)' }} />
+                    إدارة الإعلانات
+                  </h2>
+                  <button
+                    onClick={() => {
+                      setShowAdForm(true);
+                      setEditingAd(null);
+                    }}
+                    className="px-4 py-2 rounded-lg font-bold text-black transition-all hover:opacity-90"
+                    style={{ backgroundColor: 'var(--color-accent)' }}
+                  >
+                    + إضافة إعلان جديد
+                  </button>
+                </div>
+
+                {/* Advertisement Form Modal */}
+                {showAdForm && (
+                  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+                    <div
+                      className="w-full max-w-lg rounded-xl shadow-2xl border border-white/10 overflow-hidden"
+                      style={{ background: 'linear-gradient(135deg, rgba(31,41,55,0.98) 0%, rgba(17, 24, 39, 0.98) 100%)' }}
+                    >
+                      <div className="p-6 border-b border-white/10 flex justify-between items-center">
+                        <h3 className="text-xl font-bold text-white">
+                          {editingAd ? 'تعديل الإعلان' : 'إضافة إعلان جديد'}
+                        </h3>
+                        <button onClick={() => { setShowAdForm(false); setEditingAd(null); }} className="text-gray-400 hover:text-white transition-colors">
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                          </svg>
+                        </button>
+                      </div>
+
+                      <form onSubmit={handleAdFormSubmit} className="p-6 space-y-4">
+                        <div>
+                          <label className="block text-sm text-gray-300 mb-2">اسم الإعلان</label>
+                          <input
+                            type="text"
+                            name="name"
+                            required
+                            defaultValue={editingAd?.name || ''}
+                            className="w-full p-3 rounded-lg text-white border border-gray-600 focus:outline-none focus:border-amber-300"
+                            style={{ backgroundColor: 'var(--color-grayy)' }}
+                            placeholder="اسم الإعلان..."
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-sm text-gray-300 mb-2">نوع الوسائط</label>
+                          <select
+                            name="mediaType"
+                            required
+                            defaultValue={editingAd?.mediaType || 'image'}
+                            className="w-full p-3 rounded-lg text-white border border-gray-600 focus:outline-none focus:border-amber-300"
+                            style={{ backgroundColor: 'var(--color-grayy)' }}
+                          >
+                            <option value="image">صورة</option>
+                            <option value="video">فيديو</option>
+                          </select>
+                        </div>
+
+                        <div>
+                          <label className="block text-sm text-gray-300 mb-2">
+                            {editingAd ? 'تحديث الملف (اختياري)' : 'الملف'}
+                          </label>
+                          <input
+                            type="file"
+                            name="media"
+                            required={!editingAd}
+                            accept="image/*,video/*"
+                            className="w-full p-3 rounded-lg text-white border border-gray-600 focus:outline-none focus:border-amber-300"
+                            style={{ backgroundColor: 'var(--color-grayy)' }}
+                          />
+                        </div>
+
+                        <div className="flex gap-3 pt-4">
+                          <button
+                            type="submit"
+                            className="flex-1 py-2 rounded-lg font-bold text-black transition-all hover:opacity-90"
+                            style={{ backgroundColor: 'var(--color-accent)' }}
+                          >
+                            {editingAd ? 'تحديث' : 'إضافة'}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => { setShowAdForm(false); setEditingAd(null); }}
+                            className="px-6 py-2 rounded-lg font-medium bg-gray-600 text-white transition-all hover:bg-gray-700"
+                          >
+                            إلغاء
+                          </button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                )}
+
+                {/* Advertisements Table */}
+                <div className="overflow-x-auto mb-16">
+                  <table className="w-full">
+                    <thead className="bg-black/30 text-white">
+                      <tr>
+                        <th className="px-4 py-3 text-right">الاسم</th>
+                        <th className="px-4 py-3 text-right">نوع الوسائط</th>
+                        <th className="px-4 py-3 text-right">الحالة</th>
+                        <th className="px-4 py-3 text-right">معاينة</th>
+                        <th className="px-4 py-3 text-right">تحكم</th>
+                      </tr>
+                    </thead>
+
+                    <tbody>
+                      {advertisementsLoading && (
+                        <tr>
+                          <td colSpan="5" className="px-4 py-6 text-center text-white">
+                            جاري التحميل...
+                          </td>
+                        </tr>
+                      )}
+
+                      {!advertisementsLoading && advertisements.length === 0 && (
+                        <tr>
+                          <td colSpan="5" className="px-4 py-6 text-center text-white">
+                            لا توجد إعلانات
+                          </td>
+                        </tr>
+                      )}
+
+                      {!advertisementsLoading &&
+                        advertisements.map((ad, idx) => {
+                          const getMediaUrl = (media) => {
+                            if (!media) return null;
+
+                            if (typeof media === "string") {
+                              return media.startsWith("http")
+                                ? media
+                                : `https://api.arabfilmdb.com${media}`;
+                            }
+
+                            if (Array.isArray(media) && media.length > 0) {
+                              const firstMedia = media[0];
+                              return firstMedia.startsWith("http")
+                                ? firstMedia
+                                : `https://api.arabfilmdb.com${firstMedia}`;
+                            }
+
+                            if (typeof media === "object") {
+                              const url = media.url || media.path || media.src;
+                              if (url) {
+                                return url.startsWith("http")
+                                  ? url
+                                  : `https://api.arabfilmdb.com${url}`;
+                              }
+                            }
+
+                            return null;
+                          };
+
+                          const mediaUrl = getMediaUrl(ad.media);
+
+                          return (
+                            <tr
+                              key={ad._id || ad.id}
+                              className={
+                                "border-t border-gray-700 " +
+                                (idx % 2 === 0 ? "bg-black/5" : "")
+                              }
+                            >
+                              <td className="px-4 py-3 text-white font-medium">
+                                {ad.name}
+                              </td>
+
+                              <td className="px-4 py-3 text-gray-300">
+                                <span
+                                  className={`px-2 py-1 rounded-full text-xs ${ad.mediaType === "image"
+                                    ? "bg-blue-500/20 text-blue-400"
+                                    : "bg-purple-500/20 text-purple-400"
+                                    }`}
+                                >
+                                  {ad.mediaType === "image" ? "صورة" : "فيديو"}
+                                </span>
+                              </td>
+
+                              <td className="px-4 py-3">
+                                {ad.isActive ? (
+                                  <span className="px-2 py-1 rounded-full text-xs bg-green-500/20 text-green-400 border border-green-500/30">
+                                    نشط
+                                  </span>
+                                ) : (
+                                  <span className="px-2 py-1 rounded-full text-xs bg-gray-500/20 text-gray-400 border border-gray-500/30">
+                                    معطل
+                                  </span>
+                                )}
+                              </td>
+
+                              <td className="px-4 py-3">
+                                {!mediaUrl ? (
+                                  <span className="text-gray-400 text-sm">
+                                    لا توجد معاينة
+                                  </span>
+                                ) : ad.mediaType === "image" ? (
+                                  <img
+                                    src={mediaUrl}
+                                    alt={ad.name}
+                                    className="w-20 h-12 object-cover rounded"
+                                  />
+                                ) : (
+                                  <video
+                                    src={mediaUrl}
+                                    className="w-20 h-12 object-cover rounded"
+                                    muted
+                                  />
+                                )}
+                              </td>
+
+                              <td className="px-4 py-3">
+                                <div className="flex gap-2">
+                                  <button
+                                    onClick={() =>
+                                      handleToggleAdvertisement(ad._id || ad.id)
+                                    }
+                                    className={`px-3 py-1 rounded text-white text-sm ${ad.isActive
+                                      ? "bg-orange-600 hover:bg-orange-700"
+                                      : "bg-green-600 hover:bg-green-700"
+                                      }`}
+                                  >
+                                    {ad.isActive ? "إلغاء التفعيل" : "تفعيل"}
+                                  </button>
+
+                                  <button
+                                    onClick={() => {
+                                      setEditingAd(ad);
+                                      setShowAdForm(true);
+                                    }}
+                                    className="px-3 py-1 bg-blue-600 hover:bg-blue-700 rounded text-white text-sm"
+                                  >
+                                    تعديل
+                                  </button>
+
+                                  <button
+                                    onClick={() =>
+                                      handleDeleteAdvertisement(ad._id || ad.id)
+                                    }
+                                    className="px-3 py-1 bg-red-600 hover:bg-red-700 rounded text-white text-sm"
+                                  >
+                                    حذف
+                                  </button>
+                                </div>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          )
+          }
+        </main >
+      </div >
       <MessageModal
         message={selectedMessage}
         onClose={() => setSelectedMessage(null)}
       />
-    </div>
+    </div >
   );
 };
 

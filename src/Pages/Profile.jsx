@@ -258,7 +258,7 @@ const ProfilePage = () => {
                 dispatch(setUser(updatedUser));
                 console.log('Updated Redux store');
 
-                alert('✅ تم تحديث الصورة الشخصية بنجاح!');
+                // alert('✅ تم تحديث الصورة الشخصية بنجاح!');
                 console.log('✅ Profile image updated successfully:', profileImageUrl);
             } else {
                 console.error('❌ Could not find profileImage in response');

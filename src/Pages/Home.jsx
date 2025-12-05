@@ -5,6 +5,7 @@ import Series from '../HomeSech/Series';
 import Footer from '../componet/Footer';
 import Navbar from '../componet/Navbar';
 import MediaSlider from '../SliderHome/MediaSlider';
+import AdvertisementSlider from '../componet/AdvertisementSlider';
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Dashboard from '../Dashboard/Dashboard';
@@ -59,6 +60,7 @@ function Home() {
   return (
     <div className=" min-h-screen" style={{ backgroundColor: 'black' }}>
       <Navbar />
+      <AdvertisementSlider />
       <MediaSlider />
       {(user?.role === 'admin' || user?.role === 'publisher') ? (
         <div className="flex flex-col md:flex-row justify-between items-center px-3 py-5 space-y-4 md:space-y-0 md:space-x-6" style={{ backgroundColor: 'var(--color-primary)' }}>
