@@ -1,4 +1,4 @@
-import LatestAdditions from '../HomeSech/LatestAdditions.JSX';
+import LatestAdditions from '../HomeSech/LatestAdditions';
 import MostRated from '../HomeSech/MostRated'
 import Filme from '../HomeSech/Filme';
 import Series from '../HomeSech/Series';

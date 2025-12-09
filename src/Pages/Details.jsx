@@ -686,9 +686,9 @@ const Details = () => {
                                                 </div>
                                             ) : (
                                                 comments.map(c => {
-                                                    // الحصول على اسم المستخدم من مصادر مختلفة
-                                                    const commentUsername = c.user?.username || c.userId?.username || user?.username || 'مستخدم';
-                                                    const isCurrentUser = c.user?.username === user?.username || c.userId?.username === user?.username;
+                                                    // الحصول على اسم المستخدم من بيانات التعليق فقط (لا نستخدم اسم المستخدم الحالي كـ fallback)
+                                                    const commentUsername = c.user?.username || c.userId?.username || 'مستخدم';
+                                                    const isCurrentUser = commentUsername === user?.username;
 
                                                     return (
                                                         <div key={c._id} className="p-4 bg-[#2a2a2a] rounded-lg text-white text-right relative border border-gray-700 hover:border-amber-400/50 transition-all duration-200">
@@ -758,8 +758,8 @@ const Details = () => {
                                                 </div>
                                             ) : (
                                                 comments.map(c => {
-                                                    const commentUsername = c.user?.username || c.userId?.username || user?.username || 'مستخدم';
-                                                    const isCurrentUser = c.user?.username === user?.username || c.userId?.username === user?.username;
+                                                    const commentUsername = c.user?.username || c.userId?.username || 'مستخدم';
+                                                    const isCurrentUser = commentUsername === user?.username;
 
                                                     return (
                                                         <div key={c._id} className="p-4 bg-[#2a2a2a] rounded-lg text-white text-right relative border border-gray-700 hover:border-amber-400/50 transition-all duration-200">
