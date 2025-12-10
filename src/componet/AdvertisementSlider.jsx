@@ -42,8 +42,8 @@ const AdvertisementSlider = () => {
 
     if (loading) {
         return (
-            <div className="w-full h-[400px] bg-gradient-to-r from-gray-800 to-gray-900 flex items-center justify-center">
-                <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-amber-400"></div>
+            <div className="w-full h-[180px] md:h-[200px] bg-gradient-to-r from-gray-800 to-gray-900 flex items-center justify-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-3 border-b-3 border-amber-400"></div>
             </div>
         );
     }
@@ -81,7 +81,7 @@ const AdvertisementSlider = () => {
     };
 
     return (
-        <div className="w-full bg-black">
+        <div className="w-full bg-black py-2 px-2">
             <Swiper
                 modules={[Navigation, Pagination, Autoplay]}
                 spaceBetween={0}
@@ -93,11 +93,11 @@ const AdvertisementSlider = () => {
                     disableOnInteraction: false,
                 }}
                 loop={advertisements.length > 1}
-                className="advertisement-slider"
+                className="advertisement-slider rounded-xl overflow-hidden"
             >
                 {advertisements.map((ad) => (
                     <SwiperSlide key={ad._id || ad.id}>
-                        <div className="relative w-full h-[400px] md:h-[500px] lg:h-[600px] overflow-hidden">
+                        <div className="relative w-full h-[180px] md:h-[200px] lg:h-[220px] overflow-hidden rounded-lg">
                             {ad.mediaType === 'image' ? (
                                 <img
                                     src={getMediaUrl(ad.media)}
@@ -117,12 +117,12 @@ const AdvertisementSlider = () => {
                             ) : null}
 
                             {/* Overlay gradient for better text visibility */}
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent"></div>
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
 
                             {/* Advertisement title if available */}
                             {ad.name && (
-                                <div className="absolute bottom-8 left-8 right-8 z-10">
-                                    <h3 className="text-white text-2xl md:text-4xl font-bold drop-shadow-lg">
+                                <div className="absolute bottom-3 left-3 right-3 z-10 transform hover:scale-105 transition-transform duration-300">
+                                    <h3 className="text-white text-sm md:text-base font-bold drop-shadow-lg line-clamp-2">
                                         {ad.name}
                                     </h3>
                                 </div>

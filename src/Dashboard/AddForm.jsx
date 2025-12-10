@@ -77,6 +77,8 @@ export default function FilmForm() {
     seasons: '',
     episodes: ''
   });
+  const [selectedImageFile, setSelectedImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState('');
 
   useEffect(() => {
     if (id && id !== 'undefined') {
@@ -100,6 +102,8 @@ export default function FilmForm() {
               seasons: work.seasonsCount || '',
               episodes: work.episodesCount || ''
             });
+            // set preview if posterUrl exists
+            setImagePreview(work.posterUrl || '');
           } else {
             alert('لم يتم العثور على العمل المطلوب تعديله');
             navigate('/dashboard');
@@ -123,6 +127,31 @@ export default function FilmForm() {
     } else {
       setFormData({ ...formData, [name]: value });
     }
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files?.[0] || null;
+    if (!file) {
+      setSelectedImageFile(null);
+      setImagePreview('');
+      return;
+    }
+
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+      alert('صيغة الملف غير مدعومة. استخدم JPG أو PNG أو GIF أو WEBP');
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      alert('حجم الصورة كبير جداً. الحد الأقصى 5 ميجابايت');
+      return;
+    }
+
+    setSelectedImageFile(file);
+    const reader = new FileReader();
+    reader.onload = (ev) => setImagePreview(ev.target.result);
+    reader.readAsDataURL(file);
   };
 
   const addActor = () => {
@@ -162,30 +191,67 @@ export default function FilmForm() {
     }
 
     try {
-      if (id && id !== 'undefined') {
-        await workService.updateWork(id, cleanedData);
-        alert('تم تعديل العمل بنجاح');
-        navigate('/dashboard');
+      // If there's a selected file, send multipart/form-data including the file
+      if (selectedImageFile) {
+        const fd = new FormData();
+        // append fields
+        fd.append('type', cleanedData.type);
+        fd.append('nameArabic', cleanedData.nameArabic);
+        fd.append('nameEnglish', cleanedData.nameEnglish);
+        fd.append('year', cleanedData.year);
+        fd.append('director', cleanedData.director);
+        fd.append('assistantDirector', cleanedData.assistantDirector);
+        fd.append('genre', cleanedData.genre);
+        fd.append('cast', JSON.stringify(cleanedData.cast));
+        fd.append('country', cleanedData.country);
+        fd.append('filmingLocation', cleanedData.filmingLocation);
+        fd.append('summary', cleanedData.summary);
+        // seasons/episodes if series
+        if (cleanedData.seasonsCount) fd.append('seasonsCount', cleanedData.seasonsCount);
+        if (cleanedData.episodesCount) fd.append('episodesCount', cleanedData.episodesCount);
+        // Append file under field name 'image' (backend expects this)
+        fd.append('image', selectedImageFile);
+
+        if (id && id !== 'undefined') {
+          await workService.updateWorkWithImage(id, fd);
+          alert('تم تعديل العمل بنجاح');
+          navigate('/dashboard');
+        } else {
+          await workService.createWorkWithImage(fd);
+          alert('تم إضافة العمل بنجاح');
+          // reset form
+          setFormData({
+            type: 'فيلم', arabicName: '', englishName: '', year: '', director: '', assistantDirector: '', genre: '', actors: [''], country: '', location: '', summary: '', posterUrl: '', seasons: '', episodes: ''
+          });
+          setSelectedImageFile(null);
+          setImagePreview('');
+        }
       } else {
-        await workService.createWork(cleanedData, false);
-        alert('تم إضافة العمل بنجاح');
-        // Reset form only for new work
-        setFormData({
-          type: 'فيلم',
-          arabicName: '',
-          englishName: '',
-          year: '',
-          director: '',
-          assistantDirector: '',
-          genre: '',
-          actors: [''],
-          country: '',
-          location: '',
-          summary: '',
-          posterUrl: '',
-          seasons: '',
-          episodes: ''
-        });
+        if (id && id !== 'undefined') {
+          await workService.updateWork(id, cleanedData);
+          alert('تم تعديل العمل بنجاح');
+          navigate('/dashboard');
+        } else {
+          await workService.createWork(cleanedData, false);
+          alert('تم إضافة العمل بنجاح');
+          // Reset form only for new work
+          setFormData({
+            type: 'فيلم',
+            arabicName: '',
+            englishName: '',
+            year: '',
+            director: '',
+            assistantDirector: '',
+            genre: '',
+            actors: [''],
+            country: '',
+            location: '',
+            summary: '',
+            posterUrl: '',
+            seasons: '',
+            episodes: ''
+          });
+        }
       }
     } catch (error) {
       console.error('Error submitting form:', error);
@@ -423,19 +489,49 @@ export default function FilmForm() {
         </div>
 
         <div>
-          <label className="block mb-1">رابط البوستر *</label>
-          <input
-            type="url"
-            name="posterUrl"
-            value={formData.posterUrl}
-            onChange={handleChange}
-            required
-            className="w-full p-2 rounded bg-gray-700"
-            placeholder="https://example.com/image.jpg"
-          />
+          <label className="block mb-1">رابط البوستر (أو ارفع صورة)</label>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <input
+              type="url"
+              name="posterUrl"
+              value={formData.posterUrl}
+              onChange={handleChange}
+              required={!selectedImageFile}
+              className="w-full p-2 rounded bg-gray-700"
+              placeholder="https://example.com/image.jpg"
+            />
+            <div>
+              <label className="inline-flex items-center gap-2 px-4 py-2 bg-amber-400 text-black font-semibold rounded-lg cursor-pointer hover:bg-amber-500 transition">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M3 3a1 1 0 011-1h4a1 1 0 110 2H5v10h10v-3a1 1 0 112 0v4a1 1 0 01-1 1H4a1 1 0 01-1-1V3z" clipRule="evenodd" />
+                  <path d="M9 7a1 1 0 012 0v4.586l1.293-1.293a1 1 0 011.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 011.414-1.414L9 11.586V7z" />
+                </svg>
+                <span>اختر صورة من الجهاز</span>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                  className="hidden"
+                />
+              </label>
+              <div className="mt-2">
+                {imagePreview ? (
+                  <div className="mt-2 text-center">
+                    <img src={imagePreview} alt="preview" className="max-h-40 rounded-md mx-auto" />
+                    <div className="flex items-center justify-center gap-2 mt-2">
+                      <button type="button" onClick={() => { setSelectedImageFile(null); setImagePreview(''); }} className="px-3 py-1 bg-red-600 rounded text-white text-sm">إزالة الصورة</button>
+                      <button type="button" onClick={() => { navigator.clipboard?.writeText(formData.posterUrl || '') }} className="px-3 py-1 bg-gray-700 rounded text-white text-sm">نسخ رابط (إن وُجد)</button>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-xs text-gray-400">اختر ملف صورة لرفعها مباشرة مع النموذج (اختياري).</p>
+                )}
+              </div>
+            </div>
+          </div>
           <p className="text-xs text-yellow-400 mt-1">
-            ⚠️ يرجى استخدام رابط صورة مباشر (ينتهي بـ .jpg أو .png أو .webp).
-            يمكنك رفع الصورة على <a href="https://imgbb.com/" target="_blank" className="underline">ImgBB</a> أو
+            ⚠️ يمكنك إدخال رابط مباشر للصورة أو اختيار رفع ملف من الجهاز. الحقل ليس مطلوبًا إذا رفعت صورة.
+            يمكنك رفع الصورة عبر الفورم أو استخدام مواقع استضافة مثل <a href="https://imgbb.com/" target="_blank" className="underline">ImgBB</a> أو
             <a href="https://imgur.com/" target="_blank" className="underline ml-1">Imgur</a>
           </p>
         </div>

@@ -174,3 +174,32 @@ export const workService = {
     await axiosInstance.delete(`/works/${id}`);
   }
 };
+
+// Add multipart/form-data helpers (for uploading image together with work data)
+workService.createWorkWithImage = async (formData) => {
+  try {
+    const response = await axiosInstance.post('/works', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error creating work with image:', error.response?.data || error.message);
+    throw error;
+  }
+};
+
+workService.updateWorkWithImage = async (id, formData) => {
+  try {
+    const response = await axiosInstance.patch(`/works/${id}`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error updating work with image:', error.response?.data || error.message);
+    throw error;
+  }
+};
