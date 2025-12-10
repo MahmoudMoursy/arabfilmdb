@@ -108,11 +108,12 @@ const AdvertisementSlider = () => {
                             ) : ad.mediaType === 'video' ? (
                                 <video
                                     src={getMediaUrl(ad.media)}
-                                    className="w-full h-full object-cover"
-                                    autoPlay
+                                    className="absolute inset-0 w-full h-full z-[9999]"
+                                    controls
                                     muted
-                                    loop
                                     playsInline
+                                    autoPlay
+                                    loop
                                 />
                             ) : null}
 

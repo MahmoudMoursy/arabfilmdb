@@ -132,7 +132,7 @@ const LatestAdditions = () => {
                       <div className="w-full aspect-[2/3] overflow-hidden"> {/* حاوية بنسبة ثابتة لتثبيت CLS */}
                         <img
                           className={`w-full h-full object-cover transition-transform duration-300 group-hover:scale-105 ${isImageLoaded ? 'opacity-100' : 'opacity-0'}`}
-                          src={movie?.posterUrl}
+                          src={movie.posterUrl || movie.posterImage?.url || 'https://via.placeholder.com/400x600?text=No+Image'}
                           width={300}         // أبعاد ثابتة
                           height={450}        // أبعاد ثابتة
                           loading="eager"     // لو هذه صورة LCP أساسية

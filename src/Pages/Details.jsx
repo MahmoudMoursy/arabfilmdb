@@ -10,6 +10,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import FavoriteButton from '../componet/FavoriteButton';
 import AddToFavoritesButton from '../componet/AddToFavoritesButton';
 import { favoritesService } from '../api/favoritesService';
+import MediaCard from '../componet/MediaCard';
 
 import { toast } from 'react-toastify';
 
@@ -370,11 +371,12 @@ const Details = () => {
                             {/* Content Info */}
                             <div className="flex-1 space-y-6 lg:mb-8">
                                 {/* Mobile Poster (Visible only on small screens) */}
-                                    <img
-                                        alt={selectedItem.nameArabic}
-                                        className="w-full h-auto object-cover"
-                                        src={selectedItem.posterUrl || selectedItem.posterImage?.url || 'https://via.placeholder.com/200x300?text=No+Image'}
-                                    />
+                                <img
+                                    alt={selectedItem.nameArabic}
+                                    className="w-60 h-80 mr-40 block md:hidden"
+                                    src={selectedItem.posterUrl || selectedItem.posterImage?.url || 'https://via.placeholder.com/200x300?text=No+Image'}
+                                />
+
 
                                 {/* Title & Badges */}
                                 <div className="space-y-2 text-center lg:text-right">
@@ -815,6 +817,31 @@ const Details = () => {
                     </div>
                 </div>
 
+                {/* Similar Works Section */}
+                {similarMovies.length > 0 && (
+                    <div className="container mx-auto px-4 py-12 border-t border-white/10">
+                        <div className="flex items-center justify-between mb-8">
+                            <h3 className="text-2xl font-bold text-white border-r-4 border-amber-400 pr-4">
+                                أعمال مشابهة قد تعجبك
+                            </h3>
+                        </div>
+                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+                            {similarMovies.map((movie) => {
+                                const ratingData = getMovieRating(movie._id);
+                                const movieWithRating = {
+                                    ...movie,
+                                    rating: ratingData.average
+                                };
+                                return (
+                                    <MediaCard
+                                        key={movie._id}
+                                        work={movieWithRating}
+                                    />
+                                );
+                            })}
+                        </div>
+                    </div>
+                )}
                 <Footer />
             </div>
         </div>

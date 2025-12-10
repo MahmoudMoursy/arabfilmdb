@@ -49,7 +49,7 @@ const MoviesList = ({ filteredMovies, loading, searchTerm, clearAllFilters }) =>
             >
               <div className="relative">
                 <img
-                  src={movie.posterUrl}
+                  src={movie.posterUrl || movie.posterImage?.url || 'https://via.placeholder.com/400x600?text=No+Image'}
                   alt={movie.title}
                   className="w-full h-full object-cover transition-all duration-300 group-hover:scale-105"
                 />

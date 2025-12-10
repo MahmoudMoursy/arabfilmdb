@@ -280,7 +280,9 @@ const SeriesFilterSection = () => {
             >
               <div key={index} className=" text-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1" style={{ backgroundColor: 'var(--color-dark)' }}>
                 <div className="relative">
-                  <img src={item.posterUrl} alt={item.title} className="w-full h-full object-cover transition-all duration-300 group-hover:scale-105" />
+                  <img
+                    src={item.posterUrl || item.posterImage?.url || 'https://via.placeholder.com/400x600?text=No+Image'}
+                    className="w-full h-full object-cover transition-all duration-300 group-hover:scale-105" />
                   <div className="absolute top-2 right-2 bg-black bg-opacity-70 text-white px-2 py-1 rounded-lg text-sm">⭐ {item.rating}</div>
                 </div>
                 <div className="p-4 ">
