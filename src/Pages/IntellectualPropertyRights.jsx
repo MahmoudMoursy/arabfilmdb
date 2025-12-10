@@ -9,7 +9,6 @@ function IntellectualPropertyRights() {
             <div className="bg-gradient-to-b from-black via-gray-900 to-black min-h-screen">
                 <Navbar />
 
-                {/* اللوجو */}
                 <div className="flex flex-col justify-center items-center my-10">
                     <img
                         src={logo}
@@ -19,7 +18,6 @@ function IntellectualPropertyRights() {
                     />
                 </div>
 
-                {/* الكارد الرئيسي */}
                 <div
                     className="max-w-4xl mx-auto p-12 space-y-10 bg-gray-900 rounded-2xl shadow-2xl mb-10"
                     style={{ fontFamily: "Cairo, sans-serif" }}
@@ -28,14 +26,14 @@ function IntellectualPropertyRights() {
                         إشعار الملكية الفكرية
                     </h1>
 
-                    <p className="text-gray-300 text-lg leading-relaxed first-letter:text-3xl first-letter:font-bold">
+                    <p className="text-gray-300 text-lg leading-relaxed  ">
                         جميع المحتويات البرمجية والتصميمات الخاصة بموقع
                         <span className="text-amber-400 font-semibold"> ArabFilmDB </span>
                         مملوكة بالكامل لصاحب المشروع، وهي محمية بموجب قوانين حقوق الملكية
                         الفكرية المحلية والدولية.
                     </p>
 
-                    <p className="text-gray-300 text-lg leading-relaxed first-letter:text-3xl first-letter:font-bold">
+                    <p className="text-gray-300 text-lg leading-relaxed  ">
                         نحن نحترم حقوق الملكية الفكرية. إذا كنت مالكاً لحقوق نشر وتعتقد أن
                         هناك انتهاكاً داخل الموقع، يرجى التواصل معنا عبر البريد:
                     </p>
@@ -45,11 +43,11 @@ function IntellectualPropertyRights() {
                             href="mailto:contact@arabfilmdb.com"
                             className="text-amber-400 text-xl font-bold hover:text-amber-300 transition duration-300 underline"
                         >
-                            contact@arabfilmdb.com
+                            info@arabfilmdb.com
                         </a>
                     </div>
 
-                    <p className="text-gray-300 text-lg leading-relaxed first-letter:text-3xl first-letter:font-bold">
+                    <p className="text-gray-300 text-lg leading-relaxed  ">
                         وسوف نقوم بمراجعة البلاغ واتخاذ الإجراء المناسب في أسرع وقت
                         ممكن.
                     </p>

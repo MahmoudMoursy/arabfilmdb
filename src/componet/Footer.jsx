@@ -1,6 +1,6 @@
 import logo from "/src/assets/WhatsApp_Image_2025-09-01_at_19.08.17_1b74120e-removebg-preview.png";
 import { useNavigate } from 'react-router-dom';
-
+import logoo from "/src/assets/Screenshot 2025-12-10 153424.png";
 function Footer() {
     const navigate = useNavigate();
     return (
@@ -200,6 +200,20 @@ function Footer() {
                                 </svg>
                                 <a href="tel:+966535815418" className="font-bold">
                                     966535815418+
+                                </a>
+
+                            </div>
+                            <div className="-mt-24">
+
+                                <a href="https://eauthenticate.saudibusiness.gov.sa/certificate-details/0000206253">
+                                    <img
+                                        src={logoo}
+                                        alt="Logo"
+                                        width={128}
+                                        height={128}
+                                        className="w-100 h-100 object-contain drop-shadow-lg transition-shadow duration-300 group-hover:drop-shadow-2xl"
+                                        loading="eager"
+                                    />
                                 </a>
                             </div>
                         </div>

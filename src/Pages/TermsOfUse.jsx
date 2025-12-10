@@ -32,7 +32,7 @@ function TermsOfUse() {
                         <h2 className="text-3xl font-semibold text-amber-500 hover:text-amber-400 transition duration-300">
                             1. المقدمة
                         </h2>
-                        <p className="text-gray-300 text-lg leading-relaxed first-letter:text-3xl first-letter:font-bold">
+                        <p className="text-gray-300 text-lg leading-relaxed  ">
                             باستخدامك لموقع ArabFilmDB، فإنك توافق على الالتزام الكامل
                             بالشروط والأحكام المنصوص عليها في هذه الاتفاقية. إذا لم توافق
                             على أي جزء من هذه الشروط، يجب عليك التوقف فورًا عن استخدام
@@ -45,7 +45,7 @@ function TermsOfUse() {
                         <h2 className="text-3xl font-semibold text-amber-500 hover:text-amber-400 transition duration-300">
                             2. الملكية الفكرية
                         </h2>
-                        <p className="text-gray-300 text-lg leading-relaxed first-letter:text-3xl first-letter:font-bold">
+                        <p className="text-gray-300 text-lg leading-relaxed  ">
                             جميع الحقوق المتعلقة بالمحتوى، والتصميم، والرمز البرمجي،
                             وقاعدة البيانات، والشعار، والعلامة التجارية لموقع ArabFilmDB
                             هي ملك حصري لصاحب المشروع، ولا يجوز إعادة إنتاجها أو
@@ -58,7 +58,7 @@ function TermsOfUse() {
                         <h2 className="text-3xl font-semibold text-amber-500 hover:text-amber-400 transition duration-300">
                             3. استخدام الموقع
                         </h2>
-                        <p className="text-gray-300 text-lg leading-relaxed first-letter:text-3xl first-letter:font-bold">
+                        <p className="text-gray-300 text-lg leading-relaxed">
                             يُحظر استخدام الموقع لأي نشاط غير قانوني أو ينتهك حقوق
                             الغير. كما يُمنع استخدام الموقع لنشر أو توزيع محتوى مسيء أو
                             مخل أو محمي بحقوق ملكية دون ترخيص.
@@ -70,7 +70,7 @@ function TermsOfUse() {
                         <h2 className="text-3xl font-semibold text-amber-500 hover:text-amber-400 transition duration-300">
                             4. دقة المحتوى
                         </h2>
-                        <p className="text-gray-300 text-lg leading-relaxed first-letter:text-3xl first-letter:font-bold">
+                        <p className="text-gray-300 text-lg leading-relaxed  ">
                             نحن نسعى لتقديم معلومات دقيقة، لكن لا نضمن خلوها من
                             الأخطاء أو التحديث الفوري. المستخدم يعتمد على المعلومات في
                             الموقع على مسؤوليته الشخصية.
@@ -82,7 +82,7 @@ function TermsOfUse() {
                         <h2 className="text-3xl font-semibold text-amber-500 hover:text-amber-400 transition duration-300">
                             5. الحسابات والمستخدمين
                         </h2>
-                        <p className="text-gray-300 text-lg leading-relaxed first-letter:text-3xl first-letter:font-bold">
+                        <p className="text-gray-300 text-lg leading-relaxed  ">
                             يجب على المستخدمين الحفاظ على سرية بيانات الدخول، وهم
                             مسؤولون عن جميع الأنشطة التي تتم عبر حساباتهم.
                         </p>
@@ -93,7 +93,7 @@ function TermsOfUse() {
                         <h2 className="text-3xl font-semibold text-amber-500 hover:text-amber-400 transition duration-300">
                             6. التعديلات
                         </h2>
-                        <p className="text-gray-300 text-lg leading-relaxed first-letter:text-3xl first-letter:font-bold">
+                        <p className="text-gray-300 text-lg leading-relaxed  ">
                             نحتفظ بالحق في تعديل هذه الشروط في أي وقت دون إشعار مسبق.
                             استمرار استخدام الموقع يعني موافقتك على التعديلات.
                         </p>
@@ -104,7 +104,7 @@ function TermsOfUse() {
                         <h2 className="text-3xl font-semibold text-amber-500 hover:text-amber-400 transition duration-300">
                             7. الإنهاء
                         </h2>
-                        <p className="text-gray-300 text-lg leading-relaxed first-letter:text-3xl first-letter:font-bold">
+                        <p className="text-gray-300 text-lg leading-relaxed  ">
                             يحق لإدارة الموقع تعليق أو إنهاء وصول أي مستخدم في حال
                             انتهاك الشروط دون إشعار مسبق.
                         </p>
@@ -115,7 +115,7 @@ function TermsOfUse() {
                         <h2 className="text-3xl font-semibold text-amber-500 hover:text-amber-400 transition duration-300">
                             8. القانون المعمول به
                         </h2>
-                        <p className="text-gray-300 text-lg leading-relaxed first-letter:text-3xl first-letter:font-bold">
+                        <p className="text-gray-300 text-lg leading-relaxed  ">
                             تخضع هذه الاتفاقية لقوانين المملكة العربية السعودية، ويكون
                             الاختصاص القضائي لمحاكم مدينة تبوك.
                         </p>

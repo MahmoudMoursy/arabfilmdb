@@ -27,7 +27,7 @@ function PrivacyPolicy() {
                         <h2 className="text-3xl font-semibold text-amber-500 tracking-wide hover:text-amber-400 transition-all duration-300">
                             1. البيانات التي نقوم بجمعها
                         </h2>
-                        <p className="text-gray-300 text-lg leading-relaxed first-letter:text-3xl first-letter:font-bold">
+                        <p className="text-gray-300 text-lg leading-relaxed ">
                             قد نقوم بجمع معلومات مثل الاسم، البريد الإلكتروني، عنوان IP، نوع الجهاز، وسجل التصفح داخل الموقع.
                         </p>
                     </div>
@@ -37,7 +37,7 @@ function PrivacyPolicy() {
                         <h2 className="text-3xl font-semibold text-amber-500 tracking-wide hover:text-amber-400 transition-all duration-300">
                             2. كيفية استخدام البيانات
                         </h2>
-                        <p className="text-gray-300 text-lg leading-relaxed first-letter:text-3xl first-letter:font-bold">
+                        <p className="text-gray-300 text-lg leading-relaxed">
                             نستخدم بياناتك لتحسين خدماتنا، تخصيص تجربة المستخدم، إرسال إشعارات، وتحليل أداء الموقع.
                         </p>
                     </div>
@@ -47,7 +47,7 @@ function PrivacyPolicy() {
                         <h2 className="text-3xl font-semibold text-amber-500 tracking-wide hover:text-amber-400 transition-all duration-300">
                             3. مشاركة البيانات
                         </h2>
-                        <p className="text-gray-300 text-lg leading-relaxed first-letter:text-3xl first-letter:font-bold">
+                        <p className="text-gray-300 text-lg leading-relaxed">
                             لا نقوم ببيع أو مشاركة بيانات المستخدم مع أي جهة خارجية إلا إذا تطلب الأمر قانونيًا، أو لحماية حقوقنا.
                         </p>
                     </div>
@@ -57,7 +57,7 @@ function PrivacyPolicy() {
                         <h2 className="text-3xl font-semibold text-amber-500 tracking-wide hover:text-amber-400 transition-all duration-300">
                             4. الحماية الأمنية
                         </h2>
-                        <p className="text-gray-300 text-lg leading-relaxed first-letter:text-3xl first-letter:font-bold">
+                        <p className="text-gray-300 text-lg leading-relaxed ">
                             نستخدم إجراءات أمان تقنية وإدارية لحماية بيانات المستخدم من الوصول غير المصرح به أو التعديل أو الحذف.
                         </p>
                     </div>
@@ -67,7 +67,7 @@ function PrivacyPolicy() {
                         <h2 className="text-3xl font-semibold text-amber-500 tracking-wide hover:text-amber-400 transition-all duration-300">
                             5. الكوكيز
                         </h2>
-                        <p className="text-gray-300 text-lg leading-relaxed first-letter:text-3xl first-letter:font-bold">
+                        <p className="text-gray-300 text-lg leading-relaxed">
                             نستخدم ملفات تعريف الارتباط لتحليل سلوك الزوار وتحسين الأداء. يحق لك رفض الكوكيز من إعدادات المتصفح.
                         </p>
                     </div>
@@ -77,7 +77,7 @@ function PrivacyPolicy() {
                         <h2 className="text-3xl font-semibold text-amber-500 tracking-wide hover:text-amber-400 transition-all duration-300">
                             6. حقوق المستخدم
                         </h2>
-                        <p className="text-gray-300 text-lg leading-relaxed first-letter:text-3xl first-letter:font-bold">
+                        <p className="text-gray-300 text-lg leading-relaxed">
                             لك الحق في طلب الاطلاع على بياناتك أو تعديلها أو حذفها في أي وقت عبر التواصل معنا.
                         </p>
                     </div>
@@ -87,7 +87,7 @@ function PrivacyPolicy() {
                         <h2 className="text-3xl font-semibold text-amber-500 tracking-wide hover:text-amber-400 transition-all duration-300">
                             7. مدة الاحتفاظ بالبيانات
                         </h2>
-                        <p className="text-gray-300 text-lg leading-relaxed first-letter:text-3xl first-letter:font-bold">
+                        <p className="text-gray-300 text-lg leading-relaxed">
                             نحتفظ بالبيانات طالما أن حسابك نشط أو حسب ما تقتضيه القوانين.
                         </p>
                     </div>
@@ -97,7 +97,7 @@ function PrivacyPolicy() {
                         <h2 className="text-3xl font-semibold text-amber-500 tracking-wide hover:text-amber-400 transition-all duration-300">
                             8. التحديثات
                         </h2>
-                        <p className="text-gray-300 text-lg leading-relaxed first-letter:text-3xl first-letter:font-bold">
+                        <p className="text-gray-300 text-lg leading-relaxed">
                             قد نقوم بتعديل سياسة الخصوصية، وسيتم إعلامك بأي تغييرات من خلال هذه الصفحة.
                         </p>
                     </div>
@@ -107,7 +107,7 @@ function PrivacyPolicy() {
                         <h2 className="text-3xl font-semibold text-amber-500 tracking-wide hover:text-amber-400 transition-all duration-300">
                             9. تواصل معنا
                         </h2>
-                        <p className="text-gray-300 text-lg leading-relaxed first-letter:text-3xl first-letter:font-bold">
+                        <p className="text-gray-300 text-lg leading-relaxed">
                             لأي استفسارات أو طلبات تتعلق ببياناتك، راسلنا على: <span className="text-amber-400 font-semibold">contact@arabfilmdb.com</span>
                         </p>
                     </div>

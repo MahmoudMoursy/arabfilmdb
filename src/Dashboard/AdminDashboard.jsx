@@ -778,14 +778,14 @@ const AdminDashboard = () => {
 
   return (
 
-    <div className="flex h-screen " dir="rtl" style={{ backgroundColor: 'var(--color-dark)' }}>
+    <div className="flex min-h-screen " dir="rtl" style={{ backgroundColor: 'var(--color-dark)' }}>
       <Sidebar
         counts={counts}
         usersCount={users.length}
         activeSection={activeSection}
         setActiveSection={setActiveSection}
       />
-      <div className="flex-1 flex flex-col overflow-y-auto">
+      <div className="flex-1 flex flex-col">
         <main className="p-6 md:p-8">
           <div className="flex items-baseline justify-between mb-6">
             <button
@@ -1460,7 +1460,7 @@ const AdminDashboard = () => {
                                   >
                                     {ad.isActive ? "إلغاء التفعيل" : "تفعيل"}
                                   </button>
-
+                                  {/* 
                                   <button
                                     onClick={() => {
                                       setEditingAd(ad);
@@ -1469,7 +1469,7 @@ const AdminDashboard = () => {
                                     className="px-3 py-1 bg-blue-600 hover:bg-blue-700 rounded text-white text-sm"
                                   >
                                     تعديل
-                                  </button>
+                                  </button> */}
 
                                   <button
                                     onClick={() =>
