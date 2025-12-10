@@ -8,6 +8,8 @@ function Dashboard() {
     const [role, setRole] = useState(null);
     const [works, setWorks] = useState([]);
     const [showAddForm, setShowAddForm] = useState(false);
+    const [selectedImageFile, setSelectedImageFile] = useState(null);
+    const [imagePreview, setImagePreview] = useState('');
     const [formData, setFormData] = useState({
         type: 'فيلم',
         arabicName: '',
@@ -42,12 +44,37 @@ function Dashboard() {
     const handleChange = (e, index = null) => {
         const { name, value } = e.target;
         if (name === 'actors' && index !== null) {
-            const updatedActors = [...formData.actors];
-            updatedActors[index] = value;
-            setFormData({ ...formData, actors: updatedActors });
+            const newActors = [...formData.actors];
+            newActors[index] = value;
+            setFormData({ ...formData, actors: newActors });
         } else {
             setFormData({ ...formData, [name]: value });
         }
+    };
+
+    const handleFileChange = (e) => {
+        const file = e.target.files?.[0] || null;
+        if (!file) {
+            setSelectedImageFile(null);
+            setImagePreview('');
+            return;
+        }
+
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+        if (!allowedTypes.includes(file.type)) {
+            alert('صيغة الملف غير مدعومة. استخدم JPG أو PNG أو GIF أو WEBP');
+            return;
+        }
+
+        if (file.size > 5 * 1024 * 1024) {
+            alert('حجم الصورة كبير جداً. الحد الأقصى 5 ميجابايت');
+            return;
+        }
+
+        setSelectedImageFile(file);
+        const reader = new FileReader();
+        reader.onload = (ev) => setImagePreview(ev.target.result);
+        reader.readAsDataURL(file);
     };
 
     const addActor = () => {
@@ -85,7 +112,27 @@ function Dashboard() {
         }
 
         try {
-            await workService.createWork(cleanedData, true);
+            // If there's a selected file, send multipart/form-data
+            if (selectedImageFile) {
+                const fd = new FormData();
+                fd.append('type', cleanedData.type);
+                fd.append('nameArabic', cleanedData.arabicName);
+                fd.append('nameEnglish', cleanedData.englishName);
+                fd.append('year', cleanedData.year);
+                fd.append('director', cleanedData.director);
+                fd.append('assistantDirector', cleanedData.assistantDirector);
+                fd.append('genre', cleanedData.genre);
+                fd.append('cast', JSON.stringify(cleanedData.cast));
+                fd.append('country', cleanedData.country);
+                fd.append('filmingLocation', cleanedData.location);
+                fd.append('summary', cleanedData.summary);
+                if (cleanedData.seasonsCount) fd.append('seasonsCount', cleanedData.seasonsCount);
+                if (cleanedData.episodesCount) fd.append('episodesCount', cleanedData.episodesCount);
+                fd.append('image', selectedImageFile);
+                await workService.createWorkWithImage(fd);
+            } else {
+                await workService.createWork(cleanedData, true);
+            }
             alert('تم إضافة العمل بنجاح');
             setFormData({
                 type: 'فيلم',
@@ -103,6 +150,8 @@ function Dashboard() {
                 seasons: '',
                 episodes: ''
             });
+            setSelectedImageFile(null);
+            setImagePreview('');
             setShowAddForm(false);
             fetchWorks();
         } catch (error) {
@@ -328,15 +377,45 @@ function Dashboard() {
                       </div>
 
                       <div>
-                        <label className="block mb-1 text-white">رابط البوستر *</label>
-                        <input
-                          type="url"
-                          name="posterUrl"
-                          value={formData.posterUrl}
-                          onChange={handleChange}
-                          required
-                          className="w-full p-2 rounded bg-gray-700 text-white"
-                        />
+                        <label className="block mb-1 text-white">رابط البوستر (أو ارفع صورة)</label>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <input
+                            type="url"
+                            name="posterUrl"
+                            value={formData.posterUrl}
+                            onChange={handleChange}
+                            required={!selectedImageFile}
+                            className="w-full p-2 rounded bg-gray-700 text-white"
+                            placeholder="https://example.com/image.jpg"
+                          />
+                          <div>
+                            <label className="inline-flex items-center gap-2 px-4 py-2 bg-amber-400 text-black font-semibold rounded-lg cursor-pointer hover:bg-amber-500 transition">
+                              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                <path fillRule="evenodd" d="M3 3a1 1 0 011-1h4a1 1 0 110 2H5v10h10v-3a1 1 0 112 0v4a1 1 0 01-1 1H4a1 1 0 01-1-1V3z" clipRule="evenodd" />
+                                <path d="M9 7a1 1 0 012 0v4.586l1.293-1.293a1 1 0 011.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 011.414-1.414L9 11.586V7z" />
+                              </svg>
+                              <span>اختر صورة</span>
+                              <input
+                                type="file"
+                                accept="image/*"
+                                onChange={handleFileChange}
+                                className="hidden"
+                              />
+                            </label>
+                            <div className="mt-2">
+                              {imagePreview ? (
+                                <div className="mt-2 text-center">
+                                  <img src={imagePreview} alt="preview" className="max-h-40 rounded-md mx-auto" />
+                                  <div className="flex items-center justify-center gap-2 mt-2">
+                                    <button type="button" onClick={() => { setSelectedImageFile(null); setImagePreview(''); }} className="px-3 py-1 bg-red-600 rounded text-white text-sm">إزالة الصورة</button>
+                                  </div>
+                                </div>
+                              ) : (
+                                <p className="text-xs text-gray-300 mt-1">اختر ملف صورة لرفعها (اختياري)</p>
+                              )}
+                            </div>
+                          </div>
+                        </div>
                       </div>
 
                       <div className="flex gap-4">

@@ -347,7 +347,7 @@ const Details = () => {
                         <img
                             alt={selectedItem.nameArabic}
                             className="w-full h-full object-cover blur-sm scale-105 opacity-60"
-                            src={selectedItem.posterUrl}
+                            src={selectedItem.posterUrl || selectedItem.posterImage?.url || 'https://via.placeholder.com/800x600?text=No+Image'}
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-[#121212] via-[#121212]/80 to-transparent" />
                         <div className="absolute inset-0 bg-gradient-to-r from-[#121212] via-[#121212]/60 to-transparent" />
@@ -361,7 +361,7 @@ const Details = () => {
                                     <img
                                         alt={selectedItem.nameArabic}
                                         className="w-full h-auto object-cover"
-                                        src={selectedItem.posterUrl}
+                                        src={selectedItem.posterUrl || selectedItem.posterImage?.url || 'https://via.placeholder.com/400x600?text=No+Image'}
                                     />
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                                 </div>
@@ -370,13 +370,11 @@ const Details = () => {
                             {/* Content Info */}
                             <div className="flex-1 space-y-6 lg:mb-8">
                                 {/* Mobile Poster (Visible only on small screens) */}
-                                <div className="lg:hidden w-[160px] mx-auto mb-6 rounded-xl overflow-hidden shadow-2xl border border-white/10">
                                     <img
                                         alt={selectedItem.nameArabic}
                                         className="w-full h-auto object-cover"
-                                        src={selectedItem.posterUrl}
+                                        src={selectedItem.posterUrl || selectedItem.posterImage?.url || 'https://via.placeholder.com/200x300?text=No+Image'}
                                     />
-                                </div>
 
                                 {/* Title & Badges */}
                                 <div className="space-y-2 text-center lg:text-right">
